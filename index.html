@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Global Call for Solutions — Analytics Dashboard</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌍</text></svg>">
+  <link rel="preconnect" href="https://cdn.jsdelivr.net" />
+  <script src="https://cdn.plot.ly/plotly-2.35.2.min.js"></script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/simpledotcss/simple.min.css">
+  <style>
+    :root {
+      --primary-color: #2563eb;
+      --secondary-color: #64748b;
+      --success-color: #059669;
+      --warning-color: #d97706;
+      --danger-color: #dc2626;
+      --border-color: #e5e7eb;
+      --bg-light: #f8fafc;
+    }
+    
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      line-height: 1.6;
+      color: #1f2937;
+    }
+    
+    header { 
+      position: sticky; 
+      top: 0; 
+      background: white; 
+      padding: 1rem 0; 
+      z-index: 10; 
+      border-bottom: 2px solid var(--border-color);
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    }
+    
+    header h2 {
+      margin: 0 0 1rem 0;
+      color: var(--primary-color);
+      font-size: 1.75rem;
+    }
+    
+    .controls {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+      align-items: center;
+      padding: 1rem 0;
+      background: var(--bg-light);
+      border-radius: 8px;
+      padding: 1rem;
+    }
+    
+    .controls label {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      font-weight: 500;
+      min-width: 180px;
+    }
+    
+    .controls select, .controls input { 
+      min-width: 180px; 
+      padding: 0.5rem;
+      border: 1px solid var(--border-color);
+      border-radius: 4px;
+      font-size: 0.9rem;
+    }
+    
+    .controls select[multiple] {
+      min-height: 100px;
+    }
+    
+    .btn {
+      padding: 0.5rem 1rem;
+      border: none;
+      border-radius: 6px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s;
+      font-size: 0.9rem;
+    }
+    
+    .btn-primary {
+      background: var(--primary-color);
+      color: white;
+    }
+    
+    .btn-primary:hover {
+      background: #1d4ed8;
+      transform: translateY(-1px);
+    }
+    
+    .btn-secondary {
+      background: var(--secondary-color);
+      color: white;
+    }
+    
+    .btn-secondary:hover {
+      background: #475569;
+      transform: translateY(-1px);
+    }
+    
+    .btn-success {
+      background: var(--success-color);
+      color: white;
+    }
+    
+    .btn-success:hover {
+      background: #047857;
+      transform: translateY(-1px);
+    }
+    
+    .grid { 
+      display: grid; 
+      gap: 2rem; 
+      grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); 
+      margin: 3rem 0;
+      width: 100%;
+      max-width: 1400px;
+      margin-left: auto;
+      margin-right: auto;
+      padding: 2rem;
+    }
+    
+    .kpis { 
+      display: grid; 
+      gap: 1.5rem; 
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); 
+      margin: 3rem 0;
+      width: 100%;
+      max-width: 1400px;
+      margin-left: auto;
+      margin-right: auto;
+      padding: 2rem;
+    }
+    
+    .card { 
+      border: 1px solid var(--border-color); 
+      border-radius: 12px; 
+      padding: 2rem; 
+      background: white;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+      transition: all 0.2s;
+      margin-bottom: 1rem;
+    }
+    
+    .card:hover {
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+      transform: translateY(-2px);
+    }
+    
+    .title { 
+      margin: 0 0 1rem 0; 
+      font-weight: 600; 
+      color: var(--primary-color);
+      font-size: 1.1rem;
+      border-bottom: 2px solid var(--border-color);
+      padding-bottom: 0.5rem;
+    }
+    
+    .kpi-value {
+      font-size: 2rem;
+      font-weight: 700;
+      color: var(--primary-color);
+      margin: 0;
+    }
+    
+    .kpi-label {
+      color: var(--secondary-color);
+      font-size: 0.9rem;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin: 0;
+    }
+    
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 1rem;
+    }
+    
+    th, td {
+      padding: 0.75rem;
+      text-align: left;
+      border-bottom: 1px solid var(--border-color);
+    }
+    
+    th {
+      background: var(--bg-light);
+      font-weight: 600;
+      color: var(--primary-color);
+    }
+    
+    tr:hover {
+      background: var(--bg-light);
+    }
+    
+    .loading {
+      text-align: center;
+      padding: 2rem;
+      color: var(--secondary-color);
+    }
+    
+    .error {
+      background: #fef2f2;
+      border: 1px solid #fecaca;
+      color: var(--danger-color);
+      padding: 1rem;
+      border-radius: 6px;
+      margin: 1rem 0;
+    }
+    
+    @media (max-width: 768px) {
+      .controls {
+        flex-direction: column;
+        align-items: stretch;
+      }
+      
+      .controls label {
+        min-width: auto;
+      }
+      
+      .grid {
+        grid-template-columns: 1fr;
+      }
+      
+      .kpis {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h2>🌍 Global Call for Solutions — Analytics Dashboard</h2>
+    <div class="controls">
+      <label>
+        🌍 Region 
+        <select id="fRegion" multiple title="Select one or more regions to filter"></select>
+      </label>
+      <label>
+        🏳️ Country 
+        <select id="fCountry" multiple title="Select one or more countries to filter"></select>
+      </label>
+      <label>
+        🏢 Organization Type 
+        <select id="fOrg" multiple title="Select one or more organization types to filter"></select>
+      </label>
+      <label>
+        📈 Maturity Stage 
+        <select id="fMaturity" multiple title="Select one or more maturity stages to filter"></select>
+      </label>
+      <label>
+        🎯 SDG Focus 
+        <select id="fSDG" multiple title="Select one or more SDGs to filter"></select>
+      </label>
+      <div style="display: flex; gap: 0.5rem; align-items: end;">
+        <button id="clear" class="btn btn-secondary">🗑️ Clear Filters</button>
+        <button id="exportCsv" class="btn btn-success">📊 Export CSV</button>
+      </div>
+    </div>
+  </header>
+
+  <section class="kpis" id="kpis">
+    <div class="loading">Loading analytics...</div>
+  </section>
+
+  <section class="grid">
+    <div class="card">
+      <div class="title">🗺️ Submissions by Country</div>
+      <div id="map" style="height:420px;"></div>
+    </div>
+    <div class="card">
+      <div class="title">🏢 Organization Type Distribution</div>
+      <div id="orgBar" style="height:320px;"></div>
+    </div>
+    <div class="card">
+      <div class="title">🎯 Primary Thematic Focus</div>
+      <div id="themeTree" style="height:320px;"></div>
+    </div>
+    <div class="card">
+      <div class="title">🌱 SDGs Addressed</div>
+      <div id="sdgStack" style="height:320px;"></div>
+    </div>
+    <div class="card">
+      <div class="title">📊 Score Distribution</div>
+      <div id="scoreHist" style="height:320px;"></div>
+    </div>
+    <div class="card">
+      <div class="title">📈 Score vs. Maturity Stage</div>
+      <div id="scoreScatter" style="height:320px;"></div>
+    </div>
+    <div class="card" style="grid-column: 1 / -1;">
+      <div class="title">🏆 Top 20 Solutions by Score</div>
+      <div id="topTable"></div>
+    </div>
+  </section>
+
+  <script src="iso3-map.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
