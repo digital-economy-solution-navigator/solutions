@@ -7,9 +7,9 @@
 const CONFIG = {
   MATURITY_ORDER: [
     "Idea/Concept",
-    "Proof-of-Concept/Prototype", 
-    "Minimum Viable Product (MVP)/Pilot-ready",
-    "Pilot stage (small-scale implementation)",
+    "Proof of Concept", 
+    "MVP",
+    "Pilot Stage",
     "Implemented at scale"
   ],
   CHART_COLORS: ['#2563eb', '#7c3aed', '#dc2626', '#059669', '#d97706', '#0891b2', '#be185d', '#65a30d'],
@@ -158,11 +158,20 @@ class DataProcessor {
     const iso3 = window.COUNTRY_TO_ISO3[country] || null;
     const sdgs = sdgNormalize(row["SDGs addressed"]);
     
-    // Normalize maturity stage with Russian mapping
-    let maturity = (row["Maturity stage"] || "").trim();
-    if (maturity === "Пилотный этап (мелкая реализация)") {
-      maturity = "Pilot stage (small-scale implementation)";
-    }
+         // Normalize maturity stage with Russian mapping and consolidation
+     let maturity = (row["Maturity stage"] || "").trim();
+     if (maturity === "Пилотный этап (мелкая реализация)") {
+       maturity = "Pilot stage (small-scale implementation)";
+     }
+     
+     // Consolidate maturity stages
+     if (maturity.includes("Proof-of-Concept") || maturity.includes("Prototype")) {
+       maturity = "Proof of Concept";
+     } else if (maturity.includes("Minimum Viable Product") || maturity.includes("MVP") || maturity.includes("Pilot-ready")) {
+       maturity = "MVP";
+     } else if (maturity.includes("Pilot stage") || maturity.includes("small-scale implementation")) {
+       maturity = "Pilot Stage";
+     }
     
          // Normalize organization type with Russian mapping and consolidation
      let org = (row["Please specify the type of organization you are representing."] || "").replace(/\*+$/, '').trim();
@@ -751,11 +760,11 @@ class AnalyticsApp {
       
       UIComponents.renderKPIs(appState.filteredData);
       UIComponents.renderMap(appState.filteredData);
-      UIComponents.renderOrgBar(appState.filteredData);
+      // UIComponents.renderOrgBar(appState.filteredData);
       UIComponents.renderSdgStack(appState.filteredData);
       UIComponents.renderScoreHist(appState.filteredData);
       UIComponents.renderScoreScatter(appState.filteredData);
-      UIComponents.renderTopTable(appState.filteredData);
+      // UIComponents.renderTopTable(appState.filteredData);
     } catch (error) {
       console.error('Render error:', error);
       appState.setError(`Rendering error: ${error.message}`);

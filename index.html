@@ -115,7 +115,7 @@
     .grid { 
       display: grid; 
       gap: 2rem; 
-      grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); 
+      grid-template-columns: repeat(auto-fit, minmax(590px, 1fr)); 
       margin: 3rem 0;
       width: 100%;
       max-width: none;
@@ -124,16 +124,15 @@
       padding: 2rem;
     }
     
-    .kpis { 
-      display: grid; 
-      gap: 1.5rem; 
-      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); 
-      margin: 3rem 0;
-      width: 100%;
-      max-width: none;
-      margin-left: 0;
-      margin-right: 0;
-      padding: 2rem;
+    .kpis {
+        display: grid;
+        gap: 1.5rem;
+        grid-template-columns: repeat(5, 1fr);
+        margin: 3rem auto;    /* center */
+        padding: 2rem 0;
+        max-width: 1000px;    /* adjust until lines align with cards */
+        border-top: 1px solid var(--border-color);
+        border-bottom: 1px solid var(--border-color);
     }
     
     .card { 
@@ -278,10 +277,10 @@
       <div class="title">🗺️ Submissions by Country</div>
       <div id="map" style="height:420px;"></div>
     </div>
-    <div class="card">
+    <!-- <div class="card">
       <div class="title">🏢 Organization Type Distribution</div>
       <div id="orgBar" style="height:320px;"></div>
-    </div>
+    </div> -->
 
     <div class="card">
       <div class="title">🌱 SDGs Addressed</div>
@@ -295,10 +294,10 @@
       <div class="title">📈 Score vs. Maturity Stage</div>
       <div id="scoreScatter" style="height:320px;"></div>
     </div>
-    <div class="card" style="grid-column: 1 / -1;">
+    <!-- <div class="card" style="grid-column: 1 / -1;">
       <div class="title">🏆 Top 10 Solutions by Score</div>
       <div id="topTable"></div>
-    </div>
+    </div> -->
   </section>
 
   <script src="iso3-map.js"></script>
