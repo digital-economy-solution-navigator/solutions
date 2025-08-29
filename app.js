@@ -13,7 +13,7 @@ const CONFIG = {
     "Implemented at scale"
   ],
   CHART_COLORS: ['#2563eb', '#7c3aed', '#dc2626', '#059669', '#d97706', '#0891b2', '#be185d', '#65a30d'],
-  MAX_TOP_SOLUTIONS: 20,
+  MAX_TOP_SOLUTIONS: 10,
   CSV_FILENAME: 'global_solutions_export.csv'
 };
 
@@ -164,11 +164,20 @@ class DataProcessor {
       maturity = "Pilot stage (small-scale implementation)";
     }
     
-    // Normalize organization type with Russian mapping
-    let org = (row["Please specify the type of organization you are representing."] || "").replace(/\*+$/, '').trim();
-    if (org === "Частный сектор") {
-      org = "Private sector";
-    }
+         // Normalize organization type with Russian mapping and consolidation
+     let org = (row["Please specify the type of organization you are representing."] || "").replace(/\*+$/, '').trim();
+     if (org === "Частный сектор") {
+       org = "Private sector";
+     }
+     
+     // Consolidate similar organization types
+     if (org.includes("Academia") || org.includes("university") || org.includes("think tank")) {
+       org = "Academia";
+     } else if (org.includes("Civil society") || org.includes("NGO") || org.includes("community groups")) {
+       org = "Civil society";
+     } else if (org.includes("International Organisation") && !org.includes("UN")) {
+       org = "International Organisation";
+     }
     
     const region = (row["Region"] || "").trim();
     const score = utils.safeNumber(row["Total Score"]);
@@ -274,9 +283,8 @@ class UIComponents {
       };
 
       Plotly.newPlot('map', [trace], layout, {
-        displayModeBar: true,
-        responsive: true,
-        modeBarButtonsToRemove: ['pan2d', 'lasso2d', 'select2d']
+        displayModeBar: false,
+        responsive: true
       });
     } catch (error) {
       console.error('Error rendering map:', error);
@@ -311,7 +319,7 @@ class UIComponents {
       };
 
       Plotly.newPlot('orgBar', [trace], layout, {
-        displayModeBar: true,
+        displayModeBar: false,
         responsive: true
       });
     } catch (error) {
@@ -320,37 +328,7 @@ class UIComponents {
     }
   }
 
-  static renderThemeTree(data) {
-    try {
-      const counts = {};
-      data.forEach(d => counts[d._theme] = (counts[d._theme] || 0) + 1);
-      
-      const labels = Object.keys(counts);
-      const parents = labels.map(() => '');
-      const values = labels.map(l => counts[l]);
 
-      const trace = {
-        type: 'treemap',
-        labels,
-        parents,
-        values,
-        marker: { colors: CONFIG.CHART_COLORS }
-      };
-
-      const layout = {
-        margin: { t: 10, l: 10, r: 10, b: 10 },
-        title: { text: 'Thematic Focus Distribution', font: { size: 16 } }
-      };
-
-      Plotly.newPlot('themeTree', [trace], layout, {
-        displayModeBar: true,
-        responsive: true
-      });
-    } catch (error) {
-      console.error('Error rendering theme tree:', error);
-      el('themeTree').innerHTML = '<div class="error">Error rendering chart</div>';
-    }
-  }
 
   static renderSdgStack(data) {
     try {
@@ -363,23 +341,24 @@ class UIComponents {
         .sort(([a], [b]) => Number(a.split(' ')[1]) - Number(b.split(' ')[1]));
 
       const labels = sorted.map(([k]) => k);
+      const parents = labels.map(() => '');
       const values = sorted.map(([,v]) => v);
 
       const trace = {
-        type: 'bar',
-        x: labels,
-        y: values,
-        marker: { color: CONFIG.CHART_COLORS[1] }
+        type: 'treemap',
+        labels,
+        parents,
+        values,
+        marker: { colors: CONFIG.CHART_COLORS }
       };
 
       const layout = {
-        xaxis: { tickangle: -35, title: 'Sustainable Development Goals' },
-        yaxis: { title: 'Number of Solutions' },
-        margin: { b: 80, t: 10 }
+        margin: { t: 10, l: 10, r: 10, b: 10 },
+        title: { text: '', font: { size: 16 } }
       };
 
       Plotly.newPlot('sdgStack', [trace], layout, {
-        displayModeBar: true,
+        displayModeBar: false,
         responsive: true
       });
     } catch (error) {
@@ -403,11 +382,11 @@ class UIComponents {
         margin: { t: 10, l: 40, r: 10, b: 40 },
         xaxis: { title: 'Score' },
         yaxis: { title: 'Count' },
-        title: { text: 'Score Distribution', font: { size: 16 } }
+        title: { text: '', font: { size: 16 } }
       };
 
       Plotly.newPlot('scoreHist', [trace], layout, {
-        displayModeBar: true,
+        displayModeBar: false,
         responsive: true
       });
     } catch (error) {
@@ -445,11 +424,11 @@ class UIComponents {
         },
         yaxis: { title: 'Score' },
         margin: { t: 10 },
-        title: { text: 'Score vs. Maturity Stage', font: { size: 16 } }
+        title: { text: '', font: { size: 16 } }
       };
 
       Plotly.newPlot('scoreScatter', [trace], layout, {
-        displayModeBar: true,
+        displayModeBar: false,
         responsive: true
       });
     } catch (error) {
@@ -486,7 +465,7 @@ class UIComponents {
               <th>Title</th>
               <th>Country</th>
               <th>Org Type</th>
-              <th>Theme</th>
+                             <th>Thematic Focus</th>
             </tr>
           </thead>
           <tbody>${rows}</tbody>
@@ -773,7 +752,6 @@ class AnalyticsApp {
       UIComponents.renderKPIs(appState.filteredData);
       UIComponents.renderMap(appState.filteredData);
       UIComponents.renderOrgBar(appState.filteredData);
-      UIComponents.renderThemeTree(appState.filteredData);
       UIComponents.renderSdgStack(appState.filteredData);
       UIComponents.renderScoreHist(appState.filteredData);
       UIComponents.renderScoreScatter(appState.filteredData);
