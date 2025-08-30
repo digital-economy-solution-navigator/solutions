@@ -763,7 +763,7 @@ class AnalyticsApp {
       // UIComponents.renderOrgBar(appState.filteredData);
       UIComponents.renderSdgStack(appState.filteredData);
       UIComponents.renderScoreHist(appState.filteredData);
-      UIComponents.renderScoreScatter(appState.filteredData);
+      // UIComponents.renderScoreScatter(appState.filteredData);
       // UIComponents.renderTopTable(appState.filteredData);
     } catch (error) {
       console.error('Render error:', error);
