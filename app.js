@@ -404,47 +404,48 @@ class UIComponents {
     }
   }
 
-  static renderScoreScatter(data) {
-    try {
-      const validData = data.filter(d => d._score > 0 && d._maturity);
-      const catIndex = d => Math.max(0, CONFIG.MATURITY_ORDER.indexOf(d._maturity));
+  // static renderScoreScatter(data) {
+  //   try {
+  //     const validData = data.filter(d => d._score > 0 && d._maturity);
+  //     const catIndex = d => Math.max(0, CONFIG.MATURITY_ORDER.indexOf(d._maturity));
 
-      const trace = {
-        mode: 'markers',
-        x: validData.map(d => catIndex(d)),
-        y: validData.map(d => d._score),
-        text: validData.map(d => `${d["Name of your organization"]} — ${d["Title"]}`),
-        hovertemplate: "<b>%{text}</b><br>Maturity: %{x}<br>Score: %{y}<extra></extra>",
-        marker: {
-          size: 8,
-          color: validData.map(d => d._score),
-          colorscale: 'Viridis',
-          showscale: true,
-          colorbar: { title: 'Score' }
-        }
-      };
+  //     const trace = {
+  //       mode: 'markers',
+  //       x: validData.map(d => catIndex(d)),
+  //       y: validData.map(d => d._score),
+  //       text: validData.map(d => `${d["Name of your organization"]} — ${d["Title"]}`),
+  //       hovertemplate: "<b>%{text}</b><br>Maturity: %{x}<br>Score: %{y}<extra></extra>",
+  //       marker: {
+  //       size: 8,
+  //       color: validData.map(d => d._score),
+  //       colorscale: 'Viridis',
+  //       showscale: true,
+  //       colorbar: { title: 'Score' }
+  //       }
+  //     };
 
-      const layout = {
-        xaxis: {
-          tickmode: 'array',
-          tickvals: CONFIG.MATURITY_ORDER.map((_, i) => i),
-          ticktext: CONFIG.MATURITY_ORDER,
-          title: 'Maturity Stage'
-        },
-        yaxis: { title: 'Score' },
-        margin: { t: 10 },
-        title: { text: '', font: { size: 16 } }
-      };
+  //     const layout = {
+  //       xaxis: {
+  //       tickmode: 'array',
+  //       tickvals: CONFIG.MATURITY_ORDER.map((_, i) => i),
+  //       ticktext: CONFIG.MATURITY_ORDER,
+  //       title: 'Maturity Stage'
+  //       },
+  //       yaxis: { title: 'Score' },
+  //       margin: { t: 10 },
+  //       title: { text: '', font: { size: 16 } }
+  //       };
 
-      Plotly.newPlot('scoreScatter', [trace], layout, {
-        displayModeBar: false,
-        responsive: true
-      });
-    } catch (error) {
-      console.error('Error rendering score scatter:', error);
-      el('scoreScatter').innerHTML = '<div class="error">Error rendering chart</div>';
-    }
-  }
+  //     Plotly.newPlot('scoreScatter', [trace], layout, {
+  //       displayModeBar: false,
+  //       responsive: true
+  //     });
+  //   } catch (error) {
+  //     console.error('Error rendering score scatter:', error);
+  //     el('scoreScatter').innerHTML = '<div class="error">Error rendering chart</div>';
+  //     }
+  //   }
+  // }
 
   static renderTopTable(data) {
     try {
