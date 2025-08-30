@@ -3,258 +3,414 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Global Call for Solutions — Analytics Dashboard</title>
+  <title>Global Call for Solutions — UNGA Kiosk Dashboard</title>
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌍</text></svg>">
   <link rel="preconnect" href="https://cdn.jsdelivr.net" />
   <script src="https://cdn.plot.ly/plotly-2.35.2.min.js"></script>
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/simpledotcss/simple.min.css">
   <style>
-         :root {
-       --border-color: #e5e7eb;
-       --bg-light: #f8fafc;
-     }
-    
-              body {
-       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-       line-height: 1.6;
-       color: #1f2937;
-     }
-    
-         header { 
-       position: sticky; 
-       top: 0; 
-       background: #009CDC; 
-       padding: 1rem 0; 
-       z-index: 10; 
-       border-bottom: 2px solid var(--border-color);
-       box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-     }
-    
-                   header h2 {
-        margin: 0 0 1rem 0;
-        color: white;
-        font-size: 1.75rem;
-        text-align: center;
-      }
-    
-                   .controls {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 1rem;
-        align-items: center;
-        justify-content: center;
-        padding: 1rem 0;
-        background: #009CDC;
-        border-radius: 8px;
-        padding: 1rem;
-      }
-    
-         .controls label {
-       display: flex;
-       flex-direction: column;
-       gap: 0.5rem;
-       font-weight: 500;
-       min-width: 180px;
-       color: white;
-     }
-    
-    .controls select, .controls input { 
-      min-width: 180px; 
-      padding: 0.5rem;
-      border: 1px solid var(--border-color);
-      border-radius: 4px;
-      font-size: 0.9rem;
+    /* ================= UNGA THEME (Dark, Stage-friendly) ================= */
+    :root{
+      --bg: #0B1324;            /* deep navy */
+      --panel: rgba(255,255,255,.06);
+      --panel-strong: rgba(255,255,255,.10);
+      --text: #EAF4FF;
+      --muted: #9FB3C8;
+      --brand: #00A3E0;         /* UN blue */
+      --accent: #45FFD3;        /* neon aqua */
+      --gold: #F6C453;          /* highlight */
+      --radius: 20px;
+      --shadow: 0 10px 30px rgba(0,0,0,.35);
+      --border: 1px solid rgba(255,255,255,.08);
+      --gap: 28px;
     }
-    
-    .controls select[multiple] {
-      min-height: 100px;
+
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{margin:0; background:var(--bg); color:var(--text); font: 500 18px/1.6 -apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Inter,system-ui,sans-serif;}
+
+    /* Header */
+    header{
+      position: sticky; top: 0; z-index: 20;
+      background: linear-gradient(135deg,#06142E, #0B1E39 55%, #103B5C);
+      border-bottom: var(--border);
+      box-shadow: 0 8px 24px rgba(0,0,0,.35);
     }
-    
-         .btn {
-       padding: 0.5rem 1rem;
-       border: none;
-       border-radius: 6px;
-       font-weight: 500;
-       cursor: pointer;
-       transition: all 0.2s;
-       font-size: 0.9rem;
-     }
-     
-     .btn-secondary {
-       background: #64748b;
-       color: white;
-     }
-     
-     .btn-secondary:hover {
-       background: #475569;
-       transform: translateY(-1px);
-     }
-    
-    .grid { 
-      display: grid; 
-      gap: 2rem; 
-      grid-template-columns: repeat(auto-fit, minmax(590px, 1fr)); 
-      margin: 3rem 0;
-      width: 100%;
-      max-width: none;
-      margin-left: 0;
-      margin-right: 0;
-      padding: 2rem;
+    .header-inner{display:flex; align-items:center; justify-content:space-between; gap:16px; padding:22px clamp(16px,4vw,40px);}    
+    .branding{display:flex; align-items:center; gap:16px}
+    .branding img{height:56px; width:auto; filter: drop-shadow(0 6px 12px rgba(0,0,0,.35));}
+    h1{margin:0; font-size: clamp(22px, 3vw, 34px); letter-spacing:.3px; font-weight:800}
+    .subtitle{opacity:.8; font-size: clamp(12px,1.4vw,14px)}
+
+    /* Controls (hidden in Kiosk mode, but keep styles for fallback) */
+    .controls{
+      display:flex; flex-wrap:wrap; gap:14px 18px; align-items:end; padding: 14px clamp(16px,4vw,40px) 22px;
+      background: linear-gradient(180deg, rgba(255,255,255,.03), rgba(255,255,255,0));
+      border-top: var(--border);
     }
-    
-    .kpis {
-        display: grid;
-        gap: 1.5rem;
-        grid-template-columns: repeat(5, 1fr);
-        margin: 3rem auto;    /* center */
-        padding: 2rem 0;
-        max-width: 1000px;    /* adjust until lines align with cards */
-        border-top: 1px solid var(--border-color);
-        border-bottom: 1px solid var(--border-color);
+    .controls label{display:flex; flex-direction:column; gap:8px; min-width:200px; color:var(--text);}
+    .controls select{padding:10px 12px; border-radius:12px; border: var(--border); background: var(--panel); color:var(--text)}
+    .btn{padding:10px 14px; border:none; border-radius:14px; cursor:pointer; background: var(--brand); color:#00131B; font-weight:700}
+    .btn.secondary{background:#6B7E93; color:#0B1324}
+
+    /* KPI hero */
+    .kpis{display:grid; gap: var(--gap); grid-template-columns: repeat(4, minmax(220px, 1fr)); padding: clamp(16px,4vw,40px); margin: 0 auto; max-width: 1600px}
+    .kpi{background: var(--panel); border: none; border-radius: var(--radius); padding: 24px; box-shadow: var(--shadow); backdrop-filter: blur(10px);}
+    .kpi .label{color: var(--muted); text-transform: uppercase; letter-spacing: .6px; font-size: 14px}
+    .kpi .value{font-size: clamp(44px,6vw,72px); font-weight: 900; letter-spacing: .5px; margin-top: 6px}
+    .kpi .hint{color:var(--muted); font-size:14px; margin-top:6px}
+
+    /* Grid */
+    .grid{display:grid; gap: var(--gap); grid-template-columns: repeat(12, 1fr); padding: 0 clamp(16px,4vw,40px) clamp(24px,6vw,48px); max-width: 1800px; margin: 0 auto}
+    .card{grid-column: span 6; background: var(--panel); border-radius: var(--radius); box-shadow: var(--shadow); border:none; overflow:hidden}
+    .card .head{display:flex; align-items:center; justify-content:space-between; gap:12px; padding: 18px 22px; border-bottom: var(--border); background: linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.02));}
+    .card .head .title{font-weight:800; letter-spacing:.2px}
+    .card .body{padding: 16px 18px}
+    .card.full{grid-column: 1 / -1}
+
+    .legend-badge{display:inline-block; padding:6px 10px; border-radius:999px; background:var(--panel-strong); font-size:13px; color:var(--muted)}
+
+    /* Footer note */
+    footer{padding: 22px clamp(16px,4vw,40px); color:var(--muted); font-size:14px; text-align:center; opacity:.8}
+
+    /* Responsive */
+    @media (max-width: 1024px){
+      .kpis{grid-template-columns: repeat(2,1fr)}
+      .card{grid-column: 1 / -1}
     }
-    
-    .card { 
-      border: 1px solid var(--border-color); 
-      border-radius: 12px; 
-      padding: 2rem; 
-      background: white;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-      transition: all 0.2s;
-      margin-bottom: 1rem;
-      width: 100%;
-    }
-    
-    .card > div[id] {
-      width: 100% !important;
-      min-width: 100% !important;
-    }
-    
-    .card:hover {
-      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-      transform: translateY(-2px);
-    }
-    
-    .title { 
-      margin: 0 0 1rem 0; 
-      font-weight: 600; 
-      color: var(--primary-color);
-      font-size: 1.1rem;
-      border-bottom: 2px solid var(--border-color);
-      padding-bottom: 0.5rem;
-    }
-    
-    .kpi-value {
-      font-size: 2rem;
-      font-weight: 700;
-      color: var(--primary-color);
-      margin: 0;
-    }
-    
-    .kpi-label {
-      color: var(--secondary-color);
-      font-size: 0.9rem;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-      margin: 0;
-    }
-    
-    
-    
-    .loading {
-      text-align: center;
-      padding: 2rem;
-      color: var(--secondary-color);
-    }
-    
-    
-    
-    @media (max-width: 768px) {
-      .controls {
-        flex-direction: column;
-        align-items: stretch;
-      }
-      
-      .controls label {
-        min-width: auto;
-      }
-      
-      .grid {
-        grid-template-columns: 1fr;
-      }
-      
-      .kpis {
-        grid-template-columns: repeat(2, 1fr);
-      }
+    @media (max-width: 640px){
+      .kpi .value{font-size: 40px}
     }
   </style>
 </head>
 <body>
-  <header style="background: #009CDC">
-    <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 1rem; padding: 1rem; border-radius: 8px;">
-      <img src="logo.png" alt="Logo" style="height: 60px; width: auto;">
-      <h2>Global Call for Solutions — Analytics Dashboard</h2>
+  <header>
+    <div class="header-inner">
+      <div class="branding">
+        <img src="logo.png" alt="Logo" />
+        <div>
+          <h1>Global Call for Solutions — Analytics</h1>
+          <div class="subtitle">UNGA Showcase · New York · Sep 2025</div>
+        </div>
+      </div>
+      <div class="actions">
+        <button id="toggleKiosk" class="btn secondary" title="Toggle Kiosk">Kiosk</button>
+      </div>
     </div>
-    <div class="controls">
-      <label>
-        🌍 Region 
-        <select id="fRegion" multiple title="Select one or more regions to filter"></select>
-      </label>
-      <label>
-        🏳️ Country 
-        <select id="fCountry" multiple title="Select one or more countries to filter"></select>
-      </label>
-      <label>
-        🏢 Organization Type 
-        <select id="fOrg" multiple title="Select one or more organization types to filter"></select>
-      </label>
-      <label>
-        📈 Maturity Stage 
-        <select id="fMaturity" multiple title="Select one or more maturity stages to filter"></select>
-      </label>
-      <label>
-        🎯 SDG Focus 
-        <select id="fSDG" multiple title="Select one or more SDGs to filter"></select>
-      </label>
-      <div style="display: flex; gap: 0.5rem; align-items: end;">
-        <button id="clear" class="btn btn-secondary">🗑️ Clear Filters</button>
-                 <!-- <button id="exportCsv" class="btn btn-success">📊 Export CSV</button> -->
+    <div class="controls" id="controls">
+      <label>🌍 Region<select id="fRegion" multiple></select></label>
+      <label>🏳️ Country<select id="fCountry" multiple></select></label>
+      <label>🏢 Organization Type<select id="fOrg" multiple></select></label>
+      <label>📈 Maturity Stage<select id="fMaturity" multiple></select></label>
+      <label>🎯 SDG Focus<select id="fSDG" multiple></select></label>
+      <div style="display:flex; gap:10px; align-items:end">
+        <button id="clear" class="btn secondary">🗑️ Clear</button>
+        <!-- <button id="exportCsv" class="btn">📊 Export CSV</button> -->
       </div>
     </div>
   </header>
 
+  <!-- KPI HERO -->
   <section class="kpis" id="kpis">
-    <div class="loading">Loading analytics...</div>
+    <!-- filled by JS -->
   </section>
 
+  <!-- GRID -->
   <section class="grid">
-    <div class="card">
-      <div class="title">🗺️ Submissions by Country</div>
-      <div id="map" style="height:420px;"></div>
+    <div class="card full">
+      <div class="head"><div class="title">🗺️ Submissions by Country</div><span class="legend-badge">Global overview</span></div>
+      <div class="body"><div id="map" style="height:540px"></div></div>
     </div>
-    <!-- <div class="card">
-      <div class="title">🏢 Organization Type Distribution</div>
-      <div id="orgBar" style="height:320px;"></div>
-    </div> -->
 
     <div class="card">
-      <div class="title">🌱 SDGs Addressed</div>
-      <div id="sdgStack" style="height:320px;"></div>
+      <div class="head"><div class="title">🌱 SDGs Addressed</div></div>
+      <div class="body"><div id="sdgStack" style="height:380px"></div></div>
     </div>
+
     <div class="card">
-      <div class="title">📊 Score Distribution</div>
-      <div id="scoreHist" style="height:320px;"></div>
+      <div class="head"><div class="title">📊 Score Distribution</div></div>
+      <div class="body"><div id="scoreHist" style="height:380px"></div></div>
     </div>
-    <!-- <div class="card">
-      <div class="title">📈 Score vs. Maturity Stage</div>
-      <div id="scoreScatter" style="height:320px;"></div>
-    </div> -->
-    <!-- <div class="card" style="grid-column: 1 / -1;">
-      <div class="title">🏆 Top 10 Solutions by Score</div>
-      <div id="topTable"></div>
-    </div> -->
   </section>
 
+  <footer>Data refreshes from <code>data.json</code>. Kiosk mode hides controls and rotates focus automatically.</footer>
+
+  <!-- Mapping + Data Loader (same as your existing setup) -->
   <script src="iso3-map.js"></script>
-  <script src="app.js"></script>
+
+  <script>
+    /* ===================== THEME HELPERS FOR PLOTLY ===================== */
+    const PlotTheme = {
+      paper: 'rgba(0,0,0,0)',
+      plot: 'rgba(0,0,0,0)',
+      fontColor: getComputedStyle(document.documentElement).getPropertyValue('--text').trim() || '#EAF4FF',
+      grid: 'rgba(255,255,255,.08)'
+    };
+    const commonLayout = {
+      paper_bgcolor: PlotTheme.paper,
+      plot_bgcolor: PlotTheme.plot,
+      font: {color: PlotTheme.fontColor, size: 16},
+      margin: {t: 10, r: 10, b: 50, l: 60},
+      xaxis: {gridcolor: PlotTheme.grid, zeroline: false},
+      yaxis: {gridcolor: PlotTheme.grid, zeroline: false},
+    };
+
+    const MAP_COLORSCALE = [
+      [0,'#0B1E39'],[0.2,'#0C3A5A'],[0.4,'#0E5C7C'],[0.6,'#118E9C'],[0.8,'#1BC7BE'],[1,'#45FFD3']
+    ];
+
+    /* ===================== UTILITIES (subset from original) ===================== */
+    const utils = {
+      toArray: v => Array.isArray(v) ? v : (v ? [v] : []),
+      unique: arr => [...new Set(arr)].filter(Boolean).sort(),
+      safeNumber: v => { const n = Number(v); return isFinite(n) ? n : 0; },
+      formatNumber: (num, decimals = 1) => {
+        if (num >= 1_000_000) return (num/1_000_000).toFixed(1)+'M';
+        if (num >= 1_000) return (num/1_000).toFixed(1)+'K';
+        return (+num).toFixed(decimals);
+      },
+      debounce: (fn, wait=300) => { let t; return (...a)=>{ clearTimeout(t); t=setTimeout(()=>fn(...a),wait); }; }
+    };
+
+    const el = id => document.getElementById(id);
+
+    /* ===================== SDG NORMALIZATION ===================== */
+    const sdgNormalize = (s) => {
+      if (!s) return [];
+      return s.split(';').map(x=>x.trim()).filter(Boolean)
+        .map(x => {
+          if (x.includes('ЦУР 10') || x.includes('сокращение неравенства')) return 'SDG 10';
+          if (x.includes('ЦУР 12') || x.includes('Ответственное потребление и производство')) return 'SDG 12';
+          if (x.includes('ЦУР 8') || x.includes('Достойный труд и экономический рост')) return 'SDG 8';
+          return x.replace(/^SDG\s*/i, 'SDG ').replace(/\s+/g, ' ');
+        })
+        .map(x => x.replace(/^(SDG)?\s*(\d{1,2}).*$/i, (_, __, n) => `SDG ${n}`));
+    };
+
+    /* ===================== APP STATE ===================== */
+    const CONFIG = {
+      MATURITY_ORDER: ["Idea/Concept","Proof of Concept","MVP","Pilot Stage","Implemented at scale"],
+      CHART_COLORS: ['#00A3E0', '#45FFD3', '#F6C453', '#118E9C', '#1BC7BE'],
+      MAX_TOP_SOLUTIONS: 10,
+      CSV_FILENAME: 'global_solutions_export.csv'
+    };
+
+    class AppState {
+      constructor(){
+        this.rawData = [];
+        this.filters = {region:new Set(), country:new Set(), org:new Set(), maturity:new Set(), sdg:new Set()};
+        this.countryRegionMapping = null;
+        this.kiosk = true; // default kiosk ON for UNGA version
+      }
+      getFilteredData(){
+        return this.rawData.filter(r =>
+          (this.filters.region.size===0 || this.filters.region.has(r._region)) &&
+          (this.filters.country.size===0 || this.filters.country.has(r._country)) &&
+          (this.filters.org.size===0 || this.filters.org.has(r._org)) &&
+          (this.filters.maturity.size===0 || this.filters.maturity.has(r._maturity)) &&
+          (this.filters.sdg.size===0 || r._sdgs.some(s => this.filters.sdg.has(s)))
+        );
+      }
+      clearFilters(){ this.filters = {region:new Set(), country:new Set(), org:new Set(), maturity:new Set(), sdg:new Set()}; updateFilterUI(false); }
+    }
+    const appState = new AppState();
+
+    /* ===================== DATA PROCESSOR ===================== */
+    const DataProcessor = {
+      normalizeRow(row){
+        const country = (row['Country']||'').trim();
+        const iso3 = window.COUNTRY_TO_ISO3?.[country] || null;
+        const sdgs = sdgNormalize(row['SDGs addressed']);
+        let maturity = (row['Maturity stage']||'').trim();
+        if (maturity === 'Пилотный этап (мелкая реализация)') maturity = 'Pilot stage (small-scale implementation)';
+        if (/Proof-of-Concept|Prototype/i.test(maturity)) maturity = 'Proof of Concept';
+        else if (/Minimum Viable Product|MVP|Pilot-ready/i.test(maturity)) maturity = 'MVP';
+        else if (/Pilot stage|small-scale implementation/i.test(maturity)) maturity = 'Pilot Stage';
+        let org = (row['Please specify the type of organization you are representing.']||'').replace(/\*+$/,'').trim();
+        if (org === 'Частный сектор') org = 'Private sector';
+        if (/Academia|university|think tank/i.test(org)) org = 'Academia';
+        else if (/Civil society|NGO|community groups/i.test(org)) org = 'Civil society';
+        else if (/International Organisation/i.test(org) && !/UN/i.test(org)) org = 'International Organisation';
+        const region = (row['Region']||'').trim();
+        const score = utils.safeNumber(row['Total Score']);
+        const theme = (row['Primary thematic focus area']||'').trim();
+        return {...row, _country:country, _iso3:iso3, _sdgs:sdgs, _maturity:maturity, _org:org, _region:region, _score:score, _theme:theme};
+      },
+      kpis(data){
+        const countries = utils.unique(data.map(d=>d._country));
+        const scores = data.map(d=>d._score).filter(s=>s>0);
+        const avg = scores.length? (scores.reduce((a,b)=>a+b,0)/scores.length):0;
+        const median = scores.length? (s=>{const t=[...s].sort((a,b)=>a-b); const m=Math.floor(t.length/2); return t.length%2?t[m]:(t[m-1]+t[m])/2;})(scores):0;
+        const top = Math.max(...scores,0);
+        return { submissions:data.length, countries:countries.length, avg, median, top };
+      }
+    };
+
+    /* ===================== UI RENDERERS ===================== */
+    function renderKPIs(data){
+      const {submissions, countries, avg, median, top} = DataProcessor.kpis(data);
+      el('kpis').innerHTML = `
+        <div class="kpi"><div class="label">Total Submissions</div><div class="value">${utils.formatNumber(submissions,0)}</div><div class="hint">entries</div></div>
+        <div class="kpi"><div class="label">Countries Represented</div><div class="value">${utils.formatNumber(countries,0)}</div><div class="hint">unique countries</div></div>
+        <div class="kpi"><div class="label">Average Score</div><div class="value">${utils.formatNumber(avg)}</div><div class="hint">mean</div></div>
+        <div class="kpi"><div class="label">Top Score</div><div class="value">${utils.formatNumber(top)}</div><div class="hint">max</div></div>
+      `;
+    }
+
+    function renderMap(data){
+      const counts = {};
+      data.forEach(d=>{ if(d._iso3) counts[d._iso3]=(counts[d._iso3]||0)+1; });
+      const locations = Object.keys(counts);
+      const values = locations.map(k=>counts[k]);
+      const trace = {
+        type: 'choropleth', locationmode:'ISO-3', locations, z: values,
+        colorscale: MAP_COLORSCALE, reversescale: false,
+        colorbar: {title:'Submissions', tickcolor: PlotTheme.fontColor, outlinewidth:0, titlefont:{color:PlotTheme.fontColor}},
+        hovertemplate: '<b>%{location}</b><br>Submissions: %{z}<extra></extra>'
+      };
+      const layout = {
+        ...commonLayout,
+        margin: {t:0,r:0,b:0,l:0},
+        geo: {
+          projection:{type:'equirectangular'}, showland:true, landcolor:'#0E1A2F',
+          showcountries:true, countrycolor:'rgba(255,255,255,.12)',
+          showocean:true, oceancolor:'#081020'
+        }
+      };
+      Plotly.newPlot('map', [trace], layout, {displayModeBar:false, responsive:true});
+    }
+
+    function renderSdgStack(data){
+      const all = utils.unique(data.flatMap(d=>d._sdgs));
+      const by = Object.fromEntries(all.map(s=>[s,0]));
+      data.forEach(d=>d._sdgs.forEach(s=>by[s]=(by[s]||0)+1));
+      const sorted = Object.entries(by).sort(([a],[b])=>Number(a.split(' ')[1]) - Number(b.split(' ')[1]));
+      const labels = sorted.map(([k])=>k), parents = labels.map(()=>''), values = sorted.map(([,v])=>v);
+      const trace = { type:'treemap', labels, parents, values, marker:{colors: CONFIG.CHART_COLORS} };
+      Plotly.newPlot('sdgStack', [trace], {...commonLayout, margin:{t:10,l:10,r:10,b:10}}, {displayModeBar:false, responsive:true});
+    }
+
+    function renderScoreHist(data){
+      const scores = data.map(d=>d._score).filter(s=>s>0);
+      const trace = { type:'histogram', x:scores, nbinsx: 18, marker:{color:'#1BC7BE', line:{width:0}} };
+      const layout = { ...commonLayout, xaxis:{...commonLayout.xaxis, title:'Score'}, yaxis:{...commonLayout.yaxis, title:'Count'} };
+      Plotly.newPlot('scoreHist', [trace], layout, {displayModeBar:false, responsive:true});
+    }
+
+    function renderAll(){
+      const data = appState.getFilteredData();
+      renderKPIs(data); renderMap(data); renderSdgStack(data); renderScoreHist(data);
+    }
+
+    /* ===================== FILTERS ===================== */
+    function fillSelect(id, values){ const s=el(id); if(!s) return; s.innerHTML = values.map(v=>`<option value="${v}">${v}</option>`).join(''); }
+    function clearSelect(id){ const s=el(id); if(!s) return; [...s.options].forEach(o=>o.selected=false); }
+    function updateFilterUI(resetCountries=true){
+      ['fRegion','fCountry','fOrg','fMaturity','fSDG'].forEach(id=>clearSelect(id));
+      if (resetCountries){
+        fillSelect('fRegion', utils.unique(appState.rawData.map(r=>r._region)));
+        fillSelect('fCountry', utils.unique(appState.rawData.map(r=>r._country)));
+      }
+    }
+    function setFilterFromSelect(id){
+      const s=el(id); const selected = new Set([...s.selectedOptions].map(o=>o.value));
+      const key = id.replace('f','').toLowerCase();
+      if (key==='region'){ appState.filters.region = selected; updateCountryFilter(selected); }
+      if (key==='country'){ appState.filters.country = selected; updateRegionFilter(selected); }
+      if (key==='org') appState.filters.org = selected;
+      if (key==='maturity') appState.filters.maturity = selected;
+      if (key==='sdg') appState.filters.sdg = selected;
+    }
+    function updateCountryFilter(selectedRegions){
+      if (!appState.countryRegionMapping) return;
+      if (selectedRegions.size===0){ fillSelect('fCountry', utils.unique(appState.rawData.map(r=>r._country))); return; }
+      const valid = new Set();
+      selectedRegions.forEach(region=>{
+        (appState.countryRegionMapping.region_to_countries[region]||[]).forEach(c=>{ if(appState.rawData.some(r=>r._country===c)) valid.add(c); });
+      });
+      fillSelect('fCountry', Array.from(valid).sort()); appState.filters.country.clear(); clearSelect('fCountry');
+    }
+    function updateRegionFilter(selectedCountries){
+      if (!appState.countryRegionMapping) return;
+      if (selectedCountries.size===0){ fillSelect('fRegion', utils.unique(appState.rawData.map(r=>r._region))); return; }
+      const valid = new Set();
+      selectedCountries.forEach(country=>{ const region = appState.countryRegionMapping.country_to_region[country]; if(region) valid.add(region); });
+      fillSelect('fRegion', Array.from(valid).sort()); appState.filters.region.clear(); clearSelect('fRegion');
+    }
+
+    // helper to programmatically select options
+    function selectOptions(selectId, values){ const s=el(selectId); if(!s) return; [...s.options].forEach(o=>o.selected = values.includes(o.value)); s.dispatchEvent(new Event('change')); }
+
+    /* ===================== KIOSK MODE ===================== */
+    const presets = [
+      { name:'Global Overview', action: () => { appState.clearFilters(); } },
+      { name:'Africa Focus', action: () => { selectOptions('fRegion', ['Africa']); } },
+      { name:'Asia Focus', action: () => { selectOptions('fRegion', ['Asia']); } },
+      { name:'Top SDGs', action: () => { selectOptions('fSDG', ['SDG 9','SDG 12']); } },
+      { name:'High Scores', action: () => { /* emulate filter by score via quick threshold on render cycle */
+          // not using UI select; instead temporarily slice data then restore
+          const originalGet = appState.getFilteredData.bind(appState);
+          appState.getFilteredData = () => originalGet().filter(d=>d._score>= (originalGet().length? Math.max(...originalGet().map(x=>x._score))*0.7 : 0));
+          renderAll();
+          appState.getFilteredData = originalGet; // restore
+        }
+      }
+    ];
+
+    let presetIndex = 0, rotationTimer = null;
+    function startKioskRotation(){
+      stopKioskRotation();
+      rotationTimer = setInterval(()=>{
+        const p = presets[presetIndex % presets.length];
+        if (p.action) p.action();
+        renderAll();
+        presetIndex++;
+      }, 12000);
+    }
+    function stopKioskRotation(){ if(rotationTimer){ clearInterval(rotationTimer); rotationTimer=null; } }
+
+    function applyKioskVisualState(){
+      const controls = el('controls');
+      if (appState.kiosk){ controls.style.display = 'none'; startKioskRotation(); }
+      else { controls.style.display = ''; stopKioskRotation(); }
+    }
+
+    /* ===================== INIT ===================== */
+    async function init(){
+      // listeners
+      ['fRegion','fCountry','fOrg','fMaturity','fSDG'].forEach(id=>{
+        el(id)?.addEventListener('change', utils.debounce(()=>{ setFilterFromSelect(id); renderAll(); }, 250));
+      });
+      el('clear')?.addEventListener('click', ()=>{ appState.clearFilters(); renderAll(); });
+      el('toggleKiosk')?.addEventListener('click', ()=>{ appState.kiosk = !appState.kiosk; applyKioskVisualState(); });
+
+      // load mapping (optional)
+      try{ const m = await fetch('country_region_mapping.json'); if(m.ok) appState.countryRegionMapping = await m.json(); }catch{ /* noop */ }
+
+      // load data
+      const res = await fetch('data.json');
+      if (!res.ok) throw new Error('Failed to load data.json');
+      const raw = await res.json();
+      if (!Array.isArray(raw) || raw.length===0) throw new Error('Empty or invalid data');
+
+      appState.rawData = raw.map(DataProcessor.normalizeRow);
+      // populate selects
+      fillSelect('fRegion', utils.unique(appState.rawData.map(r=>r._region)));
+      fillSelect('fCountry', utils.unique(appState.rawData.map(r=>r._country)));
+      fillSelect('fOrg', utils.unique(appState.rawData.map(r=>r._org)));
+      const maturityValues = utils.unique(appState.rawData.map(r=>r._maturity)).sort((a,b)=>{
+        const ai = CONFIG.MATURITY_ORDER.indexOf(a), bi = CONFIG.MATURITY_ORDER.indexOf(b);
+        if (ai===-1 && bi===-1) return a.localeCompare(b);
+        if (ai===-1) return 1; if (bi===-1) return -1; return ai-bi;
+      });
+      fillSelect('fMaturity', maturityValues);
+      fillSelect('fSDG', utils.unique(appState.rawData.flatMap(r=>r._sdgs)));
+
+      // initial render
+      applyKioskVisualState();
+      renderAll();
+    }
+
+    document.addEventListener('DOMContentLoaded', init);
+  </script>
 </body>
 </html>
