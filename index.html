@@ -123,6 +123,33 @@
 
     .legend-badge{display:inline-block; padding:6px 10px; border-radius:999px; background:var(--panel-strong); font-size:13px; color:var(--muted)}
 
+    /* Map toggle button styling */
+    #toggleMapView {
+      font-size: 13px;
+      padding: 6px 12px;
+      border-radius: 8px;
+      transition: all 0.2s ease;
+      min-width: 60px;
+      font-weight: 600;
+    }
+    
+    #toggleMapView:hover {
+      transform: scale(1.05);
+      background: var(--accent) !important;
+      color: var(--bg) !important;
+      box-shadow: 0 4px 12px rgba(69, 255, 211, 0.3);
+    }
+    
+    #toggleMapView:active {
+      transform: scale(0.98);
+    }
+    
+    #toggleMapView.active {
+      background: var(--accent) !important;
+      color: var(--bg) !important;
+      box-shadow: 0 2px 8px rgba(69, 255, 211, 0.4);
+    }
+
     /* Footer note */
     footer{padding: 22px clamp(16px,4vw,40px); color:var(--muted); font-size:14px; text-align:center; opacity:.8}
 
@@ -178,7 +205,13 @@
   <!-- GRID -->
   <section class="grid">
     <div class="card full">
-      <div class="head"><div class="title">🗺️ Submissions by Country</div><span class="legend-badge">Global overview</span></div>
+      <div class="head">
+        <div class="title">🗺️ Submissions by Country</div>
+        <div style="display: flex; align-items: center; gap: 12px;">
+          <span class="legend-badge">Global overview</span>
+          <button id="toggleMapView" class="btn secondary" title="Toggle between 2D and 3D view">🌍 2D</button>
+        </div>
+      </div>
       <div class="body"><div id="map" style="height:540px"></div></div>
     </div>
 
@@ -316,6 +349,8 @@
           this.filters = {region:new Set(), country:new Set(), org:new Set(), maturity:new Set(), sdg:new Set()};
           this.countryRegionMapping = null;
           this.kiosk = true; // default kiosk ON - controls hidden initially
+          // Load saved map projection preference or default to 2D
+          this.mapProjection = localStorage.getItem('unga-map-projection') || 'equirectangular';
         }
       getFilteredData(){
         return this.rawData.filter(r =>
@@ -327,6 +362,24 @@
         );
       }
       clearFilters(){ this.filters = {region:new Set(), country:new Set(), org:new Set(), maturity:new Set(), sdg:new Set()}; updateFilterUI(false); }
+      
+      toggleMapProjection() {
+        this.mapProjection = this.mapProjection === 'equirectangular' ? 'globe' : 'equirectangular';
+        this.updateMapProjectionButton();
+        // Save preference to localStorage
+        localStorage.setItem('unga-map-projection', this.mapProjection);
+        return this.mapProjection;
+      }
+      
+      updateMapProjectionButton() {
+        const btn = el('toggleMapView');
+        if (btn) {
+          btn.innerHTML = this.mapProjection === 'equirectangular' ? '🌍 2D' : '🌐 3D';
+          btn.title = this.mapProjection === 'equirectangular' ? 'Switch to 3D Globe view' : 'Switch to 2D Flat view';
+          // Add visual indication of current state
+          btn.classList.toggle('active', this.mapProjection === 'globe');
+        }
+      }
     }
     const appState = new AppState();
 
@@ -491,7 +544,7 @@
             style: mapStyle,
             center: [0, 20],
             zoom: 1,
-            projection: 'equirectangular'
+            projection: appState.mapProjection
           });
           window.map.addControl(new mapboxgl.NavigationControl(), 'top-right');
 
@@ -535,6 +588,49 @@
       }
       hint.innerHTML = '❌ Map error<br><small>See console for details</small>';
     }
+  }
+}
+
+// Function to handle map projection changes
+function toggleMapProjection() {
+  if (!window.map) return;
+  
+  const newProjection = appState.toggleMapProjection();
+  console.log(`Switching to ${newProjection} projection`);
+  
+  // Update the existing map's projection
+  try {
+    window.map.setProjection(newProjection);
+    
+    // Adjust zoom for 3D globe view if needed
+    if (newProjection === 'globe') {
+      // Globe view often looks better with slightly higher zoom
+      const currentZoom = window.map.getZoom();
+      if (currentZoom < 1.5) {
+        window.map.setZoom(1.5);
+      }
+    }
+    
+    // Show a brief success message
+    const btn = el('toggleMapView');
+    if (btn) {
+      const originalText = btn.innerHTML;
+      btn.innerHTML = newProjection === 'equirectangular' ? '✅ 2D' : '✅ 3D';
+      setTimeout(() => {
+        btn.innerHTML = originalText;
+      }, 1000);
+    }
+  } catch (err) {
+    console.error('Error changing projection:', err);
+    // If setting projection fails, recreate the map
+    console.log('Recreating map with new projection...');
+    window.map.remove();
+    window.map = null;
+    setTimeout(() => {
+      if (typeof renderAll === 'function') {
+        renderAll();
+      }
+    }, 100);
   }
 }
 
@@ -653,6 +749,7 @@
                el('clear')?.addEventListener('click', ()=>{ appState.clearFilters(); renderAll(); });
         el('toggleKiosk')?.addEventListener('click', toggleKioskMode);
         el('toggleTheme')?.addEventListener('click', ()=>{ ThemeManager.toggle(); });
+        el('toggleMapView')?.addEventListener('click', toggleMapProjection);
 
       // load mapping (optional)
       try{ const m = await fetch('country_region_mapping.json'); if(m.ok) appState.countryRegionMapping = await m.json(); }catch{ /* noop */ }
@@ -678,6 +775,9 @@
 
              // initial render
        renderAll();
+       
+       // Update map projection button text
+       appState.updateMapProjectionButton();
        
        // Apply initial kiosk state (hide controls by default)
        toggleKioskMode();
