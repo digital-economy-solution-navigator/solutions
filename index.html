@@ -3,56 +3,108 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Global Call for Solutions — UNGA Kiosk Dashboard</title>
+     <title>Global Call for Solutions — UNGA Dashboard</title>
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌍</text></svg>">
   <link rel="preconnect" href="https://cdn.jsdelivr.net" />
   <script src="https://cdn.plot.ly/plotly-2.35.2.min.js"></script>
   <script src="https://api.mapbox.com/mapbox-gl-js/v2.15.0/mapbox-gl.js"></script>
   <link href="https://api.mapbox.com/mapbox-gl-js/v2.15.0/mapbox-gl.css" rel="stylesheet">
   <style>
-    /* ================= UNGA THEME (Dark, Stage-friendly) ================= */
-    :root{
-      --bg: #0B1324;            /* deep navy */
-      --panel: rgba(255,255,255,.06);
-      --panel-strong: rgba(255,255,255,.10);
-      --text: #EAF4FF;
-      --muted: #9FB3C8;
-      --brand: #00A3E0;         /* UN blue */
-      --accent: #45FFD3;        /* neon aqua */
-      --gold: #F6C453;          /* highlight */
-      --radius: 20px;
-      --shadow: 0 10px 30px rgba(0,0,0,.35);
-      --border: 1px solid rgba(255,255,255,.08);
-      --gap: 28px;
-    }
+         /* ================= UNGA THEME (Dark & Light) ================= */
+           :root{
+        /* Dark theme (default) */
+        --bg: #0B1324;            /* deep navy */
+        --panel: rgba(255,255,255,.06);
+        --panel-strong: rgba(255,255,255,.10);
+        --text: #EAF4FF;
+        --muted: #9FB3C8;
+        --brand: #00A3E0;         /* UN blue */
+        --accent: #45FFD3;        /* neon aqua */
+        --gold: #F6C453;          /* highlight */
+        --radius: 20px;
+        --shadow: 0 10px 30px rgba(0,0,0,.35);
+        --border: 1px solid rgba(255,255,255,.08);
+        --gap: 28px;
+        
+        /* Header colors for dark theme */
+        --header-start: #06142E;
+        --header-mid: #0B1E39;
+        --header-end: #103B5C;
+        --header-shadow: 0 8px 24px rgba(0,0,0,.35);
+        --controls-bg: rgba(255,255,255,.03);
+      }
 
-    *{box-sizing:border-box}
-    html,body{height:100%}
-    body{margin:0; background:var(--bg); color:var(--text); font: 500 18px/1.6 -apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Inter,system-ui,sans-serif;}
+           /* Light theme */
+      [data-theme="light"] {
+        --bg: #F8FAFC;            /* light gray */
+        --panel: rgba(0,0,0,.04);
+        --panel-strong: rgba(0,0,0,.08);
+        --text: #0F172A;
+        --muted: #64748B;
+        --brand: #00A3E0;         /* UN blue (same) */
+        --accent: #0891B2;        /* darker aqua for light mode */
+        --gold: #D97706;          /* darker gold for light mode */
+        --shadow: 0 10px 30px rgba(0,0,0,.1);
+        --border: 1px solid rgba(0,0,0,.08);
+        
+        /* Header colors for light theme - UN Blue */
+        --header-start: #00A3E0;
+        --header-mid: #0091CC;
+        --header-end: #007FB8;
+        --header-shadow: 0 8px 24px rgba(0,0,0,.1);
+        --controls-bg: rgba(0,0,0,.02);
+      }
 
-    /* Header */
-    header{
-      position: sticky; top: 0; z-index: 20;
-      background: linear-gradient(135deg,#06142E, #0B1E39 55%, #103B5C);
-      border-bottom: var(--border);
-      box-shadow: 0 8px 24px rgba(0,0,0,.35);
-    }
+         *{box-sizing:border-box}
+     html,body{height:100%}
+     body{margin:0; background:var(--bg); color:var(--text); font: 500 18px/1.6 -apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Inter,system-ui,sans-serif;}
+     
+     /* Smooth theme transitions */
+     * {
+       transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+     }
+
+         /* Header */
+     header{
+       position: sticky; top: 0; z-index: 20;
+       background: linear-gradient(135deg, var(--header-start), var(--header-mid) 55%, var(--header-end));
+       border-bottom: var(--border);
+       box-shadow: var(--header-shadow);
+     }
     .header-inner{display:flex; align-items:center; justify-content:space-between; gap:16px; padding:22px clamp(16px,4vw,40px);}    
-    .branding{display:flex; align-items:center; gap:16px}
-    .branding img{height:56px; width:auto; filter: drop-shadow(0 6px 12px rgba(0,0,0,.35));}
-    h1{margin:0; font-size: clamp(22px, 3vw, 34px); letter-spacing:.3px; font-weight:800}
-    .subtitle{opacity:.8; font-size: clamp(12px,1.4vw,14px)}
+         .branding{display:flex; align-items:center; gap:16px}
+     .branding img{height:56px; width:auto; filter: drop-shadow(0 6px 12px rgba(0,0,0,.35));}
+     h1{margin:0; font-size: clamp(22px, 3vw, 34px); letter-spacing:.3px; font-weight:800; color: white !important}
+     .subtitle{opacity:.8; font-size: clamp(12px,1.4vw,14px); color: white !important}
 
-    /* Controls (hidden in Kiosk mode, but keep styles for fallback) */
-    .controls{
-      display:flex; flex-wrap:wrap; gap:14px 18px; align-items:end; padding: 14px clamp(16px,4vw,40px) 22px;
-      background: linear-gradient(180deg, rgba(255,255,255,.03), rgba(255,255,255,0));
-      border-top: var(--border);
-    }
+         /* Controls */
+     .controls{
+       display: none; /* Hidden by default */
+       flex-wrap:wrap; gap:14px 18px; align-items:end; padding: 14px clamp(16px,4vw,40px) 22px;
+       background: linear-gradient(180deg, var(--controls-bg), transparent);
+       border-top: var(--border);
+     }
+     
+     /* Show controls when not in kiosk mode */
+     .controls.show {
+       display: flex;
+     }
     .controls label{display:flex; flex-direction:column; gap:8px; min-width:200px; color:var(--text);}
     .controls select{padding:10px 12px; border-radius:12px; border: var(--border); background: var(--panel); color:var(--text)}
-    .btn{padding:10px 14px; border:none; border-radius:14px; cursor:pointer; background: var(--brand); color:#00131B; font-weight:700}
-    .btn.secondary{background:#6B7E93; color:#0B1324}
+         .btn{padding:10px 14px; border:none; border-radius:14px; cursor:pointer; background: var(--brand); color:#00131B; font-weight:700}
+     .btn.secondary{background:#6B7E93; color:var(--text)}
+     
+     /* Theme toggle button styling */
+     #toggleTheme {
+       font-size: 18px;
+       padding: 10px 12px;
+       transition: all 0.3s ease;
+     }
+     
+     #toggleTheme:hover {
+       transform: scale(1.1);
+       background: var(--accent) !important;
+     }
 
     /* KPI hero */
     .kpis{display:grid; gap: var(--gap); grid-template-columns: repeat(4, minmax(220px, 1fr)); padding: clamp(16px,4vw,40px); margin: 0 auto; max-width: 1600px}
@@ -74,32 +126,11 @@
     /* Footer note */
     footer{padding: 22px clamp(16px,4vw,40px); color:var(--muted); font-size:14px; text-align:center; opacity:.8}
 
-    /* Mapbox custom styling */
-    .mapboxgl-popup-content {
-      background: var(--panel-strong) !important;
-      border: var(--border) !important;
-      border-radius: var(--radius) !important;
-      color: var(--text) !important;
-      backdrop-filter: blur(10px) !important;
-    }
-    
-    .mapboxgl-popup-tip {
-      border-top-color: var(--panel-strong) !important;
-    }
-
-    /* Map container styling */
-    #map {
-      width: 100%;
-      height: 540px;
-      border-radius: var(--radius);
-      overflow: hidden;
-      position: relative;
-    }
-
-    /* Mapbox canvas styling */
-    .mapboxgl-canvas {
-      border-radius: var(--radius);
-    }
+         /* Map container styling - minimal */
+     #map {
+       width: 100%;
+       height: 540px;
+     }
 
     /* Responsive */
     @media (max-width: 1024px){
@@ -121,21 +152,22 @@
           <div class="subtitle">UNGA Showcase · New York · Sep 2025</div>
         </div>
       </div>
-      <div class="actions">
-        <button id="toggleKiosk" class="btn secondary" title="Toggle Kiosk">Kiosk</button>
-      </div>
+                     <div class="actions">
+          <button id="toggleTheme" class="btn secondary" title="Toggle Theme" style="margin-right: 10px;">🌙</button>
+                     <button id="toggleKiosk" class="btn secondary" title="Show filter controls">Show Controls</button>
+        </div>
     </div>
-    <div class="controls" id="controls">
-      <label>🌍 Region<select id="fRegion" multiple></select></label>
-      <label>🏳️ Country<select id="fCountry" multiple></select></label>
-      <label>🏢 Organization Type<select id="fOrg" multiple></select></label>
-      <label>📈 Maturity Stage<select id="fMaturity" multiple></select></label>
-      <label>🎯 SDG Focus<select id="fSDG" multiple></select></label>
-      <div style="display:flex; gap:10px; align-items:end">
-        <button id="clear" class="btn secondary">🗑️ Clear</button>
-        <!-- <button id="exportCsv" class="btn">📊 Export CSV</button> -->
-      </div>
-    </div>
+                   <div class="controls" id="controls">
+       <label>🌍 Region<select id="fRegion" multiple></select></label>
+       <label>🏳️ Country<select id="fCountry" multiple></select></label>
+       <label>🏢 Organization Type<select id="fOrg" multiple></select></label>
+       <label>📈 Maturity Stage<select id="fMaturity" multiple></select></label>
+       <label>🎯 SDG Focus<select id="fSDG" multiple></select></label>
+       <div style="display:flex; gap:10px; align-items:end">
+         <button id="clear" class="btn secondary">🗑️ Clear</button>
+         <!-- <button id="exportCsv" class="btn">📊 Export CSV</button> -->
+       </div>
+     </div>
   </header>
 
   <!-- KPI HERO -->
@@ -161,7 +193,7 @@
     </div>
   </section>
 
-  <footer>Data refreshes from <code>data.json</code>. Kiosk mode hides controls and rotates focus automatically.</footer>
+     <footer>Data refreshes from <code>data.json</code>.</footer>
   
   <!-- Note: You need a Mapbox access token for the map to work. Get one at https://account.mapbox.com/ -->
   <div id="mapbox-note" style="display: none; text-align: center; padding: 20px; color: var(--muted);">
@@ -221,22 +253,70 @@
         .map(x => x.replace(/^(SDG)?\s*(\d{1,2}).*$/i, (_, __, n) => `SDG ${n}`));
     };
 
-    /* ===================== APP STATE ===================== */
-    const CONFIG = {
-      MATURITY_ORDER: ["Idea/Concept","Proof of Concept","MVP","Pilot Stage","Implemented at scale"],
-      CHART_COLORS: ['#00A3E0', '#45FFD3', '#F6C453', '#118E9C', '#1BC7BE'],
-      MAX_TOP_SOLUTIONS: 10,
-      CSV_FILENAME: 'global_solutions_export.csv',
-      MAPBOX_TOKEN: 'pk.eyJ1Ijoiemlsb25nLXRlY2giLCJhIjoiY21mMmhvZWp0MXZtdjJpcXlzOWswZGM1ZiJ9.tk_JMGIpKj5KS4bSBEukqw'
-    };
+         /* ===================== APP STATE ===================== */
+     const CONFIG = {
+       MATURITY_ORDER: ["Idea/Concept","Proof of Concept","MVP","Pilot Stage","Implemented at scale"],
+       CHART_COLORS: ['#00A3E0', '#45FFD3', '#F6C453', '#118E9C', '#1BC7BE'],
+       MAX_TOP_SOLUTIONS: 10,
+       CSV_FILENAME: 'global_solutions_export.csv',
+       MAPBOX_TOKEN: 'pk.eyJ1Ijoiemlsb25nLXRlY2giLCJhIjoiY21mMmhvZWp0MXZtdjJpcXlzOWswZGM1ZiJ9.tk_JMGIpKj5KS4bSBEukqw'
+     };
 
-    class AppState {
-      constructor(){
-        this.rawData = [];
-        this.filters = {region:new Set(), country:new Set(), org:new Set(), maturity:new Set(), sdg:new Set()};
-        this.countryRegionMapping = null;
-        this.kiosk = true; // default kiosk ON for UNGA version
-      }
+     /* ===================== THEME MANAGEMENT ===================== */
+     const ThemeManager = {
+       currentTheme: 'dark',
+       
+       init() {
+         // Load saved theme from localStorage
+         const savedTheme = localStorage.getItem('unga-theme');
+         if (savedTheme) {
+           this.setTheme(savedTheme);
+         }
+       },
+       
+       setTheme(theme) {
+         this.currentTheme = theme;
+         document.documentElement.setAttribute('data-theme', theme === 'light' ? 'light' : 'dark');
+         localStorage.setItem('unga-theme', theme);
+         
+         // Update theme toggle button
+         const toggleBtn = document.getElementById('toggleTheme');
+         if (toggleBtn) {
+           toggleBtn.innerHTML = theme === 'light' ? '🌙' : '☀️';
+           toggleBtn.title = theme === 'light' ? 'Switch to Dark Mode' : 'Switch to Light Mode';
+         }
+         
+                   // Note: Mapbox style will update on next map creation
+          // For now, we'll just log the theme change
+          console.log(`Theme changed to ${theme}. Map will use ${theme} style on next creation.`);
+       },
+       
+               toggle() {
+          const newTheme = this.currentTheme === 'dark' ? 'light' : 'dark';
+          this.setTheme(newTheme);
+          
+          // Force map recreation to show new theme immediately
+          if (window.map) {
+            console.log('Recreating map with new theme...');
+            window.map.remove();
+            window.map = null;
+            // Trigger a re-render to recreate the map
+            setTimeout(() => {
+              if (typeof renderAll === 'function') {
+                renderAll();
+              }
+            }, 100);
+          }
+        }
+     };
+
+         class AppState {
+               constructor(){
+          this.rawData = [];
+          this.filters = {region:new Set(), country:new Set(), org:new Set(), maturity:new Set(), sdg:new Set()};
+          this.countryRegionMapping = null;
+          this.kiosk = true; // default kiosk ON - controls hidden initially
+        }
       getFilteredData(){
         return this.rawData.filter(r =>
           (this.filters.region.size===0 || this.filters.region.has(r._region)) &&
@@ -339,14 +419,17 @@
     for (const [iso3, c] of Object.entries(counts)) countExpr.push(iso3, c);
     countExpr.push(0);
 
-    const colorExpr = ['interpolate', ['linear'], countExpr,
-      0,                     '#0B1E39',
-      Math.max(1, maxCount*0.20), '#0C3A5A',
-      Math.max(1, maxCount*0.40), '#0E5C7C',
-      Math.max(1, maxCount*0.60), '#118E9C',
-      Math.max(1, maxCount*0.80), '#1BC7BE',
-      Math.max(1, maxCount),      '#45FFD3',
-    ];
+         const colorExpr = ['case',
+       ['==', countExpr, 0], 'rgba(0,0,0,0)', // Transparent for 0 submissions
+       ['interpolate', ['linear'], countExpr,
+         1,                     '#0C3A5A',
+         Math.max(1, maxCount*0.20), '#0E5C7C',
+         Math.max(1, maxCount*0.40), '#118E9C',
+         Math.max(1, maxCount*0.60), '#1BC7BE',
+         Math.max(1, maxCount*0.80), '#45FFD3',
+         Math.max(1, maxCount),      '#45FFD3',
+       ]
+     ];
 
     // 3) Add/update layers
     const ensureLayers = () => {
@@ -373,38 +456,44 @@
           paint: { 'line-color': '#0E1A2F', 'line-width': 0.5 }
         });
       }
-      // one-time hover popup
-      if (!window.__submissions_hover_bound) {
-        const popup = new mapboxgl.Popup({ closeButton: false, closeOnClick: false });
-        window.map.on('mousemove', 'submissions-fill', (e) => {
-          const f = e.features && e.features[0];
-          if (!f) return;
-          const name = f.properties?.name_en || f.properties?.name || 'Country';
-          const iso  = f.properties?.iso_3166_1_alpha_3;
-          const c    = counts[iso] || 0;
-          popup.setLngLat(e.lngLat)
-               .setHTML(`<div style="font-weight:700">${name}</div><div style="color:var(--muted)">Submissions: ${c}</div>`)
-               .addTo(window.map);
-        });
-        window.map.on('mouseleave', 'submissions-fill', () => popup.remove());
-        window.__submissions_hover_bound = true;
-      }
+             // Set up hover popup (recreate each time to ensure it works after theme changes)
+       const popup = new mapboxgl.Popup({ closeButton: false, closeOnClick: false });
+       
+       // Remove any existing event listeners to prevent duplicates
+       window.map.off('mousemove', 'submissions-fill');
+       window.map.off('mouseleave', 'submissions-fill');
+       
+       window.map.on('mousemove', 'submissions-fill', (e) => {
+         const f = e.features && e.features[0];
+         if (!f) return;
+         const name = f.properties?.name_en || f.properties?.name || 'Country';
+         const iso  = f.properties?.iso_3166_1_alpha_3;
+         const c    = counts[iso] || 0;
+         popup.setLngLat(e.lngLat)
+              .setHTML(`<div style="font-weight:700">${name}</div><div style="color:var(--muted)">Submissions: ${c}</div>`)
+              .addTo(window.map);
+       });
+       window.map.on('mouseleave', 'submissions-fill', () => popup.remove());
     };
 
-    // 4) Create once or update
-    if (!window.map || !window.map.getStyle){
-      // Put a non-destructive hint overlay (not innerHTML wipe)
-      showHint('🌍 Initializing map…');
+            // 4) Create once or update
+        if (!window.map || !window.map.getStyle){
+          // Put a non-destructive hint overlay (not innerHTML wipe)
+          showHint('🌍 Initializing map…');
 
-      mapboxgl.accessToken = CONFIG.MAPBOX_TOKEN;
-      window.map = new mapboxgl.Map({
-        container: 'map',
-        style: 'mapbox://styles/mapbox/dark-v11',
-        center: [0, 20],
-        zoom: 1,
-        projection: 'equirectangular'
-      });
-      window.map.addControl(new mapboxgl.NavigationControl(), 'top-right');
+          mapboxgl.accessToken = CONFIG.MAPBOX_TOKEN;
+          const mapStyle = ThemeManager.currentTheme === 'light' 
+            ? 'mapbox://styles/mapbox/outdoors-v12' 
+            : 'mapbox://styles/mapbox/outdoors-v12';
+          
+          window.map = new mapboxgl.Map({
+            container: 'map',
+            style: mapStyle,
+            center: [0, 20],
+            zoom: 1,
+            projection: 'equirectangular'
+          });
+          window.map.addControl(new mapboxgl.NavigationControl(), 'top-right');
 
       window.map.on('error', (e) => {
         console.error('Mapbox error:', e);
@@ -470,6 +559,7 @@
 
     function renderAll(){
       const data = appState.getFilteredData();
+      console.log(`🎯 Rendering ${data.length} submissions (filtered from ${appState.rawData.length} total)`);
       renderKPIs(data); renderMap(data); renderSdgStack(data); renderScoreHist(data);
     }
 
@@ -509,51 +599,60 @@
       fillSelect('fRegion', Array.from(valid).sort()); appState.filters.region.clear(); clearSelect('fRegion');
     }
 
-    // helper to programmatically select options
-    function selectOptions(selectId, values){ const s=el(selectId); if(!s) return; [...s.options].forEach(o=>o.selected = values.includes(o.value)); s.dispatchEvent(new Event('change')); }
+         // helper to programmatically select options
+     function selectOptions(selectId, values){ 
+       const s=el(selectId); 
+       if(!s) return; 
+       [...s.options].forEach(o=>o.selected = values.includes(o.value)); 
+       s.dispatchEvent(new Event('change')); 
+       
+       // Also manually update the app state to ensure filters are applied
+       const key = selectId.replace('f','').toLowerCase();
+       const selected = new Set(values);
+       
+       if (key==='region'){ 
+         appState.filters.region = selected; 
+         updateCountryFilter(selected); 
+       }
+       if (key==='country'){ 
+         appState.filters.country = selected; 
+         updateRegionFilter(selected); 
+       }
+       if (key==='org') appState.filters.org = selected;
+       if (key==='maturity') appState.filters.maturity = selected;
+       if (key==='sdg') appState.filters.sdg = selected;
+     }
 
-    /* ===================== KIOSK MODE ===================== */
-    const presets = [
-      { name:'Global Overview', action: () => { appState.clearFilters(); } },
-      { name:'Africa Focus', action: () => { selectOptions('fRegion', ['Africa']); } },
-      { name:'Asia Focus', action: () => { selectOptions('fRegion', ['Asia']); } },
-      { name:'Top SDGs', action: () => { selectOptions('fSDG', ['SDG 9','SDG 12']); } },
-      { name:'High Scores', action: () => { /* emulate filter by score via quick threshold on render cycle */
-          // not using UI select; instead temporarily slice data then restore
-          const originalGet = appState.getFilteredData.bind(appState);
-          appState.getFilteredData = () => originalGet().filter(d=>d._score>= (originalGet().length? Math.max(...originalGet().map(x=>x._score))*0.7 : 0));
-          renderAll();
-          appState.getFilteredData = originalGet; // restore
-        }
-      }
-    ];
+     /* ===================== SIMPLE KIOSK MODE ===================== */
+     function toggleKioskMode(){
+       appState.kiosk = !appState.kiosk;
+       const controls = el('controls');
+       
+       if (appState.kiosk){
+         controls.classList.remove('show');
+         el('toggleKiosk').textContent = 'Show Controls';
+         el('toggleKiosk').title = 'Show filter controls';
+       } else {
+         controls.classList.add('show');
+         el('toggleKiosk').textContent = 'Kiosk';
+         el('toggleKiosk').title = 'Hide filter controls';
+       }
+     }
 
-    let presetIndex = 0, rotationTimer = null;
-    function startKioskRotation(){
-      stopKioskRotation();
-      rotationTimer = setInterval(()=>{
-        const p = presets[presetIndex % presets.length];
-        if (p.action) p.action();
-        renderAll();
-        presetIndex++;
-      }, 12000);
-    }
-    function stopKioskRotation(){ if(rotationTimer){ clearInterval(rotationTimer); rotationTimer=null; } }
 
-    function applyKioskVisualState(){
-      const controls = el('controls');
-      if (appState.kiosk){ controls.style.display = 'none'; startKioskRotation(); }
-      else { controls.style.display = ''; stopKioskRotation(); }
-    }
 
     /* ===================== INIT ===================== */
-    async function init(){
-      // listeners
-      ['fRegion','fCountry','fOrg','fMaturity','fSDG'].forEach(id=>{
-        el(id)?.addEventListener('change', utils.debounce(()=>{ setFilterFromSelect(id); renderAll(); }, 250));
-      });
-      el('clear')?.addEventListener('click', ()=>{ appState.clearFilters(); renderAll(); });
-      el('toggleKiosk')?.addEventListener('click', ()=>{ appState.kiosk = !appState.kiosk; applyKioskVisualState(); });
+         async function init(){
+       // Initialize theme manager
+       ThemeManager.init();
+       
+       // listeners
+       ['fRegion','fCountry','fOrg','fMaturity','fSDG'].forEach(id=>{
+         el(id)?.addEventListener('change', utils.debounce(()=>{ setFilterFromSelect(id); renderAll(); }, 250));
+       });
+               el('clear')?.addEventListener('click', ()=>{ appState.clearFilters(); renderAll(); });
+        el('toggleKiosk')?.addEventListener('click', toggleKioskMode);
+        el('toggleTheme')?.addEventListener('click', ()=>{ ThemeManager.toggle(); });
 
       // load mapping (optional)
       try{ const m = await fetch('country_region_mapping.json'); if(m.ok) appState.countryRegionMapping = await m.json(); }catch{ /* noop */ }
@@ -577,9 +676,11 @@
       fillSelect('fMaturity', maturityValues);
       fillSelect('fSDG', utils.unique(appState.rawData.flatMap(r=>r._sdgs)));
 
-      // initial render
-      applyKioskVisualState();
-      renderAll();
+             // initial render
+       renderAll();
+       
+       // Apply initial kiosk state (hide controls by default)
+       toggleKioskMode();
     }
 
     document.addEventListener('DOMContentLoaded', init);
