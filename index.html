@@ -462,10 +462,28 @@
       return;
     }
 
-    // 1) Aggregate counts by ISO3
-    const counts = {};
-    for (const d of data) if (d._iso3) counts[d._iso3] = (counts[d._iso3] || 0) + 1;
-    const maxCount = Math.max(0, ...Object.values(counts));
+         // 1) Aggregate counts by ISO3 and prepare marker data
+     const counts = {};
+     const markerData = [];
+     for (const d of data) if (d._iso3) {
+       counts[d._iso3] = (counts[d._iso3] || 0) + 1;
+       // Add marker for each submission
+       markerData.push({
+         type: 'Feature',
+         properties: {
+           country: d._country,
+           iso3: d._iso3,
+           score: d._score,
+           org: d._org,
+           maturity: d._maturity
+         },
+         geometry: {
+           type: 'Point',
+           coordinates: [d._longitude || 0, d._latitude || 0] // We'll need to add coordinates
+         }
+       });
+     }
+     const maxCount = Math.max(0, ...Object.values(counts));
 
     // 2) Build expressions
     const countExpr = ['match', ['get', 'iso_3166_1_alpha_3']];
@@ -473,61 +491,238 @@
     countExpr.push(0);
 
          const colorExpr = ['case',
-       ['==', countExpr, 0], 'rgba(0,0,0,0)', // Transparent for 0 submissions
+       ['==', countExpr, 0], '#D0D0D0', // Light gray for 0 submissions
        ['interpolate', ['linear'], countExpr,
-         1,                     '#0C3A5A',
-         Math.max(1, maxCount*0.20), '#0E5C7C',
-         Math.max(1, maxCount*0.40), '#118E9C',
-         Math.max(1, maxCount*0.60), '#1BC7BE',
-         Math.max(1, maxCount*0.80), '#45FFD3',
-         Math.max(1, maxCount),      '#45FFD3',
+         1,                     '#E8F5E8', // Very light green for 1 submission
+         Math.max(1, maxCount*0.20), '#B3E6B3', // Light green for low submissions
+         Math.max(1, maxCount*0.40), '#7ED67E', // Medium-light green
+         Math.max(1, maxCount*0.60), '#4AC64A', // Medium green
+         Math.max(1, maxCount*0.80), '#16B616', // Dark green for high submissions
+         Math.max(1, maxCount),      '#0B7A0B', // Very dark green for highest submissions
        ]
      ];
 
-    // 3) Add/update layers
-    const ensureLayers = () => {
-      if (!window.map.getSource('country-bounds')) {
-        window.map.addSource('country-bounds', { type: 'vector', url: 'mapbox://mapbox.country-boundaries-v1' });
-      }
-      if (!window.map.getLayer('submissions-fill')) {
-        window.map.addLayer({
-          id: 'submissions-fill',
-          type: 'fill',
-          source: 'country-bounds',
-          'source-layer': 'country_boundaries',
-          paint: { 'fill-color': colorExpr, 'fill-opacity': 0.75 }
-        });
-      } else {
-        window.map.setPaintProperty('submissions-fill', 'fill-color', colorExpr);
-      }
-      if (!window.map.getLayer('submissions-outline')) {
-        window.map.addLayer({
-          id: 'submissions-outline',
-          type: 'line',
-          source: 'country-bounds',
-          'source-layer': 'country_boundaries',
-          paint: { 'line-color': '#0E1A2F', 'line-width': 0.5 }
-        });
-      }
-             // Set up hover popup (recreate each time to ensure it works after theme changes)
-       const popup = new mapboxgl.Popup({ closeButton: false, closeOnClick: false });
-       
-       // Remove any existing event listeners to prevent duplicates
-       window.map.off('mousemove', 'submissions-fill');
-       window.map.off('mouseleave', 'submissions-fill');
-       
-       window.map.on('mousemove', 'submissions-fill', (e) => {
-         const f = e.features && e.features[0];
-         if (!f) return;
-         const name = f.properties?.name_en || f.properties?.name || 'Country';
-         const iso  = f.properties?.iso_3166_1_alpha_3;
-         const c    = counts[iso] || 0;
-         popup.setLngLat(e.lngLat)
-              .setHTML(`<div style="font-weight:700">${name}</div><div style="color:var(--muted)">Submissions: ${c}</div>`)
-              .addTo(window.map);
-       });
-       window.map.on('mouseleave', 'submissions-fill', () => popup.remove());
-    };
+         // Helper function to get country center coordinates
+     const getCountryCoordinates = (countryName) => {
+       // Simple country coordinate mapping - you can expand this
+       const countryCoords = {
+         'United States': [-95.7129, 37.0902],
+         'Canada': [-106.3468, 56.1304],
+         'United Kingdom': [-3.4360, 55.3781],
+         'Germany': [10.4515, 51.1657],
+         'France': [2.2137, 46.2276],
+         'Italy': [12.5674, 41.8719],
+         'Spain': [-3.7492, 40.4637],
+         'Netherlands': [5.2913, 52.1326],
+         'Sweden': [18.6435, 60.1282],
+         'Norway': [8.4689, 60.4720],
+         'Denmark': [9.5018, 56.2639],
+         'Finland': [25.7482, 61.9241],
+         'Australia': [133.7751, -25.2744],
+         'Japan': [138.2529, 36.2048],
+         'South Korea': [127.7669, 35.9078],
+         'China': [104.1954, 35.8617],
+         'India': [78.9629, 20.5937],
+         'Brazil': [-51.9253, -14.2350],
+         'Mexico': [-102.5528, 23.6345],
+         'Argentina': [-63.6167, -38.4161],
+         'South Africa': [22.9375, -30.5595],
+         'Nigeria': [8.6753, 9.0820],
+         'Kenya': [37.9062, -0.0236],
+         'Egypt': [30.8025, 26.8206],
+         'Turkey': [35.2433, 38.9637],
+         'Russia': [105.3188, 61.5240],
+         'Ukraine': [31.1656, 48.3794],
+         'Poland': [19.1451, 51.9194],
+         'Czech Republic': [15.4730, 49.8175],
+         'Austria': [14.5501, 47.5162],
+         'Switzerland': [8.2275, 46.8182],
+         'Belgium': [4.4699, 50.5039],
+         'Ireland': [-8.2439, 53.4129],
+         'Portugal': [-8.2245, 39.3999],
+         'Greece': [21.8243, 39.0742],
+         'Israel': [34.8516, 31.0461],
+         'United Arab Emirates': [53.8478, 23.4241],
+         'Saudi Arabia': [45.0792, 23.8859],
+         'Thailand': [100.9925, 15.8700],
+         'Vietnam': [108.2772, 14.0583],
+         'Philippines': [121.7740, 12.8797],
+         'Indonesia': [113.9213, -0.7893],
+         'Malaysia': [101.9758, 4.2105],
+         'Singapore': [103.8198, 1.3521],
+         'New Zealand': [174.8860, -40.9006],
+         'Chile': [-71.5430, -35.6751],
+         'Colombia': [-74.2973, 4.5709],
+         'Peru': [-75.0152, -9.1900],
+         'Venezuela': [-66.5897, 6.4238],
+         'Ecuador': [-78.1834, -1.8312],
+         'Uruguay': [-55.7658, -32.5228],
+         'Paraguay': [-58.4438, -23.4425],
+         'Bolivia': [-63.5887, -16.2902],
+         'Guyana': [-58.9302, 4.8604],
+         'Suriname': [-56.0278, 3.9193],
+         'French Guiana': [-53.1258, 3.9339]
+       };
+       return countryCoords[countryName] || [0, 0]; // Default to [0,0] if not found
+     };
+
+     // 3) Add/update layers
+     const ensureLayers = () => {
+       if (!window.map.getSource('country-bounds')) {
+         window.map.addSource('country-bounds', { type: 'vector', url: 'mapbox://mapbox.country-boundaries-v1' });
+       }
+       if (!window.map.getLayer('submissions-fill')) {
+         window.map.addLayer({
+           id: 'submissions-fill',
+           type: 'fill',
+           source: 'country-bounds',
+           'source-layer': 'country_boundaries',
+           paint: { 'fill-color': colorExpr, 'fill-opacity': 0.75 }
+         });
+       } else {
+         window.map.setPaintProperty('submissions-fill', 'fill-color', colorExpr);
+       }
+       if (!window.map.getLayer('submissions-outline')) {
+         window.map.addLayer({
+           id: 'submissions-outline',
+           type: 'line',
+           source: 'country-bounds',
+           'source-layer': 'country_boundaries',
+           paint: { 'line-color': '#0E1A2F', 'line-width': 0.5 }
+         });
+       }
+
+       // Add clustered markers
+       if (!window.map.getSource('submissions')) {
+         // Prepare GeoJSON data with proper coordinates
+         const geoJsonData = {
+           type: 'FeatureCollection',
+           features: data.map(d => {
+             const coords = getCountryCoordinates(d._country);
+             return {
+               type: 'Feature',
+               properties: {
+                 country: d._country,
+                 iso3: d._iso3,
+                 score: d._score,
+                 org: d._org,
+                 maturity: d._maturity,
+                 id: Math.random() // Unique ID for each marker
+               },
+               geometry: {
+                 type: 'Point',
+                 coordinates: coords
+               }
+             };
+           }).filter(f => f.geometry.coordinates[0] !== 0 || f.geometry.coordinates[1] !== 0) // Filter out invalid coordinates
+         };
+
+         window.map.addSource('submissions', {
+           type: 'geojson',
+           data: geoJsonData,
+           cluster: true,
+           clusterMaxZoom: 14,
+           clusterRadius: 50
+         });
+
+         // Add cluster circles
+         window.map.addLayer({
+           id: 'clusters',
+           type: 'circle',
+           source: 'submissions',
+           filter: ['has', 'point_count'],
+           paint: {
+             'circle-color': [
+               'step',
+               ['get', 'point_count'],
+               '#51bbd6', // Color for small clusters
+               10, '#f1f075', // Color for medium clusters
+               20, '#f28cb1'  // Color for large clusters
+             ],
+             'circle-radius': [
+               'step',
+               ['get', 'point_count'],
+               15, // Size for small clusters
+               10, 20, // Size for medium clusters
+               20, 30  // Size for large clusters
+             ]
+           }
+         });
+
+         // Add cluster count labels
+         window.map.addLayer({
+           id: 'cluster-count',
+           type: 'symbol',
+           source: 'submissions',
+           filter: ['has', 'point_count'],
+           layout: {
+             'text-field': '{point_count_abbreviated}',
+             'text-font': ['DIN Offc Pro Medium', 'Arial Unicode MS Bold'],
+             'text-size': 12
+           }
+         });
+
+         // Add unclustered points
+         window.map.addLayer({
+           id: 'unclustered-point',
+           type: 'circle',
+           source: 'submissions',
+           filter: ['!', ['has', 'point_count']],
+           paint: {
+             'circle-color': '#11b4da',
+             'circle-radius': 8,
+             'circle-stroke-width': 1,
+             'circle-stroke-color': '#fff'
+           }
+         });
+
+         // Add click handlers for clusters and points
+         window.map.on('click', 'clusters', (e) => {
+           const features = window.map.queryRenderedFeatures(e.point, {
+             layers: ['clusters']
+           });
+           const clusterId = features[0].properties.cluster_id;
+           window.map.getSource('submissions').getClusterExpansionZoom(clusterId, (err, zoom) => {
+             if (err) return;
+             window.map.easeTo({
+               center: features[0].geometry.coordinates,
+               zoom: zoom
+             });
+           });
+         });
+
+         // Add click handler for individual points
+         window.map.on('click', 'unclustered-point', (e) => {
+           const coordinates = e.features[0].geometry.coordinates.slice();
+           const props = e.features[0].properties;
+           
+           // Create popup for individual submission
+           new mapboxgl.Popup()
+             .setLngLat(coordinates)
+             .setHTML(`
+               <div style="font-weight:700">${props.country}</div>
+               <div style="color:var(--muted)">Organization: ${props.org}</div>
+               <div style="color:var(--muted)">Maturity: ${props.maturity}</div>
+               <div style="color:var(--muted)">Score: ${props.score}</div>
+             `)
+             .addTo(window.map);
+         });
+
+         // Change cursor on hover
+         window.map.on('mouseenter', 'clusters', () => {
+           window.map.getCanvas().style.cursor = 'pointer';
+         });
+         window.map.on('mouseleave', 'clusters', () => {
+           window.map.getCanvas().style.cursor = '';
+         });
+         window.map.on('mouseenter', 'unclustered-point', () => {
+           window.map.getCanvas().style.cursor = 'pointer';
+         });
+         window.map.on('mouseleave', 'unclustered-point', () => {
+           window.map.getCanvas().style.cursor = '';
+         });
+       }
+     };
 
             // 4) Create once or update
         if (!window.map || !window.map.getStyle){
