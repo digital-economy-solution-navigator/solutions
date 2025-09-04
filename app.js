@@ -3,195 +3,156 @@
  * Main application logic for data visualization and filtering
  */
 
-// --- Constants & Configuration ---
+// ============================================================================
+// CONFIGURATION & CONSTANTS
+// ============================================================================
+
 const CONFIG = {
-  MATURITY_ORDER: [
-    "Idea/Concept",
-    "Proof of Concept", 
-    "MVP",
-    "Pilot Stage",
-    "Implemented at scale"
-  ],
-  CHART_COLORS: ['#2563eb', '#7c3aed', '#dc2626', '#059669', '#d97706', '#0891b2', '#be185d', '#65a30d'],
+  MATURITY_ORDER: ["Idea/Concept", "Proof of Concept", "MVP", "Pilot Stage", "Implemented at scale"],
+  CHART_COLORS: ['#00A3E0', '#45FFD3', '#F6C453', '#118E9C', '#1BC7BE'],
   MAX_TOP_SOLUTIONS: 10,
-  CSV_FILENAME: 'global_solutions_export.csv'
+  CSV_FILENAME: 'global_solutions_export.csv',
+  MAPBOX_TOKEN: 'pk.eyJ1Ijoiemlsb25nLXRlY2giLCJhIjoiY21mMmhvZWp0MXZtdjJpcXlzOWswZGM1ZiJ9.tk_JMGIpKj5KS4bSBEukqw'
 };
 
-// --- Utility Functions ---
+// ============================================================================
+// UTILITIES
+// ============================================================================
+
 const utils = {
   toArray: v => Array.isArray(v) ? v : (v ? [v] : []),
   unique: arr => [...new Set(arr)].filter(Boolean).sort(),
-  safeNumber: v => {
-    const num = Number(v);
-    return isFinite(num) ? num : 0;
+  safeNumber: v => { 
+    const n = Number(v); 
+    return isFinite(n) ? n : 0; 
   },
   formatNumber: (num, decimals = 1) => {
-    if (num >= 1000000) return (num / 1000000).toFixed(1) + 'M';
-    if (num >= 1000) return (num / 1000).toFixed(1) + 'K';
-    return num.toFixed(decimals);
+    if (num >= 1_000_000) return (num / 1_000_000).toFixed(1) + 'M';
+    if (num >= 1_000) return (num / 1_000).toFixed(1) + 'K';
+    return (+num).toFixed(decimals);
   },
-  debounce: (func, wait) => {
-    let timeout;
-    return function executedFunction(...args) {
-      const later = () => {
-        clearTimeout(timeout);
-        func(...args);
-      };
-      clearTimeout(timeout);
-      timeout = setTimeout(later, wait);
-    };
+  debounce: (fn, wait = 300) => { 
+    let t; 
+    return (...a) => { 
+      clearTimeout(t); 
+      t = setTimeout(() => fn(...a), wait); 
+    }; 
   }
 };
 
-// --- SDG Normalization ---
+const el = id => document.getElementById(id);
+
+// ============================================================================
+// THEME MANAGEMENT
+// ============================================================================
+
+const PlotTheme = {
+  paper: 'rgba(0,0,0,0)',
+  plot: 'rgba(0,0,0,0)',
+  fontColor: getComputedStyle(document.documentElement).getPropertyValue('--text').trim() || '#EAF4FF',
+  grid: 'rgba(255,255,255,.08)'
+};
+
+const commonLayout = {
+  paper_bgcolor: PlotTheme.paper,
+  plot_bgcolor: PlotTheme.plot,
+  font: { color: PlotTheme.fontColor, size: 16 },
+  margin: { t: 10, r: 10, b: 50, l: 60 },
+  xaxis: { gridcolor: PlotTheme.grid, zeroline: false },
+  yaxis: { gridcolor: PlotTheme.grid, zeroline: false },
+};
+
+const ThemeManager = {
+  currentTheme: 'dark',
+  
+  init() {
+    const savedTheme = localStorage.getItem('unga-theme');
+    if (savedTheme) {
+      this.setTheme(savedTheme);
+    }
+  },
+  
+  setTheme(theme) {
+    this.currentTheme = theme;
+    document.documentElement.setAttribute('data-theme', theme === 'light' ? 'light' : 'dark');
+    localStorage.setItem('unga-theme', theme);
+    
+    const toggleBtn = document.getElementById('toggleTheme');
+    if (toggleBtn) {
+      toggleBtn.innerHTML = theme === 'light' ? '🌙' : '☀️';
+      toggleBtn.title = theme === 'light' ? 'Switch to Dark Mode' : 'Switch to Light Mode';
+    }
+    
+    console.log(`Theme changed to ${theme}. Map will use ${theme} style on next creation.`);
+  },
+  
+  toggle() {
+    const newTheme = this.currentTheme === 'dark' ? 'light' : 'dark';
+    this.setTheme(newTheme);
+    
+    if (window.map) {
+      console.log('Recreating map with new theme...');
+      window.map.remove();
+      window.map = null;
+      setTimeout(() => {
+        if (typeof renderAll === 'function') {
+          renderAll();
+        }
+      }, 100);
+    }
+  }
+};
+
+// ============================================================================
+// DATA PROCESSING
+// ============================================================================
+
 const sdgNormalize = (s) => {
   if (!s) return [];
-  return s
-    .split(";")
-    .map(x => x.trim())
-    .filter(Boolean)
-    // Map Russian SDG entries to English equivalents
+  return s.split(';').map(x => x.trim()).filter(Boolean)
     .map(x => {
-      // Map specific Russian SDG entries
       if (x.includes('ЦУР 10') || x.includes('сокращение неравенства')) return 'SDG 10';
       if (x.includes('ЦУР 12') || x.includes('Ответственное потребление и производство')) return 'SDG 12';
       if (x.includes('ЦУР 8') || x.includes('Достойный труд и экономический рост')) return 'SDG 8';
-      
-      // Handle standard SDG format
-      return x.replace(/^SDG\s*/i, "SDG ").replace(/\s+/g, " ");
+      return x.replace(/^SDG\s*/i, 'SDG ').replace(/\s+/g, ' ');
     })
     .map(x => x.replace(/^(SDG)?\s*(\d{1,2}).*$/i, (_, __, n) => `SDG ${n}`));
 };
 
-// --- DOM Utilities ---
-const el = id => document.getElementById(id);
-const createElement = (tag, className, textContent) => {
-  const element = document.createElement(tag);
-  if (className) element.className = className;
-  if (textContent) element.textContent = textContent;
-  return element;
-};
-
-// --- Application State ---
-class AppState {
-  constructor() {
-    this.rawData = [];
-    this.filteredData = [];
-    this.filters = {
-      region: new Set(),
-      country: new Set(),
-      org: new Set(),
-      maturity: new Set(),
-      sdg: new Set()
-    };
-    this.isLoading = false;
-    this.error = null;
-    this.countryRegionMapping = null; // Store the mapping data
-  }
-
-  setLoading(loading) {
-    this.isLoading = loading;
-    this.updateUI();
-  }
-
-  setError(error) {
-    this.error = error;
-    this.updateUI();
-  }
-
-  updateUI() {
-    const loadingEl = el('kpis');
-    if (this.isLoading) {
-      loadingEl.innerHTML = '<div class="loading">🔄 Loading analytics...</div>';
-    } else if (this.error) {
-      loadingEl.innerHTML = `<div class="error">❌ Error: ${this.error}</div>`;
+const DataProcessor = {
+  normalizeRow(row) {
+    const country = (row['Country'] || '').trim();
+    const iso3 = window.COUNTRY_TO_ISO3?.[country] || null;
+    const sdgs = sdgNormalize(row['SDGs addressed']);
+    
+    let maturity = (row['Maturity stage'] || '').trim();
+    if (maturity === 'Пилотный этап (мелкая реализация)') {
+      maturity = 'Pilot stage (small-scale implementation)';
     }
-  }
-
-  clearFilters() {
-    this.filters = {
-      region: new Set(),
-      country: new Set(),
-      org: new Set(),
-      maturity: new Set(),
-      sdg: new Set()
-    };
-    this.updateFilterUI();
-    
-    // Reset region and country filters to show all options
-    if (this.countryRegionMapping) {
-      const allRegions = utils.unique(this.rawData.map(r => r._region));
-      const allCountries = utils.unique(this.rawData.map(r => r._country));
-      FilterManager.fillSelect("fRegion", allRegions);
-      FilterManager.fillSelect("fCountry", allCountries);
+    if (/Proof-of-Concept|Prototype/i.test(maturity)) {
+      maturity = 'Proof of Concept';
+    } else if (/Minimum Viable Product|MVP|Pilot-ready/i.test(maturity)) {
+      maturity = 'MVP';
+    } else if (/Pilot stage|small-scale implementation/i.test(maturity)) {
+      maturity = 'Pilot Stage';
     }
-  }
-
-  updateFilterUI() {
-    Object.keys(this.filters).forEach(key => {
-      const selectId = `f${key.charAt(0).toUpperCase() + key.slice(1)}`;
-      const select = el(selectId);
-      if (select) {
-        [...select.options].forEach(option => option.selected = false);
-      }
-    });
-  }
-
-  getFilteredData() {
-    return this.rawData.filter(row =>
-      (this.filters.region.size === 0 || this.filters.region.has(row._region)) &&
-      (this.filters.country.size === 0 || this.filters.country.has(row._country)) &&
-      (this.filters.org.size === 0 || this.filters.org.has(row._org)) &&
-      (this.filters.maturity.size === 0 || this.filters.maturity.has(row._maturity)) &&
-      (this.filters.sdg.size === 0 || row._sdgs.some(s => this.filters.sdg.has(s)))
-    );
-  }
-}
-
-// --- Global State ---
-const appState = new AppState();
-
-// --- Data Processing ---
-class DataProcessor {
-  static normalizeRow(row) {
-    const country = (row["Country"] || "").trim();
-    const iso3 = window.COUNTRY_TO_ISO3[country] || null;
-    const sdgs = sdgNormalize(row["SDGs addressed"]);
     
-         // Normalize maturity stage with Russian mapping and consolidation
-     let maturity = (row["Maturity stage"] || "").trim();
-     if (maturity === "Пилотный этап (мелкая реализация)") {
-       maturity = "Pilot stage (small-scale implementation)";
-     }
-     
-     // Consolidate maturity stages
-     if (maturity.includes("Proof-of-Concept") || maturity.includes("Prototype")) {
-       maturity = "Proof of Concept";
-     } else if (maturity.includes("Minimum Viable Product") || maturity.includes("MVP") || maturity.includes("Pilot-ready")) {
-       maturity = "MVP";
-     } else if (maturity.includes("Pilot stage") || maturity.includes("small-scale implementation")) {
-       maturity = "Pilot Stage";
-     }
+    let org = (row['Please specify the type of organization you are representing.'] || '').replace(/\*+$/, '').trim();
+    if (org === 'Частный сектор') {
+      org = 'Private sector';
+    }
+    if (/Academia|university|think tank/i.test(org)) {
+      org = 'Academia';
+    } else if (/Civil society|NGO|community groups/i.test(org)) {
+      org = 'Civil society';
+    } else if (/International Organisation/i.test(org) && !/UN/i.test(org)) {
+      org = 'International Organisation';
+    }
     
-         // Normalize organization type with Russian mapping and consolidation
-     let org = (row["Please specify the type of organization you are representing."] || "").replace(/\*+$/, '').trim();
-     if (org === "Частный сектор") {
-       org = "Private sector";
-     }
-     
-     // Consolidate similar organization types
-     if (org.includes("Academia") || org.includes("university") || org.includes("think tank")) {
-       org = "Academia";
-     } else if (org.includes("Civil society") || org.includes("NGO") || org.includes("community groups")) {
-       org = "Civil society";
-     } else if (org.includes("International Organisation") && !org.includes("UN")) {
-       org = "International Organisation";
-     }
+    const region = (row['Region'] || '').trim();
+    const score = utils.safeNumber(row['Total Score']);
+    const theme = (row['Primary thematic focus area'] || '').trim();
     
-    const region = (row["Region"] || "").trim();
-    const score = utils.safeNumber(row["Total Score"]);
-    const theme = (row["Primary thematic focus area"] || "").trim();
-
     return {
       ...row,
       _country: country,
@@ -203,578 +164,692 @@ class DataProcessor {
       _score: score,
       _theme: theme
     };
-  }
-
-  static calculateKPIs(data) {
+  },
+  
+  kpis(data) {
     const countries = utils.unique(data.map(d => d._country));
-    const scores = data.map(d => d._score).filter(score => score > 0);
+    const scores = data.map(d => d._score).filter(s => s > 0);
+    const avg = scores.length ? (scores.reduce((a, b) => a + b, 0) / scores.length) : 0;
+    const median = scores.length ? (s => {
+      const t = [...s].sort((a, b) => a - b);
+      const m = Math.floor(t.length / 2);
+      return t.length % 2 ? t[m] : (t[m - 1] + t[m]) / 2;
+    })(scores) : 0;
+    const top = Math.max(...scores, 0);
     
-    const avg = scores.length ? scores.reduce((a, b) => a + b, 0) / scores.length : 0;
-    const median = scores.length ? this.calculateMedian(scores) : 0;
-    const topScore = Math.max(...scores, 0);
-    
-    return {
-      submissions: data.length,
-      countries: countries.length,
-      avgScore: avg,
-      medianScore: median,
-      topScore: topScore
+    return { 
+      submissions: data.length, 
+      countries: countries.length, 
+      avg, 
+      median, 
+      top 
     };
   }
+};
 
-  static calculateMedian(arr) {
-    const sorted = arr.sort((a, b) => a - b);
-    const mid = Math.floor(sorted.length / 2);
-    return sorted.length % 2 ? sorted[mid] : (sorted[mid - 1] + sorted[mid]) / 2;
-  }
-}
+// ============================================================================
+// APPLICATION STATE
+// ============================================================================
 
-// --- UI Components ---
-class UIComponents {
-  static renderKPIs(data) {
-    const kpis = DataProcessor.calculateKPIs(data);
-    const kpiHtml = `
-      <div class="card">
-        <div class="kpi-label">Total Submissions</div>
-        <div class="kpi-value">${utils.formatNumber(kpis.submissions, 0)}</div>
-      </div>
-      <div class="card">
-        <div class="kpi-label">Countries Represented</div>
-        <div class="kpi-value">${utils.formatNumber(kpis.countries, 0)}</div>
-      </div>
-      <div class="card">
-        <div class="kpi-label">Average Score</div>
-        <div class="kpi-value">${utils.formatNumber(kpis.avgScore)}</div>
-      </div>
-      <div class="card">
-        <div class="kpi-label">Median Score</div>
-        <div class="kpi-value">${utils.formatNumber(kpis.medianScore)}</div>
-      </div>
-      <div class="card">
-        <div class="kpi-label">Top Score</div>
-        <div class="kpi-value">${utils.formatNumber(kpis.topScore)}</div>
-      </div>
-    `;
-    el('kpis').innerHTML = kpiHtml;
-  }
-
-  static renderMap(data) {
-    try {
-      const counts = {};
-      data.forEach(d => {
-        if (d._iso3) counts[d._iso3] = (counts[d._iso3] || 0) + 1;
-      });
-
-      const locations = Object.keys(counts);
-      const values = locations.map(k => counts[k]);
-
-      const trace = {
-        type: 'choropleth',
-        locations,
-        z: values,
-        locationmode: 'ISO-3',
-        colorscale: 'Blues',
-        colorbar: { title: 'Submissions' },
-        hovertemplate: '<b>%{location}</b><br>Submissions: %{z}<extra></extra>'
-      };
-
-      const layout = {
-        geo: {
-          projection: { type: 'equirectangular' },
-          showland: true,
-          landcolor: '#f8fafc',
-          coastlinecolor: '#64748b',
-          showocean: true,
-          oceancolor: '#e2e8f0'
-        },
-        margin: { t: 0, r: 0, b: 0, l: 0 },
-        title: { text: 'Global Distribution of Solutions', font: { size: 16 } }
-      };
-
-      Plotly.newPlot('map', [trace], layout, {
-        displayModeBar: false,
-        responsive: true
-      });
-    } catch (error) {
-      console.error('Error rendering map:', error);
-      el('map').innerHTML = '<div class="error">Error rendering map</div>';
-    }
-  }
-
-  static renderOrgBar(data) {
-    try {
-      const byOrg = {};
-      data.forEach(d => byOrg[d._org] = (byOrg[d._org] || 0) + 1);
-      
-      const sorted = Object.entries(byOrg)
-        .sort(([,a], [,b]) => b - a)
-        .slice(0, 15); // Top 15 org types
-
-      const labels = sorted.map(([k]) => k);
-      const values = sorted.map(([,v]) => v);
-
-      const trace = {
-        type: 'bar',
-        x: values,
-        y: labels,
-        orientation: 'h',
-        marker: { color: CONFIG.CHART_COLORS[0] }
-      };
-
-      const layout = {
-        margin: { l: 120, r: 10, t: 10, b: 40 },
-        xaxis: { title: 'Number of Organizations' },
-        yaxis: { title: 'Organization Type' }
-      };
-
-      Plotly.newPlot('orgBar', [trace], layout, {
-        displayModeBar: false,
-        responsive: true
-      });
-    } catch (error) {
-      console.error('Error rendering org bar:', error);
-      el('orgBar').innerHTML = '<div class="error">Error rendering chart</div>';
-    }
-  }
-
-
-
-  static renderSdgStack(data) {
-    try {
-      const allSdgs = utils.unique(data.flatMap(d => d._sdgs));
-      const bySdg = Object.fromEntries(allSdgs.map(s => [s, 0]));
-      
-      data.forEach(d => d._sdgs.forEach(s => bySdg[s] = (bySdg[s] || 0) + 1));
-      
-      const sorted = Object.entries(bySdg)
-        .sort(([a], [b]) => Number(a.split(' ')[1]) - Number(b.split(' ')[1]));
-
-      const labels = sorted.map(([k]) => k);
-      const parents = labels.map(() => '');
-      const values = sorted.map(([,v]) => v);
-
-      const trace = {
-        type: 'treemap',
-        labels,
-        parents,
-        values,
-        marker: { colors: CONFIG.CHART_COLORS }
-      };
-
-      const layout = {
-        margin: { t: 10, l: 10, r: 10, b: 10 },
-        title: { text: '', font: { size: 16 } }
-      };
-
-      Plotly.newPlot('sdgStack', [trace], layout, {
-        displayModeBar: false,
-        responsive: true
-      });
-    } catch (error) {
-      console.error('Error rendering SDG stack:', error);
-      el('sdgStack').innerHTML = '<div class="error">Error rendering chart</div>';
-    }
-  }
-
-  static renderScoreHist(data) {
-    try {
-      const scores = data.map(d => d._score).filter(score => score > 0);
-      
-      const trace = {
-        type: 'histogram',
-        x: scores,
-        nbinsx: 20,
-        marker: { color: CONFIG.CHART_COLORS[2] }
-      };
-
-      const layout = {
-        margin: { t: 10, l: 40, r: 10, b: 40 },
-        xaxis: { title: 'Score' },
-        yaxis: { title: 'Count' },
-        title: { text: '', font: { size: 16 } }
-      };
-
-      Plotly.newPlot('scoreHist', [trace], layout, {
-        displayModeBar: false,
-        responsive: true
-      });
-    } catch (error) {
-      console.error('Error rendering score histogram:', error);
-      el('scoreHist').innerHTML = '<div class="error">Error rendering chart</div>';
-    }
-  }
-
-  // static renderScoreScatter(data) {
-  //   try {
-  //     const validData = data.filter(d => d._score > 0 && d._maturity);
-  //     const catIndex = d => Math.max(0, CONFIG.MATURITY_ORDER.indexOf(d._maturity));
-
-  //     const trace = {
-  //       mode: 'markers',
-  //       x: validData.map(d => catIndex(d)),
-  //       y: validData.map(d => d._score),
-  //       text: validData.map(d => `${d["Name of your organization"]} — ${d["Title"]}`),
-  //       hovertemplate: "<b>%{text}</b><br>Maturity: %{x}<br>Score: %{y}<extra></extra>",
-  //       marker: {
-  //       size: 8,
-  //       color: validData.map(d => d._score),
-  //       colorscale: 'Viridis',
-  //       showscale: true,
-  //       colorbar: { title: 'Score' }
-  //       }
-  //     };
-
-  //     const layout = {
-  //       xaxis: {
-  //       tickmode: 'array',
-  //       tickvals: CONFIG.MATURITY_ORDER.map((_, i) => i),
-  //       ticktext: CONFIG.MATURITY_ORDER,
-  //       title: 'Maturity Stage'
-  //       },
-  //       yaxis: { title: 'Score' },
-  //       margin: { t: 10 },
-  //       title: { text: '', font: { size: 16 } }
-  //       };
-
-  //     Plotly.newPlot('scoreScatter', [trace], layout, {
-  //       displayModeBar: false,
-  //       responsive: true
-  //     });
-  //   } catch (error) {
-  //     console.error('Error rendering score scatter:', error);
-  //     el('scoreScatter').innerHTML = '<div class="error">Error rendering chart</div>';
-  //     }
-  //   }
-  // }
-
-  static renderTopTable(data) {
-    try {
-      const top = data
-        .filter(d => d._score > 0)
-        .sort((a, b) => b._score - a._score)
-        .slice(0, CONFIG.MAX_TOP_SOLUTIONS);
-
-      const rows = top.map((d, index) => `
-        <tr>
-          <td>${index + 1}</td>
-          <td>${d._score.toFixed(1)}</td>
-          <td>${d["Name of your organization"] || ""}</td>
-          <td>${d["Title"] || ""}</td>
-          <td>${d._country || ""}</td>
-          <td>${d._org || ""}</td>
-          <td>${d._theme || ""}</td>
-        </tr>`).join('');
-
-      el('topTable').innerHTML = `
-        <table>
-          <thead>
-            <tr>
-              <th>Rank</th>
-              <th>Score</th>
-              <th>Organization</th>
-              <th>Title</th>
-              <th>Country</th>
-              <th>Org Type</th>
-                             <th>Thematic Focus</th>
-            </tr>
-          </thead>
-          <tbody>${rows}</tbody>
-        </table>`;
-    } catch (error) {
-      console.error('Error rendering top table:', error);
-      el('topTable').innerHTML = '<div class="error">Error rendering table</div>';
-    }
-  }
-}
-
-// --- Filter Management ---
-class FilterManager {
-  static fillSelect(id, values) {
-    const select = el(id);
-    if (!select) return;
-    
-    select.innerHTML = values.map(v => 
-      `<option value="${v}">${v}</option>`
-    ).join('');
-  }
-
-  static clearSelect(id) {
-    const select = el(id);
-    if (!select) return;
-    
-    [...select.options].forEach(option => option.selected = false);
-  }
-
-  static setFilterFromSelect(id) {
-    const select = el(id);
-    if (!select) return;
-
-    const selected = new Set([...select.selectedOptions].map(o => o.value));
-    const filterKey = id.replace('f', '').toLowerCase();
-    
-    if (filterKey === 'region') {
-      appState.filters.region = selected;
-      // Update country filter based on region selection
-      FilterManager.updateCountryFilter(selected);
-    }
-    if (filterKey === 'country') {
-      appState.filters.country = selected;
-      // Update region filter based on country selection
-      FilterManager.updateRegionFilter(selected);
-    }
-    if (filterKey === 'org') appState.filters.org = selected;
-    if (filterKey === 'maturity') appState.filters.maturity = selected;
-    if (filterKey === 'sdg') appState.filters.sdg = selected;
-  }
-
-  static populateFilters() {
-    // Get unique values from data
-    const regions = utils.unique(appState.rawData.map(r => r._region));
-    const countries = utils.unique(appState.rawData.map(r => r._country));
-    const orgs = utils.unique(appState.rawData.map(r => r._org));
-    
-    // Populate region filter
-    FilterManager.fillSelect("fRegion", regions);
-    
-    // Populate country filter (initially all countries)
-    FilterManager.fillSelect("fCountry", countries);
-    
-    // Populate other filters
-    FilterManager.fillSelect("fOrg", orgs);
-    
-    // Get actual maturity values from data and sort them logically
-    const actualMaturityValues = utils.unique(appState.rawData.map(r => r._maturity));
-    const sortedMaturity = actualMaturityValues.sort((a, b) => {
-      const aIndex = CONFIG.MATURITY_ORDER.indexOf(a);
-      const bIndex = CONFIG.MATURITY_ORDER.indexOf(b);
-      if (aIndex === -1 && bIndex === -1) return a.localeCompare(b);
-      if (aIndex === -1) return 1;
-      if (bIndex === -1) return 0;
-      return aIndex - bIndex;
-    });
-    
-    FilterManager.fillSelect("fMaturity", sortedMaturity);
-    FilterManager.fillSelect("fSDG", utils.unique(appState.rawData.flatMap(r => r._sdgs)));
-  }
-
-  static updateCountryFilter(selectedRegions) {
-    if (!appState.countryRegionMapping) return;
-    
-    const countrySelect = el('fCountry');
-    if (!countrySelect) return;
-    
-    if (selectedRegions.size === 0) {
-      // If no regions selected, show all countries
-      const allCountries = utils.unique(appState.rawData.map(r => r._country));
-      FilterManager.fillSelect("fCountry", allCountries);
-      return;
-    }
-    
-    // Get countries that belong to selected regions
-    const validCountries = new Set();
-    selectedRegions.forEach(region => {
-      const countriesInRegion = appState.countryRegionMapping.region_to_countries[region] || [];
-      countriesInRegion.forEach(country => {
-        // Only add countries that exist in our data
-        if (appState.rawData.some(r => r._country === country)) {
-          validCountries.add(country);
-        }
-      });
-    });
-    
-    // Update country filter with only valid countries
-    const sortedCountries = Array.from(validCountries).sort();
-    FilterManager.fillSelect("fCountry", sortedCountries);
-    
-    // Clear any country selections that are no longer valid
-    appState.filters.country.clear();
-    [...countrySelect.options].forEach(option => option.selected = false);
-  }
-
-  static updateRegionFilter(selectedCountries) {
-    if (!appState.countryRegionMapping) return;
-    
-    const regionSelect = el('fRegion');
-    if (!regionSelect) return;
-    
-    if (selectedCountries.size === 0) {
-      // If no countries selected, show all regions
-      const allRegions = utils.unique(appState.rawData.map(r => r._region));
-      FilterManager.fillSelect("fRegion", allRegions);
-      return;
-    }
-    
-    // Get regions that contain selected countries
-    const validRegions = new Set();
-    selectedCountries.forEach(country => {
-      const region = appState.countryRegionMapping.country_to_region[country];
-      if (region) {
-        validRegions.add(region);
-      }
-    });
-    
-    // Update region filter with only valid regions
-    const sortedRegions = Array.from(validRegions).sort();
-    FilterManager.fillSelect("fRegion", sortedRegions);
-    
-    // Clear any region selections that are no longer valid
-    appState.filters.region.clear();
-    [...regionSelect.options].forEach(option => option.selected = false);
-  }
-}
-
-// --- CSV Export ---
-class CSVExporter {
-  static exportCSV(data) {
-    try {
-      const cols = [
-        "ID", "Country", "Region", "Name of your organization",
-        "Please specify the type of organization you are representing.",
-        "Title", "Primary thematic focus area", "Maturity stage",
-        "Total Score", "SDGs addressed"
-      ];
-      
-      const header = cols.join(",");
-      const esc = v => `"${String(v ?? "").replace(/"/g, '""')}"`;
-      const lines = data.map(r => cols.map(c => esc(r[c])).join(","));
-      const csvContent = header + "\n" + lines.join("\n");
-      
-      const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8" });
-      const url = URL.createObjectURL(blob);
-      const a = createElement('a');
-      a.href = url;
-      a.download = CONFIG.CSV_FILENAME;
-      a.click();
-      URL.revokeObjectURL(url);
-      
-      // Show success message
-      this.showExportSuccess();
-    } catch (error) {
-      console.error('Export error:', error);
-      this.showExportError();
-    }
-  }
-
-  static showExportSuccess() {
-    const button = el('exportCsv');
-    const originalText = button.textContent;
-    button.textContent = '✅ Exported!';
-    button.style.background = CONFIG.CHART_COLORS[3];
-    
-    setTimeout(() => {
-      button.textContent = originalText;
-      button.style.background = '';
-    }, 2000);
-  }
-
-  static showExportError() {
-    const button = el('exportCsv');
-    const originalText = button.textContent;
-    button.textContent = '❌ Export Failed';
-    button.style.background = CONFIG.CHART_COLORS[2];
-    
-    setTimeout(() => {
-      button.textContent = originalText;
-      button.style.background = '';
-    }, 2000);
-  }
-}
-
-// --- Main Application ---
-class AnalyticsApp {
+class AppState {
   constructor() {
-    this.initializeEventListeners();
+    this.rawData = [];
+    this.filters = {
+      region: new Set(),
+      country: new Set(),
+      org: new Set(),
+      maturity: new Set(),
+      sdg: new Set()
+    };
+    this.countryRegionMapping = null;
+    this.kiosk = true; // default kiosk ON - controls hidden initially
+    this.mapProjection = localStorage.getItem('unga-map-projection') || 'equirectangular';
   }
-
-  async initialize() {
-    try {
-      appState.setLoading(true);
-      
-      // Load country-region mapping first
-      try {
-        const mappingResponse = await fetch('country_region_mapping.json');
-        if (mappingResponse.ok) {
-          appState.countryRegionMapping = await mappingResponse.json();
-          console.log('Loaded country-region mapping');
-        }
-      } catch (mappingError) {
-        console.warn('Could not load country-region mapping:', mappingError.message);
-      }
-      
-      // Load data
-      const response = await fetch('data.json');
-      if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-      
-      let rawData;
-      try {
-        rawData = await response.json();
-      } catch (jsonError) {
-        throw new Error(`Invalid JSON data: ${jsonError.message}`);
-      }
-      
-      if (!Array.isArray(rawData)) {
-        throw new Error('Data must be an array of records');
-      }
-      
-      if (rawData.length === 0) {
-        throw new Error('No data found in the file');
-      }
-      
-      console.log(`Loaded ${rawData.length} records from data.json`);
-      
-      appState.rawData = rawData.map(DataProcessor.normalizeRow);
-      
-      // Initialize UI
-      FilterManager.populateFilters();
-      this.renderAll();
-      
-      appState.setLoading(false);
-    } catch (error) {
-      console.error('Initialization error:', error);
-      appState.setError(`Failed to load data: ${error.message}`);
-    }
+  
+  getFilteredData() {
+    return this.rawData.filter(r =>
+      (this.filters.region.size === 0 || this.filters.region.has(r._region)) &&
+      (this.filters.country.size === 0 || this.filters.country.has(r._country)) &&
+      (this.filters.org.size === 0 || this.filters.org.has(r._org)) &&
+      (this.filters.maturity.size === 0 || this.filters.maturity.has(r._maturity)) &&
+      (this.filters.sdg.size === 0 || r._sdgs.some(s => this.filters.sdg.has(s)))
+    );
   }
-
-  initializeEventListeners() {
-    // Filter change events
-    ["fRegion", "fCountry", "fOrg", "fMaturity", "fSDG"].forEach(id => {
-      el(id)?.addEventListener('change', utils.debounce(() => {
-        FilterManager.setFilterFromSelect(id);
-        this.renderAll();
-      }, 300));
-    });
-
-    // Button events
-    el('clear')?.addEventListener('click', () => {
-      appState.clearFilters();
-      this.renderAll();
-    });
-
-    el('exportCsv')?.addEventListener('click', () => {
-      CSVExporter.exportCSV(appState.getFilteredData());
-    });
+  
+  clearFilters() {
+    this.filters = {
+      region: new Set(),
+      country: new Set(),
+      org: new Set(),
+      maturity: new Set(),
+      sdg: new Set()
+    };
+    updateFilterUI(false);
   }
-
-  renderAll() {
-    try {
-      appState.filteredData = appState.getFilteredData();
-      
-      UIComponents.renderKPIs(appState.filteredData);
-      UIComponents.renderMap(appState.filteredData);
-      // UIComponents.renderOrgBar(appState.filteredData);
-      UIComponents.renderSdgStack(appState.filteredData);
-      UIComponents.renderScoreHist(appState.filteredData);
-      // UIComponents.renderScoreScatter(appState.filteredData);
-      // UIComponents.renderTopTable(appState.filteredData);
-    } catch (error) {
-      console.error('Render error:', error);
-      appState.setError(`Rendering error: ${error.message}`);
+  
+  toggleMapProjection() {
+    this.mapProjection = this.mapProjection === 'equirectangular' ? 'globe' : 'equirectangular';
+    this.updateMapProjectionButton();
+    localStorage.setItem('unga-map-projection', this.mapProjection);
+    return this.mapProjection;
+  }
+  
+  updateMapProjectionButton() {
+    const btn = el('toggleMapView');
+    if (btn) {
+      btn.innerHTML = this.mapProjection === 'equirectangular' ? '🌍 2D' : '🌐 3D';
+      btn.title = this.mapProjection === 'equirectangular' ? 'Switch to 3D Globe view' : 'Switch to 2D Flat view';
+      btn.classList.toggle('active', this.mapProjection === 'globe');
     }
   }
 }
 
-// --- Application Initialization ---
-document.addEventListener('DOMContentLoaded', () => {
-  const app = new AnalyticsApp();
-  app.initialize();
-});
+const appState = new AppState();
+
+// ============================================================================
+// UI RENDERERS
+// ============================================================================
+
+function renderKPIs(data) {
+  const { submissions, countries, avg, median, top } = DataProcessor.kpis(data);
+  el('kpis').innerHTML = `
+    <div class="kpi">
+      <div class="label">Total Submissions</div>
+      <div class="value">${utils.formatNumber(submissions, 0)}</div>
+      <div class="hint">entries</div>
+    </div>
+    <div class="kpi">
+      <div class="label">Countries Represented</div>
+      <div class="value">${utils.formatNumber(countries, 0)}</div>
+      <div class="hint">unique countries</div>
+    </div>
+    <div class="kpi">
+      <div class="label">Average Score</div>
+      <div class="value">${utils.formatNumber(avg)}</div>
+      <div class="hint">mean</div>
+    </div>
+    <div class="kpi">
+      <div class="label">Top Score</div>
+      <div class="value">${utils.formatNumber(top)}</div>
+      <div class="hint">max</div>
+    </div>
+  `;
+}
+
+function renderSdgStack(data) {
+  const all = utils.unique(data.flatMap(d => d._sdgs));
+  const by = Object.fromEntries(all.map(s => [s, 0]));
+  data.forEach(d => d._sdgs.forEach(s => by[s] = (by[s] || 0) + 1));
+  const sorted = Object.entries(by).sort(([a], [b]) => Number(a.split(' ')[1]) - Number(b.split(' ')[1]));
+  const labels = sorted.map(([k]) => k);
+  const parents = labels.map(() => '');
+  const values = sorted.map(([, v]) => v);
+  const trace = { 
+    type: 'treemap', 
+    labels, 
+    parents, 
+    values, 
+    marker: { colors: CONFIG.CHART_COLORS } 
+  };
+  Plotly.newPlot('sdgStack', [trace], { ...commonLayout, margin: { t: 10, l: 10, r: 10, b: 10 } }, { displayModeBar: false, responsive: true });
+}
+
+function renderScoreHist(data) {
+  const scores = data.map(d => d._score).filter(s => s > 0);
+  const trace = { 
+    type: 'histogram', 
+    x: scores, 
+    nbinsx: 18, 
+    marker: { color: '#1BC7BE', line: { width: 0 } } 
+  };
+  const layout = { 
+    ...commonLayout, 
+    xaxis: { ...commonLayout.xaxis, title: 'Score' }, 
+    yaxis: { ...commonLayout.yaxis, title: 'Count' } 
+  };
+  Plotly.newPlot('scoreHist', [trace], layout, { displayModeBar: false, responsive: true });
+}
+
+function renderAll() {
+  const data = appState.getFilteredData();
+  console.log(`🎯 Rendering ${data.length} submissions (filtered from ${appState.rawData.length} total)`);
+  renderKPIs(data);
+  renderMap(data);
+  renderSdgStack(data);
+  renderScoreHist(data);
+}
+
+// ============================================================================
+// MAP FUNCTIONALITY
+// ============================================================================
+
+const getCountryCoordinates = (countryName) => {
+  const countryCoords = {
+    'United States': [-95.7129, 37.0902],
+    'Canada': [-106.3468, 56.1304],
+    'United Kingdom': [-3.4360, 55.3781],
+    'Germany': [10.4515, 51.1657],
+    'France': [2.2137, 46.2276],
+    'Italy': [12.5674, 41.8719],
+    'Spain': [-3.7492, 40.4637],
+    'Netherlands': [5.2913, 52.1326],
+    'Sweden': [18.6435, 60.1282],
+    'Norway': [8.4689, 60.4720],
+    'Denmark': [9.5018, 56.2639],
+    'Finland': [25.7482, 61.9241],
+    'Australia': [133.7751, -25.2744],
+    'Japan': [138.2529, 36.2048],
+    'South Korea': [127.7669, 35.9078],
+    'China': [104.1954, 35.8617],
+    'India': [78.9629, 20.5937],
+    'Brazil': [-51.9253, -14.2350],
+    'Mexico': [-102.5528, 23.6345],
+    'Argentina': [-63.6167, -38.4161],
+    'South Africa': [22.9375, -30.5595],
+    'Nigeria': [8.6753, 9.0820],
+    'Kenya': [37.9062, -0.0236],
+    'Egypt': [30.8025, 26.8206],
+    'Turkey': [35.2433, 38.9637],
+    'Russia': [105.3188, 61.5240],
+    'Ukraine': [31.1656, 48.3794],
+    'Poland': [19.1451, 51.9194],
+    'Czech Republic': [15.4730, 49.8175],
+    'Austria': [14.5501, 47.5162],
+    'Switzerland': [8.2275, 46.8182],
+    'Belgium': [4.4699, 50.5039],
+    'Ireland': [-8.2439, 53.4129],
+    'Portugal': [-8.2245, 39.3999],
+    'Greece': [21.8243, 39.0742],
+    'Israel': [34.8516, 31.0461],
+    'United Arab Emirates': [53.8478, 23.4241],
+    'Saudi Arabia': [45.0792, 23.8859],
+    'Thailand': [100.9925, 15.8700],
+    'Vietnam': [108.2772, 14.0583],
+    'Philippines': [121.7740, 12.8797],
+    'Indonesia': [113.9213, -0.7893],
+    'Malaysia': [101.9758, 4.2105],
+    'Singapore': [103.8198, 1.3521],
+    'New Zealand': [174.8860, -40.9006],
+    'Chile': [-71.5430, -35.6751],
+    'Colombia': [-74.2973, 4.5709],
+    'Peru': [-75.0152, -9.1900],
+    'Venezuela': [-66.5897, 6.4238],
+    'Ecuador': [-78.1834, -1.8312],
+    'Uruguay': [-55.7658, -32.5228],
+    'Paraguay': [-58.4438, -23.4425],
+    'Bolivia': [-63.5887, -16.2902],
+    'Guyana': [-58.9302, 4.8604],
+    'Suriname': [-56.0278, 3.9193],
+    'French Guiana': [-53.1258, 3.9339]
+  };
+  return countryCoords[countryName] || [0, 0];
+};
+
+function renderMap(data) {
+  try {
+    const hasToken = CONFIG.MAPBOX_TOKEN && !/example$/.test(CONFIG.MAPBOX_TOKEN);
+    const mapEl = el('map');
+    const HINT_ID = 'map-hint';
+
+    const showHint = (html) => {
+      if (!mapEl) return;
+      let hint = document.getElementById(HINT_ID);
+      if (!hint) {
+        hint = document.createElement('div');
+        hint.id = HINT_ID;
+        hint.style.cssText = `
+          position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
+          color: var(--muted); pointer-events: none; z-index: 2; text-align: center; padding: 24px;
+          background: none;
+        `;
+        mapEl.appendChild(hint);
+      }
+      hint.innerHTML = html;
+    };
+    
+    const hideHint = () => {
+      const hint = document.getElementById(HINT_ID);
+      if (hint && hint.parentNode) {
+        hint.parentNode.removeChild(hint);
+      }
+    };
+
+    if (!hasToken) {
+      if (!window.map || !window.map.getStyle) {
+        mapEl.innerHTML = '<div style="text-align:center;padding:40px;color:var(--muted)">⚠️ Mapbox token missing. Update CONFIG.MAPBOX_TOKEN.</div>';
+      }
+      el('mapbox-note').style.display = 'block';
+      return;
+    }
+
+    // Aggregate counts by ISO3
+    const counts = {};
+    for (const d of data) if (d._iso3) {
+      counts[d._iso3] = (counts[d._iso3] || 0) + 1;
+    }
+    const maxCount = Math.max(0, ...Object.values(counts));
+
+    // Build expressions
+    const countExpr = ['match', ['get', 'iso_3166_1_alpha_3']];
+    for (const [iso3, c] of Object.entries(counts)) countExpr.push(iso3, c);
+    countExpr.push(0);
+
+    const colorExpr = ['case',
+      ['==', countExpr, 0], '#D0D0D0',
+      ['interpolate', ['linear'], countExpr,
+        1, '#E8F5E8',
+        Math.max(1, maxCount * 0.20), '#B3E6B3',
+        Math.max(1, maxCount * 0.40), '#7ED67E',
+        Math.max(1, maxCount * 0.60), '#4AC64A',
+        Math.max(1, maxCount * 0.80), '#16B616',
+        Math.max(1, maxCount), '#0B7A0B',
+      ]
+    ];
+
+    const ensureLayers = () => {
+      if (!window.map.getSource('country-bounds')) {
+        window.map.addSource('country-bounds', { type: 'vector', url: 'mapbox://mapbox.country-boundaries-v1' });
+      }
+      if (!window.map.getLayer('submissions-fill')) {
+        window.map.addLayer({
+          id: 'submissions-fill',
+          type: 'fill',
+          source: 'country-bounds',
+          'source-layer': 'country_boundaries',
+          paint: { 'fill-color': colorExpr, 'fill-opacity': 0.75 }
+        });
+      } else {
+        window.map.setPaintProperty('submissions-fill', 'fill-color', colorExpr);
+      }
+      if (!window.map.getLayer('submissions-outline')) {
+        window.map.addLayer({
+          id: 'submissions-outline',
+          type: 'line',
+          source: 'country-bounds',
+          'source-layer': 'country_boundaries',
+          paint: { 'line-color': '#0E1A2F', 'line-width': 0.5 }
+        });
+      }
+
+      // Add clustered markers
+      if (!window.map.getSource('submissions')) {
+        const geoJsonData = {
+          type: 'FeatureCollection',
+          features: data.map(d => {
+            const coords = getCountryCoordinates(d._country);
+            return {
+              type: 'Feature',
+              properties: {
+                country: d._country,
+                iso3: d._iso3,
+                score: d._score,
+                org: d._org,
+                maturity: d._maturity,
+                id: Math.random()
+              },
+              geometry: {
+                type: 'Point',
+                coordinates: coords
+              }
+            };
+          }).filter(f => f.geometry.coordinates[0] !== 0 || f.geometry.coordinates[1] !== 0)
+        };
+
+        window.map.addSource('submissions', {
+          type: 'geojson',
+          data: geoJsonData,
+          cluster: true,
+          clusterMaxZoom: 14,
+          clusterRadius: 50
+        });
+
+        // Add cluster circles
+        window.map.addLayer({
+          id: 'clusters',
+          type: 'circle',
+          source: 'submissions',
+          filter: ['has', 'point_count'],
+          paint: {
+            'circle-color': [
+              'step',
+              ['get', 'point_count'],
+              '#51bbd6',
+              10, '#f1f075',
+              20, '#f28cb1'
+            ],
+            'circle-radius': [
+              'step',
+              ['get', 'point_count'],
+              15,
+              10, 20,
+              20, 30
+            ]
+          }
+        });
+
+        // Add cluster count labels
+        window.map.addLayer({
+          id: 'cluster-count',
+          type: 'symbol',
+          source: 'submissions',
+          filter: ['has', 'point_count'],
+          layout: {
+            'text-field': '{point_count_abbreviated}',
+            'text-font': ['DIN Offc Pro Medium', 'Arial Unicode MS Bold'],
+            'text-size': 12
+          }
+        });
+
+        // Add unclustered points
+        window.map.addLayer({
+          id: 'unclustered-point',
+          type: 'circle',
+          source: 'submissions',
+          filter: ['!', ['has', 'point_count']],
+          paint: {
+            'circle-color': '#11b4da',
+            'circle-radius': 8,
+            'circle-stroke-width': 1,
+            'circle-stroke-color': '#fff'
+          }
+        });
+
+        // Add click handlers
+        window.map.on('click', 'clusters', (e) => {
+          const features = window.map.queryRenderedFeatures(e.point, { layers: ['clusters'] });
+          const clusterId = features[0].properties.cluster_id;
+          window.map.getSource('submissions').getClusterExpansionZoom(clusterId, (err, zoom) => {
+            if (err) return;
+            window.map.easeTo({
+              center: features[0].geometry.coordinates,
+              zoom: zoom
+            });
+          });
+        });
+
+        window.map.on('click', 'unclustered-point', (e) => {
+          const coordinates = e.features[0].geometry.coordinates.slice();
+          const props = e.features[0].properties;
+          
+          new mapboxgl.Popup()
+            .setLngLat(coordinates)
+            .setHTML(`
+              <div style="font-weight:700">${props.country}</div>
+              <div style="color:var(--muted)">Organization: ${props.org}</div>
+              <div style="color:var(--muted)">Maturity: ${props.maturity}</div>
+              <div style="color:var(--muted)">Score: ${props.score}</div>
+            `)
+            .addTo(window.map);
+        });
+
+        // Change cursor on hover
+        window.map.on('mouseenter', 'clusters', () => {
+          window.map.getCanvas().style.cursor = 'pointer';
+        });
+        window.map.on('mouseleave', 'clusters', () => {
+          window.map.getCanvas().style.cursor = '';
+        });
+        window.map.on('mouseenter', 'unclustered-point', () => {
+          window.map.getCanvas().style.cursor = 'pointer';
+        });
+        window.map.on('mouseleave', 'unclustered-point', () => {
+          window.map.getCanvas().style.cursor = '';
+        });
+      }
+    };
+
+    // Create or update map
+    if (!window.map || !window.map.getStyle) {
+      showHint('🌍 Initializing map…');
+
+      mapboxgl.accessToken = CONFIG.MAPBOX_TOKEN;
+      const mapStyle = ThemeManager.currentTheme === 'light' 
+        ? 'mapbox://styles/mapbox/outdoors-v12' 
+        : 'mapbox://styles/mapbox/outdoors-v12';
+      
+      window.map = new mapboxgl.Map({
+        container: 'map',
+        style: mapStyle,
+        center: [0, 20],
+        zoom: 1,
+        projection: appState.mapProjection
+      });
+      window.map.addControl(new mapboxgl.NavigationControl(), 'top-right');
+
+      window.map.on('error', (e) => {
+        console.error('Mapbox error:', e);
+        showHint('❌ Map error<br><small>Check token or style</small>');
+      });
+
+      window.map.on('load', () => {
+        hideHint();
+        ensureLayers();
+      });
+    } else {
+      if (window.map.isStyleLoaded) {
+        ensureLayers();
+      } else {
+        showHint('🌍 Updating map…');
+        if (!window.__pending_style_load_handler) {
+          window.__pending_style_load_handler = true;
+          window.map.on('load', () => {
+            ensureLayers();
+            hideHint();
+            window.__pending_style_load_handler = false;
+          });
+        }
+      }
+    }
+  } catch (err) {
+    console.error('Error rendering map:', err);
+    const mapEl = el('map');
+    if (mapEl) {
+      let hint = document.getElementById('map-hint');
+      if (!hint) {
+        hint = document.createElement('div');
+        hint.id = 'map-hint';
+        hint.style.cssText = 'position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:var(--muted);pointer-events:none;z-index:2;text-align:center;padding:24px;';
+        mapEl.appendChild(hint);
+      }
+      hint.innerHTML = '❌ Map error<br><small>See console for details</small>';
+    }
+  }
+}
+
+function toggleMapProjection() {
+  if (!window.map) return;
+  
+  const newProjection = appState.toggleMapProjection();
+  console.log(`Switching to ${newProjection} projection`);
+  
+  try {
+    window.map.setProjection(newProjection);
+    
+    if (newProjection === 'globe') {
+      const currentZoom = window.map.getZoom();
+      if (currentZoom < 1.5) {
+        window.map.setZoom(1.5);
+      }
+    }
+    
+    const btn = el('toggleMapView');
+    if (btn) {
+      const originalText = btn.innerHTML;
+      btn.innerHTML = newProjection === 'equirectangular' ? '✅ 2D' : '✅ 3D';
+      setTimeout(() => {
+        btn.innerHTML = originalText;
+      }, 1000);
+    }
+  } catch (err) {
+    console.error('Error changing projection:', err);
+    console.log('Recreating map with new projection...');
+    window.map.remove();
+    window.map = null;
+    setTimeout(() => {
+      if (typeof renderAll === 'function') {
+        renderAll();
+      }
+    }, 100);
+  }
+}
+
+// ============================================================================
+// FILTER MANAGEMENT
+// ============================================================================
+
+function fillSelect(id, values) { 
+  const s = el(id); 
+  if (!s) return; 
+  s.innerHTML = values.map(v => `<option value="${v}">${v}</option>`).join(''); 
+}
+
+function clearSelect(id) { 
+  const s = el(id); 
+  if (!s) return; 
+  [...s.options].forEach(o => o.selected = false); 
+}
+
+function updateFilterUI(resetCountries = true) {
+  ['fRegion', 'fCountry', 'fOrg', 'fMaturity', 'fSDG'].forEach(id => clearSelect(id));
+  if (resetCountries) {
+    fillSelect('fRegion', utils.unique(appState.rawData.map(r => r._region)));
+    fillSelect('fCountry', utils.unique(appState.rawData.map(r => r._country)));
+  }
+}
+
+function setFilterFromSelect(id) {
+  const s = el(id); 
+  const selected = new Set([...s.selectedOptions].map(o => o.value));
+  const key = id.replace('f', '').toLowerCase();
+  
+  if (key === 'region') { 
+    appState.filters.region = selected; 
+    updateCountryFilter(selected); 
+  }
+  if (key === 'country') { 
+    appState.filters.country = selected; 
+    updateRegionFilter(selected); 
+  }
+  if (key === 'org') appState.filters.org = selected;
+  if (key === 'maturity') appState.filters.maturity = selected;
+  if (key === 'sdg') appState.filters.sdg = selected;
+}
+
+function updateCountryFilter(selectedRegions) {
+  if (!appState.countryRegionMapping) return;
+  if (selectedRegions.size === 0) { 
+    fillSelect('fCountry', utils.unique(appState.rawData.map(r => r._country))); 
+    return; 
+  }
+  const valid = new Set();
+  selectedRegions.forEach(region => {
+    (appState.countryRegionMapping.region_to_countries[region] || []).forEach(c => { 
+      if (appState.rawData.some(r => r._country === c)) valid.add(c); 
+    });
+  });
+  fillSelect('fCountry', Array.from(valid).sort()); 
+  appState.filters.country.clear(); 
+  clearSelect('fCountry');
+}
+
+function updateRegionFilter(selectedCountries) {
+  if (!appState.countryRegionMapping) return;
+  if (selectedCountries.size === 0) { 
+    fillSelect('fRegion', utils.unique(appState.rawData.map(r => r._region))); 
+    return; 
+  }
+  const valid = new Set();
+  selectedCountries.forEach(country => { 
+    const region = appState.countryRegionMapping.country_to_region[country]; 
+    if (region) valid.add(region); 
+  });
+  fillSelect('fRegion', Array.from(valid).sort()); 
+  appState.filters.region.clear(); 
+  clearSelect('fRegion');
+}
+
+// ============================================================================
+// UI CONTROLS
+// ============================================================================
+
+function toggleKioskMode() {
+  appState.kiosk = !appState.kiosk;
+  const controls = el('controls');
+  
+  if (appState.kiosk) {
+    controls.classList.remove('show');
+    el('toggleKiosk').textContent = 'Show Controls';
+    el('toggleKiosk').title = 'Show filter controls';
+  } else {
+    controls.classList.add('show');
+    el('toggleKiosk').textContent = 'Kiosk';
+    el('toggleKiosk').title = 'Hide filter controls';
+  }
+}
+
+// ============================================================================
+// INITIALIZATION
+// ============================================================================
+
+async function init() {
+  // Initialize theme manager
+  ThemeManager.init();
+  
+  // Set up event listeners
+  ['fRegion', 'fCountry', 'fOrg', 'fMaturity', 'fSDG'].forEach(id => {
+    el(id)?.addEventListener('change', utils.debounce(() => { 
+      setFilterFromSelect(id); 
+      renderAll(); 
+    }, 250));
+  });
+  
+  el('clear')?.addEventListener('click', () => { 
+    appState.clearFilters(); 
+    renderAll(); 
+  });
+  el('toggleKiosk')?.addEventListener('click', toggleKioskMode);
+  el('toggleTheme')?.addEventListener('click', () => { ThemeManager.toggle(); });
+  el('toggleMapView')?.addEventListener('click', toggleMapProjection);
+
+  // Load mapping data (optional)
+  try { 
+    const m = await fetch('country_region_mapping.json'); 
+    if (m.ok) appState.countryRegionMapping = await m.json(); 
+  } catch { /* noop */ }
+
+  // Load main data
+  const res = await fetch('data.json');
+  if (!res.ok) throw new Error('Failed to load data.json');
+  const raw = await res.json();
+  if (!Array.isArray(raw) || raw.length === 0) throw new Error('Empty or invalid data');
+
+  appState.rawData = raw.map(DataProcessor.normalizeRow);
+  
+  // Populate filter selects
+  fillSelect('fRegion', utils.unique(appState.rawData.map(r => r._region)));
+  fillSelect('fCountry', utils.unique(appState.rawData.map(r => r._country)));
+  fillSelect('fOrg', utils.unique(appState.rawData.map(r => r._org)));
+  
+  const maturityValues = utils.unique(appState.rawData.map(r => r._maturity)).sort((a, b) => {
+    const ai = CONFIG.MATURITY_ORDER.indexOf(a);
+    const bi = CONFIG.MATURITY_ORDER.indexOf(b);
+    if (ai === -1 && bi === -1) return a.localeCompare(b);
+    if (ai === -1) return 1;
+    if (bi === -1) return -1;
+    return ai - bi;
+  });
+  fillSelect('fMaturity', maturityValues);
+  fillSelect('fSDG', utils.unique(appState.rawData.flatMap(r => r._sdgs)));
+
+  // Initial render
+  renderAll();
+  
+  // Update map projection button text
+  appState.updateMapProjectionButton();
+  
+  // Apply initial kiosk state (hide controls by default)
+  toggleKioskMode();
+}
+
+// Start the application
+document.addEventListener('DOMContentLoaded', init);

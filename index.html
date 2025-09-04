@@ -2,173 +2,19 @@
 <html lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-     <title>Global Call for Solutions — UNGA Dashboard</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Global Call for Solutions — UNGA Dashboard</title>
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌍</text></svg>">
-  <link rel="preconnect" href="https://cdn.jsdelivr.net" />
+  
+  <!-- External Libraries -->
   <script src="https://cdn.plot.ly/plotly-2.35.2.min.js"></script>
   <script src="https://api.mapbox.com/mapbox-gl-js/v2.15.0/mapbox-gl.js"></script>
   <link href="https://api.mapbox.com/mapbox-gl-js/v2.15.0/mapbox-gl.css" rel="stylesheet">
-  <style>
-         /* ================= UNGA THEME (Dark & Light) ================= */
-           :root{
-        /* Dark theme (default) */
-        --bg: #0B1324;            /* deep navy */
-        --panel: rgba(255,255,255,.06);
-        --panel-strong: rgba(255,255,255,.10);
-        --text: #EAF4FF;
-        --muted: #9FB3C8;
-        --brand: #00A3E0;         /* UN blue */
-        --accent: #45FFD3;        /* neon aqua */
-        --gold: #F6C453;          /* highlight */
-        --radius: 20px;
-        --shadow: 0 10px 30px rgba(0,0,0,.35);
-        --border: 1px solid rgba(255,255,255,.08);
-        --gap: 28px;
-        
-        /* Header colors for dark theme */
-        --header-start: #06142E;
-        --header-mid: #0B1E39;
-        --header-end: #103B5C;
-        --header-shadow: 0 8px 24px rgba(0,0,0,.35);
-        --controls-bg: rgba(255,255,255,.03);
-      }
-
-           /* Light theme */
-      [data-theme="light"] {
-        --bg: #F8FAFC;            /* light gray */
-        --panel: rgba(0,0,0,.04);
-        --panel-strong: rgba(0,0,0,.08);
-        --text: #0F172A;
-        --muted: #64748B;
-        --brand: #00A3E0;         /* UN blue (same) */
-        --accent: #0891B2;        /* darker aqua for light mode */
-        --gold: #D97706;          /* darker gold for light mode */
-        --shadow: 0 10px 30px rgba(0,0,0,.1);
-        --border: 1px solid rgba(0,0,0,.08);
-        
-        /* Header colors for light theme - UN Blue */
-        --header-start: #00A3E0;
-        --header-mid: #0091CC;
-        --header-end: #007FB8;
-        --header-shadow: 0 8px 24px rgba(0,0,0,.1);
-        --controls-bg: rgba(0,0,0,.02);
-      }
-
-         *{box-sizing:border-box}
-     html,body{height:100%}
-     body{margin:0; background:var(--bg); color:var(--text); font: 500 18px/1.6 -apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Inter,system-ui,sans-serif;}
-     
-     /* Smooth theme transitions */
-     * {
-       transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
-     }
-
-         /* Header */
-     header{
-       position: sticky; top: 0; z-index: 20;
-       background: linear-gradient(135deg, var(--header-start), var(--header-mid) 55%, var(--header-end));
-       border-bottom: var(--border);
-       box-shadow: var(--header-shadow);
-     }
-    .header-inner{display:flex; align-items:center; justify-content:space-between; gap:16px; padding:22px clamp(16px,4vw,40px);}    
-         .branding{display:flex; align-items:center; gap:16px}
-     .branding img{height:56px; width:auto; filter: drop-shadow(0 6px 12px rgba(0,0,0,.35));}
-     h1{margin:0; font-size: clamp(22px, 3vw, 34px); letter-spacing:.3px; font-weight:800; color: white !important}
-     .subtitle{opacity:.8; font-size: clamp(12px,1.4vw,14px); color: white !important}
-
-         /* Controls */
-     .controls{
-       display: none; /* Hidden by default */
-       flex-wrap:wrap; gap:14px 18px; align-items:end; padding: 14px clamp(16px,4vw,40px) 22px;
-       background: linear-gradient(180deg, var(--controls-bg), transparent);
-       border-top: var(--border);
-     }
-     
-     /* Show controls when not in kiosk mode */
-     .controls.show {
-       display: flex;
-     }
-    .controls label{display:flex; flex-direction:column; gap:8px; min-width:200px; color:var(--text);}
-    .controls select{padding:10px 12px; border-radius:12px; border: var(--border); background: var(--panel); color:var(--text)}
-         .btn{padding:10px 14px; border:none; border-radius:14px; cursor:pointer; background: var(--brand); color:#00131B; font-weight:700}
-     .btn.secondary{background:#6B7E93; color:var(--text)}
-     
-     /* Theme toggle button styling */
-     #toggleTheme {
-       font-size: 18px;
-       padding: 10px 12px;
-       transition: all 0.3s ease;
-     }
-     
-     #toggleTheme:hover {
-       transform: scale(1.1);
-       background: var(--accent) !important;
-     }
-
-    /* KPI hero */
-    .kpis{display:grid; gap: var(--gap); grid-template-columns: repeat(4, minmax(220px, 1fr)); padding: clamp(16px,4vw,40px); margin: 0 auto; max-width: 1600px}
-    .kpi{background: var(--panel); border: none; border-radius: var(--radius); padding: 24px; box-shadow: var(--shadow); backdrop-filter: blur(10px);}
-    .kpi .label{color: var(--muted); text-transform: uppercase; letter-spacing: .6px; font-size: 14px}
-    .kpi .value{font-size: clamp(44px,6vw,72px); font-weight: 900; letter-spacing: .5px; margin-top: 6px}
-    .kpi .hint{color:var(--muted); font-size:14px; margin-top:6px}
-
-    /* Grid */
-    .grid{display:grid; gap: var(--gap); grid-template-columns: repeat(12, 1fr); padding: 0 clamp(16px,4vw,40px) clamp(24px,6vw,48px); max-width: 1800px; margin: 0 auto}
-    .card{grid-column: span 6; background: var(--panel); border-radius: var(--radius); box-shadow: var(--shadow); border:none; overflow:hidden}
-    .card .head{display:flex; align-items:center; justify-content:space-between; gap:12px; padding: 18px 22px; border-bottom: var(--border); background: linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.02));}
-    .card .head .title{font-weight:800; letter-spacing:.2px}
-    .card .body{padding: 16px 18px}
-    .card.full{grid-column: 1 / -1}
-
-    .legend-badge{display:inline-block; padding:6px 10px; border-radius:999px; background:var(--panel-strong); font-size:13px; color:var(--muted)}
-
-    /* Map toggle button styling */
-    #toggleMapView {
-      font-size: 13px;
-      padding: 6px 12px;
-      border-radius: 8px;
-      transition: all 0.2s ease;
-      min-width: 60px;
-      font-weight: 600;
-    }
-    
-    #toggleMapView:hover {
-      transform: scale(1.05);
-      background: var(--accent) !important;
-      color: var(--bg) !important;
-      box-shadow: 0 4px 12px rgba(69, 255, 211, 0.3);
-    }
-    
-    #toggleMapView:active {
-      transform: scale(0.98);
-    }
-    
-    #toggleMapView.active {
-      background: var(--accent) !important;
-      color: var(--bg) !important;
-      box-shadow: 0 2px 8px rgba(69, 255, 211, 0.4);
-    }
-
-    /* Footer note */
-    footer{padding: 22px clamp(16px,4vw,40px); color:var(--muted); font-size:14px; text-align:center; opacity:.8}
-
-         /* Map container styling - minimal */
-     #map {
-       width: 100%;
-       height: 540px;
-     }
-
-    /* Responsive */
-    @media (max-width: 1024px){
-      .kpis{grid-template-columns: repeat(2,1fr)}
-      .card{grid-column: 1 / -1}
-    }
-    @media (max-width: 640px){
-      .kpi .value{font-size: 40px}
-    }
-  </style>
+  
+  <!-- Custom Styles -->
+  <link href="styles.css" rel="stylesheet">
 </head>
+
 <body>
   <header>
     <div class="header-inner">
@@ -179,806 +25,106 @@
           <div class="subtitle">UNGA Showcase · New York · Sep 2025</div>
         </div>
       </div>
-                     <div class="actions">
-          <button id="toggleTheme" class="btn secondary" title="Toggle Theme" style="margin-right: 10px;">🌙</button>
-                     <button id="toggleKiosk" class="btn secondary" title="Show filter controls">Show Controls</button>
-        </div>
+      
+      <div class="actions">
+        <button id="toggleTheme" class="btn secondary" title="Toggle Theme" style="margin-right: 10px;">
+          🌙
+        </button>
+        <button id="toggleKiosk" class="btn secondary" title="Show filter controls">
+          Show Controls
+        </button>
+      </div>
     </div>
-                   <div class="controls" id="controls">
-       <label>🌍 Region<select id="fRegion" multiple></select></label>
-       <label>🏳️ Country<select id="fCountry" multiple></select></label>
-       <label>🏢 Organization Type<select id="fOrg" multiple></select></label>
-       <label>📈 Maturity Stage<select id="fMaturity" multiple></select></label>
-       <label>🎯 SDG Focus<select id="fSDG" multiple></select></label>
-       <div style="display:flex; gap:10px; align-items:end">
-         <button id="clear" class="btn secondary">🗑️ Clear</button>
-         <!-- <button id="exportCsv" class="btn">📊 Export CSV</button> -->
-       </div>
-     </div>
+    
+    <div class="controls" id="controls">
+      <label>
+        🌍 Region
+        <select id="fRegion" multiple></select>
+      </label>
+      <label>
+        🏳️ Country
+        <select id="fCountry" multiple></select>
+      </label>
+      <label>
+        🏢 Organization Type
+        <select id="fOrg" multiple></select>
+      </label>
+      <label>
+        📈 Maturity Stage
+        <select id="fMaturity" multiple></select>
+      </label>
+      <label>
+        🎯 SDG Focus
+        <select id="fSDG" multiple></select>
+      </label>
+      <div style="display: flex; gap: 10px; align-items: end">
+        <button id="clear" class="btn secondary">🗑️ Clear</button>
+      </div>
+    </div>
   </header>
 
-  <!-- KPI HERO -->
+  <!-- KPI Hero Section -->
   <section class="kpis" id="kpis">
-    <!-- filled by JS -->
+    <!-- KPI cards will be populated by JavaScript -->
   </section>
 
-  <!-- GRID -->
+  <!-- Main Content Grid -->
   <section class="grid">
+    <!-- Map Card -->
     <div class="card full">
       <div class="head">
         <div class="title">🗺️ Submissions by Country</div>
         <div style="display: flex; align-items: center; gap: 12px;">
           <span class="legend-badge">Global overview</span>
-          <button id="toggleMapView" class="btn secondary" title="Toggle between 2D and 3D view">🌍 2D</button>
+          <button id="toggleMapView" class="btn secondary" title="Toggle between 2D and 3D view">
+            🌍 2D
+          </button>
         </div>
       </div>
-      <div class="body"><div id="map" style="height:540px"></div></div>
+      <div class="body">
+        <div id="map" style="height: 540px"></div>
+      </div>
     </div>
 
+    <!-- SDG Stack Card -->
     <div class="card">
-      <div class="head"><div class="title">🌱 SDGs Addressed</div></div>
-      <div class="body"><div id="sdgStack" style="height:380px"></div></div>
+      <div class="head">
+        <div class="title">🌱 SDGs Addressed</div>
+      </div>
+      <div class="body">
+        <div id="sdgStack" style="height: 380px"></div>
+      </div>
     </div>
 
+    <!-- Score Distribution Card -->
     <div class="card">
-      <div class="head"><div class="title">📊 Score Distribution</div></div>
-      <div class="body"><div id="scoreHist" style="height:380px"></div></div>
+      <div class="head">
+        <div class="title">📊 Score Distribution</div>
+      </div>
+      <div class="body">
+        <div id="scoreHist" style="height: 380px"></div>
+      </div>
     </div>
   </section>
 
-     <footer>Data refreshes from <code>data.json</code>.</footer>
+  <!-- Footer -->
+  <footer>
+    Data refreshes from <code>data.json</code>.
+  </footer>
   
-  <!-- Note: You need a Mapbox access token for the map to work. Get one at https://account.mapbox.com/ -->
+  <!-- Mapbox Token Notice -->
   <div id="mapbox-note" style="display: none; text-align: center; padding: 20px; color: var(--muted);">
     <p>⚠️ Mapbox access token required. Update CONFIG.MAPBOX_TOKEN in the code.</p>
-    <p>Get a free token at <a href="https://account.mapbox.com/" target="_blank" style="color: var(--brand);">https://account.mapbox.com/</a></p>
+    <p>
+      Get a free token at 
+      <a href="https://account.mapbox.com/" target="_blank" style="color: var(--brand);">
+        https://account.mapbox.com/
+      </a>
+    </p>
   </div>
 
-  <!-- Mapping + Data Loader (same as your existing setup) -->
+  <!-- Scripts -->
   <script src="iso3-map.js"></script>
-
-  <script>
-    /* ===================== THEME HELPERS FOR PLOTLY ===================== */
-    const PlotTheme = {
-      paper: 'rgba(0,0,0,0)',
-      plot: 'rgba(0,0,0,0)',
-      fontColor: getComputedStyle(document.documentElement).getPropertyValue('--text').trim() || '#EAF4FF',
-      grid: 'rgba(255,255,255,.08)'
-    };
-    const commonLayout = {
-      paper_bgcolor: PlotTheme.paper,
-      plot_bgcolor: PlotTheme.plot,
-      font: {color: PlotTheme.fontColor, size: 16},
-      margin: {t: 10, r: 10, b: 50, l: 60},
-      xaxis: {gridcolor: PlotTheme.grid, zeroline: false},
-      yaxis: {gridcolor: PlotTheme.grid, zeroline: false},
-    };
-
-    const MAP_COLORSCALE = [
-      [0,'#0B1E39'],[0.2,'#0C3A5A'],[0.4,'#0E5C7C'],[0.6,'#118E9C'],[0.8,'#1BC7BE'],[1,'#45FFD3']
-    ];
-
-    /* ===================== UTILITIES (subset from original) ===================== */
-    const utils = {
-      toArray: v => Array.isArray(v) ? v : (v ? [v] : []),
-      unique: arr => [...new Set(arr)].filter(Boolean).sort(),
-      safeNumber: v => { const n = Number(v); return isFinite(n) ? n : 0; },
-      formatNumber: (num, decimals = 1) => {
-        if (num >= 1_000_000) return (num/1_000_000).toFixed(1)+'M';
-        if (num >= 1_000) return (num/1_000).toFixed(1)+'K';
-        return (+num).toFixed(decimals);
-      },
-      debounce: (fn, wait=300) => { let t; return (...a)=>{ clearTimeout(t); t=setTimeout(()=>fn(...a),wait); }; }
-    };
-
-    const el = id => document.getElementById(id);
-
-    /* ===================== SDG NORMALIZATION ===================== */
-    const sdgNormalize = (s) => {
-      if (!s) return [];
-      return s.split(';').map(x=>x.trim()).filter(Boolean)
-        .map(x => {
-          if (x.includes('ЦУР 10') || x.includes('сокращение неравенства')) return 'SDG 10';
-          if (x.includes('ЦУР 12') || x.includes('Ответственное потребление и производство')) return 'SDG 12';
-          if (x.includes('ЦУР 8') || x.includes('Достойный труд и экономический рост')) return 'SDG 8';
-          return x.replace(/^SDG\s*/i, 'SDG ').replace(/\s+/g, ' ');
-        })
-        .map(x => x.replace(/^(SDG)?\s*(\d{1,2}).*$/i, (_, __, n) => `SDG ${n}`));
-    };
-
-         /* ===================== APP STATE ===================== */
-     const CONFIG = {
-       MATURITY_ORDER: ["Idea/Concept","Proof of Concept","MVP","Pilot Stage","Implemented at scale"],
-       CHART_COLORS: ['#00A3E0', '#45FFD3', '#F6C453', '#118E9C', '#1BC7BE'],
-       MAX_TOP_SOLUTIONS: 10,
-       CSV_FILENAME: 'global_solutions_export.csv',
-       MAPBOX_TOKEN: 'pk.eyJ1Ijoiemlsb25nLXRlY2giLCJhIjoiY21mMmhvZWp0MXZtdjJpcXlzOWswZGM1ZiJ9.tk_JMGIpKj5KS4bSBEukqw'
-     };
-
-     /* ===================== THEME MANAGEMENT ===================== */
-     const ThemeManager = {
-       currentTheme: 'dark',
-       
-       init() {
-         // Load saved theme from localStorage
-         const savedTheme = localStorage.getItem('unga-theme');
-         if (savedTheme) {
-           this.setTheme(savedTheme);
-         }
-       },
-       
-       setTheme(theme) {
-         this.currentTheme = theme;
-         document.documentElement.setAttribute('data-theme', theme === 'light' ? 'light' : 'dark');
-         localStorage.setItem('unga-theme', theme);
-         
-         // Update theme toggle button
-         const toggleBtn = document.getElementById('toggleTheme');
-         if (toggleBtn) {
-           toggleBtn.innerHTML = theme === 'light' ? '🌙' : '☀️';
-           toggleBtn.title = theme === 'light' ? 'Switch to Dark Mode' : 'Switch to Light Mode';
-         }
-         
-                   // Note: Mapbox style will update on next map creation
-          // For now, we'll just log the theme change
-          console.log(`Theme changed to ${theme}. Map will use ${theme} style on next creation.`);
-       },
-       
-               toggle() {
-          const newTheme = this.currentTheme === 'dark' ? 'light' : 'dark';
-          this.setTheme(newTheme);
-          
-          // Force map recreation to show new theme immediately
-          if (window.map) {
-            console.log('Recreating map with new theme...');
-            window.map.remove();
-            window.map = null;
-            // Trigger a re-render to recreate the map
-            setTimeout(() => {
-              if (typeof renderAll === 'function') {
-                renderAll();
-              }
-            }, 100);
-          }
-        }
-     };
-
-         class AppState {
-               constructor(){
-          this.rawData = [];
-          this.filters = {region:new Set(), country:new Set(), org:new Set(), maturity:new Set(), sdg:new Set()};
-          this.countryRegionMapping = null;
-          this.kiosk = true; // default kiosk ON - controls hidden initially
-          // Load saved map projection preference or default to 2D
-          this.mapProjection = localStorage.getItem('unga-map-projection') || 'equirectangular';
-        }
-      getFilteredData(){
-        return this.rawData.filter(r =>
-          (this.filters.region.size===0 || this.filters.region.has(r._region)) &&
-          (this.filters.country.size===0 || this.filters.country.has(r._country)) &&
-          (this.filters.org.size===0 || this.filters.org.has(r._org)) &&
-          (this.filters.maturity.size===0 || this.filters.maturity.has(r._maturity)) &&
-          (this.filters.sdg.size===0 || r._sdgs.some(s => this.filters.sdg.has(s)))
-        );
-      }
-      clearFilters(){ this.filters = {region:new Set(), country:new Set(), org:new Set(), maturity:new Set(), sdg:new Set()}; updateFilterUI(false); }
-      
-      toggleMapProjection() {
-        this.mapProjection = this.mapProjection === 'equirectangular' ? 'globe' : 'equirectangular';
-        this.updateMapProjectionButton();
-        // Save preference to localStorage
-        localStorage.setItem('unga-map-projection', this.mapProjection);
-        return this.mapProjection;
-      }
-      
-      updateMapProjectionButton() {
-        const btn = el('toggleMapView');
-        if (btn) {
-          btn.innerHTML = this.mapProjection === 'equirectangular' ? '🌍 2D' : '🌐 3D';
-          btn.title = this.mapProjection === 'equirectangular' ? 'Switch to 3D Globe view' : 'Switch to 2D Flat view';
-          // Add visual indication of current state
-          btn.classList.toggle('active', this.mapProjection === 'globe');
-        }
-      }
-    }
-    const appState = new AppState();
-
-    /* ===================== DATA PROCESSOR ===================== */
-    const DataProcessor = {
-      normalizeRow(row){
-        const country = (row['Country']||'').trim();
-        const iso3 = window.COUNTRY_TO_ISO3?.[country] || null;
-        const sdgs = sdgNormalize(row['SDGs addressed']);
-        let maturity = (row['Maturity stage']||'').trim();
-        if (maturity === 'Пилотный этап (мелкая реализация)') maturity = 'Pilot stage (small-scale implementation)';
-        if (/Proof-of-Concept|Prototype/i.test(maturity)) maturity = 'Proof of Concept';
-        else if (/Minimum Viable Product|MVP|Pilot-ready/i.test(maturity)) maturity = 'MVP';
-        else if (/Pilot stage|small-scale implementation/i.test(maturity)) maturity = 'Pilot Stage';
-        let org = (row['Please specify the type of organization you are representing.']||'').replace(/\*+$/,'').trim();
-        if (org === 'Частный сектор') org = 'Private sector';
-        if (/Academia|university|think tank/i.test(org)) org = 'Academia';
-        else if (/Civil society|NGO|community groups/i.test(org)) org = 'Civil society';
-        else if (/International Organisation/i.test(org) && !/UN/i.test(org)) org = 'International Organisation';
-        const region = (row['Region']||'').trim();
-        const score = utils.safeNumber(row['Total Score']);
-        const theme = (row['Primary thematic focus area']||'').trim();
-        return {...row, _country:country, _iso3:iso3, _sdgs:sdgs, _maturity:maturity, _org:org, _region:region, _score:score, _theme:theme};
-      },
-      kpis(data){
-        const countries = utils.unique(data.map(d=>d._country));
-        const scores = data.map(d=>d._score).filter(s=>s>0);
-        const avg = scores.length? (scores.reduce((a,b)=>a+b,0)/scores.length):0;
-        const median = scores.length? (s=>{const t=[...s].sort((a,b)=>a-b); const m=Math.floor(t.length/2); return t.length%2?t[m]:(t[m-1]+t[m])/2;})(scores):0;
-        const top = Math.max(...scores,0);
-        return { submissions:data.length, countries:countries.length, avg, median, top };
-      }
-    };
-
-    /* ===================== UI RENDERERS ===================== */
-    function renderKPIs(data){
-      const {submissions, countries, avg, median, top} = DataProcessor.kpis(data);
-      el('kpis').innerHTML = `
-        <div class="kpi"><div class="label">Total Submissions</div><div class="value">${utils.formatNumber(submissions,0)}</div><div class="hint">entries</div></div>
-        <div class="kpi"><div class="label">Countries Represented</div><div class="value">${utils.formatNumber(countries,0)}</div><div class="hint">unique countries</div></div>
-        <div class="kpi"><div class="label">Average Score</div><div class="value">${utils.formatNumber(avg)}</div><div class="hint">mean</div></div>
-        <div class="kpi"><div class="label">Top Score</div><div class="value">${utils.formatNumber(top)}</div><div class="hint">max</div></div>
-      `;
-    }
-
-    function renderMap(data){
-  try{
-    const hasToken = CONFIG.MAPBOX_TOKEN && !/example$/.test(CONFIG.MAPBOX_TOKEN);
-    const mapEl = el('map');
-    const HINT_ID = 'map-hint';
-
-    // helpers to manage the overlay hint safely
-    const showHint = (html) => {
-      if (!mapEl) return;
-      let hint = document.getElementById(HINT_ID);
-      if (!hint){
-        hint = document.createElement('div');
-        hint.id = HINT_ID;
-        hint.style.cssText = `
-          position:absolute; inset:0; display:flex; align-items:center; justify-content:center;
-          color: var(--muted); pointer-events:none; z-index: 2; text-align:center; padding: 24px;
-          background: none;
-        `;
-        mapEl.appendChild(hint);
-      }
-      hint.innerHTML = html;
-    };
-    const hideHint = () => {
-      const hint = document.getElementById(HINT_ID);
-      if (hint && hint.parentNode) hint.parentNode.removeChild(hint);
-    };
-
-    // 0) Token guard
-    if (!hasToken){
-      // Safe to write innerHTML if no map was ever created:
-      if (!window.map || !window.map.getStyle) {
-        mapEl.innerHTML = '<div style="text-align:center;padding:40px;color:var(--muted)">⚠️ Mapbox token missing. Update CONFIG.MAPBOX_TOKEN.</div>';
-      }
-      el('mapbox-note').style.display = 'block';
-      return;
-    }
-
-         // 1) Aggregate counts by ISO3 and prepare marker data
-     const counts = {};
-     const markerData = [];
-     for (const d of data) if (d._iso3) {
-       counts[d._iso3] = (counts[d._iso3] || 0) + 1;
-       // Add marker for each submission
-       markerData.push({
-         type: 'Feature',
-         properties: {
-           country: d._country,
-           iso3: d._iso3,
-           score: d._score,
-           org: d._org,
-           maturity: d._maturity
-         },
-         geometry: {
-           type: 'Point',
-           coordinates: [d._longitude || 0, d._latitude || 0] // We'll need to add coordinates
-         }
-       });
-     }
-     const maxCount = Math.max(0, ...Object.values(counts));
-
-    // 2) Build expressions
-    const countExpr = ['match', ['get', 'iso_3166_1_alpha_3']];
-    for (const [iso3, c] of Object.entries(counts)) countExpr.push(iso3, c);
-    countExpr.push(0);
-
-         const colorExpr = ['case',
-       ['==', countExpr, 0], '#D0D0D0', // Light gray for 0 submissions
-       ['interpolate', ['linear'], countExpr,
-         1,                     '#E8F5E8', // Very light green for 1 submission
-         Math.max(1, maxCount*0.20), '#B3E6B3', // Light green for low submissions
-         Math.max(1, maxCount*0.40), '#7ED67E', // Medium-light green
-         Math.max(1, maxCount*0.60), '#4AC64A', // Medium green
-         Math.max(1, maxCount*0.80), '#16B616', // Dark green for high submissions
-         Math.max(1, maxCount),      '#0B7A0B', // Very dark green for highest submissions
-       ]
-     ];
-
-         // Helper function to get country center coordinates
-     const getCountryCoordinates = (countryName) => {
-       // Simple country coordinate mapping - you can expand this
-       const countryCoords = {
-         'United States': [-95.7129, 37.0902],
-         'Canada': [-106.3468, 56.1304],
-         'United Kingdom': [-3.4360, 55.3781],
-         'Germany': [10.4515, 51.1657],
-         'France': [2.2137, 46.2276],
-         'Italy': [12.5674, 41.8719],
-         'Spain': [-3.7492, 40.4637],
-         'Netherlands': [5.2913, 52.1326],
-         'Sweden': [18.6435, 60.1282],
-         'Norway': [8.4689, 60.4720],
-         'Denmark': [9.5018, 56.2639],
-         'Finland': [25.7482, 61.9241],
-         'Australia': [133.7751, -25.2744],
-         'Japan': [138.2529, 36.2048],
-         'South Korea': [127.7669, 35.9078],
-         'China': [104.1954, 35.8617],
-         'India': [78.9629, 20.5937],
-         'Brazil': [-51.9253, -14.2350],
-         'Mexico': [-102.5528, 23.6345],
-         'Argentina': [-63.6167, -38.4161],
-         'South Africa': [22.9375, -30.5595],
-         'Nigeria': [8.6753, 9.0820],
-         'Kenya': [37.9062, -0.0236],
-         'Egypt': [30.8025, 26.8206],
-         'Turkey': [35.2433, 38.9637],
-         'Russia': [105.3188, 61.5240],
-         'Ukraine': [31.1656, 48.3794],
-         'Poland': [19.1451, 51.9194],
-         'Czech Republic': [15.4730, 49.8175],
-         'Austria': [14.5501, 47.5162],
-         'Switzerland': [8.2275, 46.8182],
-         'Belgium': [4.4699, 50.5039],
-         'Ireland': [-8.2439, 53.4129],
-         'Portugal': [-8.2245, 39.3999],
-         'Greece': [21.8243, 39.0742],
-         'Israel': [34.8516, 31.0461],
-         'United Arab Emirates': [53.8478, 23.4241],
-         'Saudi Arabia': [45.0792, 23.8859],
-         'Thailand': [100.9925, 15.8700],
-         'Vietnam': [108.2772, 14.0583],
-         'Philippines': [121.7740, 12.8797],
-         'Indonesia': [113.9213, -0.7893],
-         'Malaysia': [101.9758, 4.2105],
-         'Singapore': [103.8198, 1.3521],
-         'New Zealand': [174.8860, -40.9006],
-         'Chile': [-71.5430, -35.6751],
-         'Colombia': [-74.2973, 4.5709],
-         'Peru': [-75.0152, -9.1900],
-         'Venezuela': [-66.5897, 6.4238],
-         'Ecuador': [-78.1834, -1.8312],
-         'Uruguay': [-55.7658, -32.5228],
-         'Paraguay': [-58.4438, -23.4425],
-         'Bolivia': [-63.5887, -16.2902],
-         'Guyana': [-58.9302, 4.8604],
-         'Suriname': [-56.0278, 3.9193],
-         'French Guiana': [-53.1258, 3.9339]
-       };
-       return countryCoords[countryName] || [0, 0]; // Default to [0,0] if not found
-     };
-
-     // 3) Add/update layers
-     const ensureLayers = () => {
-       if (!window.map.getSource('country-bounds')) {
-         window.map.addSource('country-bounds', { type: 'vector', url: 'mapbox://mapbox.country-boundaries-v1' });
-       }
-       if (!window.map.getLayer('submissions-fill')) {
-         window.map.addLayer({
-           id: 'submissions-fill',
-           type: 'fill',
-           source: 'country-bounds',
-           'source-layer': 'country_boundaries',
-           paint: { 'fill-color': colorExpr, 'fill-opacity': 0.75 }
-         });
-       } else {
-         window.map.setPaintProperty('submissions-fill', 'fill-color', colorExpr);
-       }
-       if (!window.map.getLayer('submissions-outline')) {
-         window.map.addLayer({
-           id: 'submissions-outline',
-           type: 'line',
-           source: 'country-bounds',
-           'source-layer': 'country_boundaries',
-           paint: { 'line-color': '#0E1A2F', 'line-width': 0.5 }
-         });
-       }
-
-       // Add clustered markers
-       if (!window.map.getSource('submissions')) {
-         // Prepare GeoJSON data with proper coordinates
-         const geoJsonData = {
-           type: 'FeatureCollection',
-           features: data.map(d => {
-             const coords = getCountryCoordinates(d._country);
-             return {
-               type: 'Feature',
-               properties: {
-                 country: d._country,
-                 iso3: d._iso3,
-                 score: d._score,
-                 org: d._org,
-                 maturity: d._maturity,
-                 id: Math.random() // Unique ID for each marker
-               },
-               geometry: {
-                 type: 'Point',
-                 coordinates: coords
-               }
-             };
-           }).filter(f => f.geometry.coordinates[0] !== 0 || f.geometry.coordinates[1] !== 0) // Filter out invalid coordinates
-         };
-
-         window.map.addSource('submissions', {
-           type: 'geojson',
-           data: geoJsonData,
-           cluster: true,
-           clusterMaxZoom: 14,
-           clusterRadius: 50
-         });
-
-         // Add cluster circles
-         window.map.addLayer({
-           id: 'clusters',
-           type: 'circle',
-           source: 'submissions',
-           filter: ['has', 'point_count'],
-           paint: {
-             'circle-color': [
-               'step',
-               ['get', 'point_count'],
-               '#51bbd6', // Color for small clusters
-               10, '#f1f075', // Color for medium clusters
-               20, '#f28cb1'  // Color for large clusters
-             ],
-             'circle-radius': [
-               'step',
-               ['get', 'point_count'],
-               15, // Size for small clusters
-               10, 20, // Size for medium clusters
-               20, 30  // Size for large clusters
-             ]
-           }
-         });
-
-         // Add cluster count labels
-         window.map.addLayer({
-           id: 'cluster-count',
-           type: 'symbol',
-           source: 'submissions',
-           filter: ['has', 'point_count'],
-           layout: {
-             'text-field': '{point_count_abbreviated}',
-             'text-font': ['DIN Offc Pro Medium', 'Arial Unicode MS Bold'],
-             'text-size': 12
-           }
-         });
-
-         // Add unclustered points
-         window.map.addLayer({
-           id: 'unclustered-point',
-           type: 'circle',
-           source: 'submissions',
-           filter: ['!', ['has', 'point_count']],
-           paint: {
-             'circle-color': '#11b4da',
-             'circle-radius': 8,
-             'circle-stroke-width': 1,
-             'circle-stroke-color': '#fff'
-           }
-         });
-
-         // Add click handlers for clusters and points
-         window.map.on('click', 'clusters', (e) => {
-           const features = window.map.queryRenderedFeatures(e.point, {
-             layers: ['clusters']
-           });
-           const clusterId = features[0].properties.cluster_id;
-           window.map.getSource('submissions').getClusterExpansionZoom(clusterId, (err, zoom) => {
-             if (err) return;
-             window.map.easeTo({
-               center: features[0].geometry.coordinates,
-               zoom: zoom
-             });
-           });
-         });
-
-         // Add click handler for individual points
-         window.map.on('click', 'unclustered-point', (e) => {
-           const coordinates = e.features[0].geometry.coordinates.slice();
-           const props = e.features[0].properties;
-           
-           // Create popup for individual submission
-           new mapboxgl.Popup()
-             .setLngLat(coordinates)
-             .setHTML(`
-               <div style="font-weight:700">${props.country}</div>
-               <div style="color:var(--muted)">Organization: ${props.org}</div>
-               <div style="color:var(--muted)">Maturity: ${props.maturity}</div>
-               <div style="color:var(--muted)">Score: ${props.score}</div>
-             `)
-             .addTo(window.map);
-         });
-
-         // Change cursor on hover
-         window.map.on('mouseenter', 'clusters', () => {
-           window.map.getCanvas().style.cursor = 'pointer';
-         });
-         window.map.on('mouseleave', 'clusters', () => {
-           window.map.getCanvas().style.cursor = '';
-         });
-         window.map.on('mouseenter', 'unclustered-point', () => {
-           window.map.getCanvas().style.cursor = 'pointer';
-         });
-         window.map.on('mouseleave', 'unclustered-point', () => {
-           window.map.getCanvas().style.cursor = '';
-         });
-       }
-     };
-
-            // 4) Create once or update
-        if (!window.map || !window.map.getStyle){
-          // Put a non-destructive hint overlay (not innerHTML wipe)
-          showHint('🌍 Initializing map…');
-
-          mapboxgl.accessToken = CONFIG.MAPBOX_TOKEN;
-          const mapStyle = ThemeManager.currentTheme === 'light' 
-            ? 'mapbox://styles/mapbox/outdoors-v12' 
-            : 'mapbox://styles/mapbox/outdoors-v12';
-          
-          window.map = new mapboxgl.Map({
-            container: 'map',
-            style: mapStyle,
-            center: [0, 20],
-            zoom: 1,
-            projection: appState.mapProjection
-          });
-          window.map.addControl(new mapboxgl.NavigationControl(), 'top-right');
-
-      window.map.on('error', (e) => {
-        console.error('Mapbox error:', e);
-        showHint('❌ Map error<br><small>Check token or style</small>');
-      });
-
-      window.map.on('load', () => {
-        hideHint();           // remove only the overlay, keep the canvas
-        ensureLayers();
-      });
-    } else {
-      // Style may still be loading; v2.15 uses boolean property
-      if (window.map.isStyleLoaded) {
-        ensureLayers();
-      } else {
-        // If style’s reloading, show a *temporary* overlay, then remove it on load
-        showHint('🌍 Updating map…');
-        if (!window.__pending_style_load_handler) {
-          window.__pending_style_load_handler = true;
-          window.map.on('load', () => {
-            ensureLayers();
-            hideHint();
-            window.__pending_style_load_handler = false;
-          });
-        }
-      }
-    }
-  } catch (err){
-    console.error('Error rendering map:', err);
-    // Only show a hint overlay; do not clear the map container
-    const mapEl = el('map');
-    if (mapEl) {
-      let hint = document.getElementById('map-hint');
-      if (!hint){
-        hint = document.createElement('div');
-        hint.id = 'map-hint';
-        hint.style.cssText = 'position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:var(--muted);pointer-events:none;z-index:2;text-align:center;padding:24px;';
-        mapEl.appendChild(hint);
-      }
-      hint.innerHTML = '❌ Map error<br><small>See console for details</small>';
-    }
-  }
-}
-
-// Function to handle map projection changes
-function toggleMapProjection() {
-  if (!window.map) return;
-  
-  const newProjection = appState.toggleMapProjection();
-  console.log(`Switching to ${newProjection} projection`);
-  
-  // Update the existing map's projection
-  try {
-    window.map.setProjection(newProjection);
-    
-    // Adjust zoom for 3D globe view if needed
-    if (newProjection === 'globe') {
-      // Globe view often looks better with slightly higher zoom
-      const currentZoom = window.map.getZoom();
-      if (currentZoom < 1.5) {
-        window.map.setZoom(1.5);
-      }
-    }
-    
-    // Show a brief success message
-    const btn = el('toggleMapView');
-    if (btn) {
-      const originalText = btn.innerHTML;
-      btn.innerHTML = newProjection === 'equirectangular' ? '✅ 2D' : '✅ 3D';
-      setTimeout(() => {
-        btn.innerHTML = originalText;
-      }, 1000);
-    }
-  } catch (err) {
-    console.error('Error changing projection:', err);
-    // If setting projection fails, recreate the map
-    console.log('Recreating map with new projection...');
-    window.map.remove();
-    window.map = null;
-    setTimeout(() => {
-      if (typeof renderAll === 'function') {
-        renderAll();
-      }
-    }, 100);
-  }
-}
-
-
-
-    function renderSdgStack(data){
-      const all = utils.unique(data.flatMap(d=>d._sdgs));
-      const by = Object.fromEntries(all.map(s=>[s,0]));
-      data.forEach(d=>d._sdgs.forEach(s=>by[s]=(by[s]||0)+1));
-      const sorted = Object.entries(by).sort(([a],[b])=>Number(a.split(' ')[1]) - Number(b.split(' ')[1]));
-      const labels = sorted.map(([k])=>k), parents = labels.map(()=>''), values = sorted.map(([,v])=>v);
-      const trace = { type:'treemap', labels, parents, values, marker:{colors: CONFIG.CHART_COLORS} };
-      Plotly.newPlot('sdgStack', [trace], {...commonLayout, margin:{t:10,l:10,r:10,b:10}}, {displayModeBar:false, responsive:true});
-    }
-
-    function renderScoreHist(data){
-      const scores = data.map(d=>d._score).filter(s=>s>0);
-      const trace = { type:'histogram', x:scores, nbinsx: 18, marker:{color:'#1BC7BE', line:{width:0}} };
-      const layout = { ...commonLayout, xaxis:{...commonLayout.xaxis, title:'Score'}, yaxis:{...commonLayout.yaxis, title:'Count'} };
-      Plotly.newPlot('scoreHist', [trace], layout, {displayModeBar:false, responsive:true});
-    }
-
-    function renderAll(){
-      const data = appState.getFilteredData();
-      console.log(`🎯 Rendering ${data.length} submissions (filtered from ${appState.rawData.length} total)`);
-      renderKPIs(data); renderMap(data); renderSdgStack(data); renderScoreHist(data);
-    }
-
-    /* ===================== FILTERS ===================== */
-    function fillSelect(id, values){ const s=el(id); if(!s) return; s.innerHTML = values.map(v=>`<option value="${v}">${v}</option>`).join(''); }
-    function clearSelect(id){ const s=el(id); if(!s) return; [...s.options].forEach(o=>o.selected=false); }
-    function updateFilterUI(resetCountries=true){
-      ['fRegion','fCountry','fOrg','fMaturity','fSDG'].forEach(id=>clearSelect(id));
-      if (resetCountries){
-        fillSelect('fRegion', utils.unique(appState.rawData.map(r=>r._region)));
-        fillSelect('fCountry', utils.unique(appState.rawData.map(r=>r._country)));
-      }
-    }
-    function setFilterFromSelect(id){
-      const s=el(id); const selected = new Set([...s.selectedOptions].map(o=>o.value));
-      const key = id.replace('f','').toLowerCase();
-      if (key==='region'){ appState.filters.region = selected; updateCountryFilter(selected); }
-      if (key==='country'){ appState.filters.country = selected; updateRegionFilter(selected); }
-      if (key==='org') appState.filters.org = selected;
-      if (key==='maturity') appState.filters.maturity = selected;
-      if (key==='sdg') appState.filters.sdg = selected;
-    }
-    function updateCountryFilter(selectedRegions){
-      if (!appState.countryRegionMapping) return;
-      if (selectedRegions.size===0){ fillSelect('fCountry', utils.unique(appState.rawData.map(r=>r._country))); return; }
-      const valid = new Set();
-      selectedRegions.forEach(region=>{
-        (appState.countryRegionMapping.region_to_countries[region]||[]).forEach(c=>{ if(appState.rawData.some(r=>r._country===c)) valid.add(c); });
-      });
-      fillSelect('fCountry', Array.from(valid).sort()); appState.filters.country.clear(); clearSelect('fCountry');
-    }
-    function updateRegionFilter(selectedCountries){
-      if (!appState.countryRegionMapping) return;
-      if (selectedCountries.size===0){ fillSelect('fRegion', utils.unique(appState.rawData.map(r=>r._region))); return; }
-      const valid = new Set();
-      selectedCountries.forEach(country=>{ const region = appState.countryRegionMapping.country_to_region[country]; if(region) valid.add(region); });
-      fillSelect('fRegion', Array.from(valid).sort()); appState.filters.region.clear(); clearSelect('fRegion');
-    }
-
-         // helper to programmatically select options
-     function selectOptions(selectId, values){ 
-       const s=el(selectId); 
-       if(!s) return; 
-       [...s.options].forEach(o=>o.selected = values.includes(o.value)); 
-       s.dispatchEvent(new Event('change')); 
-       
-       // Also manually update the app state to ensure filters are applied
-       const key = selectId.replace('f','').toLowerCase();
-       const selected = new Set(values);
-       
-       if (key==='region'){ 
-         appState.filters.region = selected; 
-         updateCountryFilter(selected); 
-       }
-       if (key==='country'){ 
-         appState.filters.country = selected; 
-         updateRegionFilter(selected); 
-       }
-       if (key==='org') appState.filters.org = selected;
-       if (key==='maturity') appState.filters.maturity = selected;
-       if (key==='sdg') appState.filters.sdg = selected;
-     }
-
-     /* ===================== SIMPLE KIOSK MODE ===================== */
-     function toggleKioskMode(){
-       appState.kiosk = !appState.kiosk;
-       const controls = el('controls');
-       
-       if (appState.kiosk){
-         controls.classList.remove('show');
-         el('toggleKiosk').textContent = 'Show Controls';
-         el('toggleKiosk').title = 'Show filter controls';
-       } else {
-         controls.classList.add('show');
-         el('toggleKiosk').textContent = 'Kiosk';
-         el('toggleKiosk').title = 'Hide filter controls';
-       }
-     }
-
-
-
-    /* ===================== INIT ===================== */
-         async function init(){
-       // Initialize theme manager
-       ThemeManager.init();
-       
-       // listeners
-       ['fRegion','fCountry','fOrg','fMaturity','fSDG'].forEach(id=>{
-         el(id)?.addEventListener('change', utils.debounce(()=>{ setFilterFromSelect(id); renderAll(); }, 250));
-       });
-               el('clear')?.addEventListener('click', ()=>{ appState.clearFilters(); renderAll(); });
-        el('toggleKiosk')?.addEventListener('click', toggleKioskMode);
-        el('toggleTheme')?.addEventListener('click', ()=>{ ThemeManager.toggle(); });
-        el('toggleMapView')?.addEventListener('click', toggleMapProjection);
-
-      // load mapping (optional)
-      try{ const m = await fetch('country_region_mapping.json'); if(m.ok) appState.countryRegionMapping = await m.json(); }catch{ /* noop */ }
-
-      // load data
-      const res = await fetch('data.json');
-      if (!res.ok) throw new Error('Failed to load data.json');
-      const raw = await res.json();
-      if (!Array.isArray(raw) || raw.length===0) throw new Error('Empty or invalid data');
-
-      appState.rawData = raw.map(DataProcessor.normalizeRow);
-      // populate selects
-      fillSelect('fRegion', utils.unique(appState.rawData.map(r=>r._region)));
-      fillSelect('fCountry', utils.unique(appState.rawData.map(r=>r._country)));
-      fillSelect('fOrg', utils.unique(appState.rawData.map(r=>r._org)));
-      const maturityValues = utils.unique(appState.rawData.map(r=>r._maturity)).sort((a,b)=>{
-        const ai = CONFIG.MATURITY_ORDER.indexOf(a), bi = CONFIG.MATURITY_ORDER.indexOf(b);
-        if (ai===-1 && bi===-1) return a.localeCompare(b);
-        if (ai===-1) return 1; if (bi===-1) return -1; return ai-bi;
-      });
-      fillSelect('fMaturity', maturityValues);
-      fillSelect('fSDG', utils.unique(appState.rawData.flatMap(r=>r._sdgs)));
-
-             // initial render
-       renderAll();
-       
-       // Update map projection button text
-       appState.updateMapProjectionButton();
-       
-       // Apply initial kiosk state (hide controls by default)
-       toggleKioskMode();
-    }
-
-    document.addEventListener('DOMContentLoaded', init);
-  </script>
-</body>
+  <script src="app.js"></script>
+  </body>
 </html>

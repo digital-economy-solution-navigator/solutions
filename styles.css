@@ -1,0 +1,314 @@
+/* ================= UNGA THEME (Dark & Light) ================= */
+:root {
+  /* Dark theme (default) */
+  --bg: #0B1324;            /* deep navy */
+  --panel: rgba(255,255,255,.06);
+  --panel-strong: rgba(255,255,255,.10);
+  --text: #EAF4FF;
+  --muted: #9FB3C8;
+  --brand: #00A3E0;         /* UN blue */
+  --accent: #45FFD3;        /* neon aqua */
+  --radius: 20px;
+  --shadow: 0 10px 30px rgba(0,0,0,.35);
+  --border: 1px solid rgba(255,255,255,.08);
+  --gap: 28px;
+  
+  /* Header colors for dark theme */
+  --header-start: #06142E;
+  --header-mid: #0B1E39;
+  --header-end: #103B5C;
+  --header-shadow: 0 8px 24px rgba(0,0,0,.35);
+  --controls-bg: rgba(255,255,255,.03);
+}
+
+/* Light theme */
+[data-theme="light"] {
+  --bg: #F8FAFC;            /* light gray */
+  --panel: rgba(0,0,0,.04);
+  --panel-strong: rgba(0,0,0,.08);
+  --text: #0F172A;
+  --muted: #64748B;
+  --brand: #00A3E0;         /* UN blue (same) */
+  --accent: #0891B2;        /* darker aqua for light mode */
+  --shadow: 0 10px 30px rgba(0,0,0,.1);
+  --border: 1px solid rgba(0,0,0,.08);
+  
+  /* Header colors for light theme - UN Blue */
+  --header-start: #00A3E0;
+  --header-mid: #0091CC;
+  --header-end: #007FB8;
+  --header-shadow: 0 8px 24px rgba(0,0,0,.1);
+  --controls-bg: rgba(0,0,0,.02);
+}
+
+/* Base styles */
+* {
+  box-sizing: border-box;
+}
+
+html, body {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font: 500 18px/1.6 -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Inter, system-ui, sans-serif;
+}
+
+/* Smooth theme transitions */
+* {
+  transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+/* Header */
+header {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  background: linear-gradient(135deg, var(--header-start), var(--header-mid) 55%, var(--header-end));
+  border-bottom: var(--border);
+  box-shadow: var(--header-shadow);
+}
+
+.header-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 22px clamp(16px, 4vw, 40px);
+}
+
+.branding {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.branding img {
+  height: 56px;
+  width: auto;
+  filter: drop-shadow(0 6px 12px rgba(0,0,0,.35));
+}
+
+h1 {
+  margin: 0;
+  font-size: clamp(22px, 3vw, 34px);
+  letter-spacing: .3px;
+  font-weight: 800;
+  color: white !important;
+}
+
+.subtitle {
+  opacity: .8;
+  font-size: clamp(12px, 1.4vw, 14px);
+  color: white !important;
+}
+
+/* Controls */
+.controls {
+  display: none; /* Hidden by default */
+  flex-wrap: wrap;
+  gap: 14px 18px;
+  align-items: end;
+  padding: 14px clamp(16px, 4vw, 40px) 22px;
+  background: linear-gradient(180deg, var(--controls-bg), transparent);
+  border-top: var(--border);
+}
+
+/* Show controls when not in kiosk mode */
+.controls.show {
+  display: flex;
+}
+
+.controls label {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 200px;
+  color: var(--text);
+}
+
+.controls select {
+  padding: 10px 12px;
+  border-radius: 12px;
+  border: var(--border);
+  background: var(--panel);
+  color: var(--text);
+}
+
+.btn {
+  padding: 10px 14px;
+  border: none;
+  border-radius: 14px;
+  cursor: pointer;
+  background: var(--brand);
+  color: #00131B;
+  font-weight: 700;
+}
+
+.btn.secondary {
+  background: #6B7E93;
+  color: var(--text);
+}
+
+/* Theme toggle button styling */
+#toggleTheme {
+  font-size: 18px;
+  padding: 10px 12px;
+  transition: all 0.3s ease;
+}
+
+#toggleTheme:hover {
+  transform: scale(1.1);
+  background: var(--accent) !important;
+}
+
+/* KPI hero */
+.kpis {
+  display: grid;
+  gap: var(--gap);
+  grid-template-columns: repeat(4, minmax(220px, 1fr));
+  padding: clamp(16px, 4vw, 40px);
+  margin: 0 auto;
+  max-width: 1600px;
+}
+
+.kpi {
+  background: var(--panel);
+  border: none;
+  border-radius: var(--radius);
+  padding: 24px;
+  box-shadow: var(--shadow);
+  backdrop-filter: blur(10px);
+}
+
+.kpi .label {
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: .6px;
+  font-size: 14px;
+}
+
+.kpi .value {
+  font-size: clamp(44px, 6vw, 72px);
+  font-weight: 900;
+  letter-spacing: .5px;
+  margin-top: 6px;
+}
+
+.kpi .hint {
+  color: var(--muted);
+  font-size: 14px;
+  margin-top: 6px;
+}
+
+/* Grid */
+.grid {
+  display: grid;
+  gap: var(--gap);
+  grid-template-columns: repeat(12, 1fr);
+  padding: 0 clamp(16px, 4vw, 40px) clamp(24px, 6vw, 48px);
+  max-width: 1800px;
+  margin: 0 auto;
+}
+
+.card {
+  grid-column: span 6;
+  background: var(--panel);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  border: none;
+  overflow: hidden;
+}
+
+.card .head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 18px 22px;
+  border-bottom: var(--border);
+  background: linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.02));
+}
+
+.card .head .title {
+  font-weight: 800;
+  letter-spacing: .2px;
+}
+
+.card .body {
+  padding: 16px 18px;
+}
+
+.card.full {
+  grid-column: 1 / -1;
+}
+
+.legend-badge {
+  display: inline-block;
+  padding: 6px 10px;
+  border-radius: 999px;
+  background: var(--panel-strong);
+  font-size: 13px;
+  color: var(--muted);
+}
+
+/* Map toggle button styling */
+#toggleMapView {
+  font-size: 13px;
+  padding: 6px 12px;
+  border-radius: 8px;
+  transition: all 0.2s ease;
+  min-width: 60px;
+  font-weight: 600;
+}
+
+#toggleMapView:hover {
+  transform: scale(1.05);
+  background: var(--accent) !important;
+  color: var(--bg) !important;
+  box-shadow: 0 4px 12px rgba(69, 255, 211, 0.3);
+}
+
+#toggleMapView:active {
+  transform: scale(0.98);
+}
+
+#toggleMapView.active {
+  background: var(--accent) !important;
+  color: var(--bg) !important;
+  box-shadow: 0 2px 8px rgba(69, 255, 211, 0.4);
+}
+
+/* Footer note */
+footer {
+  padding: 22px clamp(16px, 4vw, 40px);
+  color: var(--muted);
+  font-size: 14px;
+  text-align: center;
+  opacity: .8;
+}
+
+/* Map container styling - minimal */
+#map {
+  width: 100%;
+  height: 540px;
+}
+
+/* Responsive */
+@media (max-width: 1024px) {
+  .kpis {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .card {
+    grid-column: 1 / -1;
+  }
+}
+
+@media (max-width: 640px) {
+  .kpi .value {
+    font-size: 40px;
+  }
+}
