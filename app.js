@@ -206,21 +206,25 @@ const DataProcessor = {
   
   kpis(data) {
     const countries = utils.unique(data.map(d => d._country));
-    const scores = data.map(d => d._score).filter(s => s > 0);
-    const avg = scores.length ? (scores.reduce((a, b) => a + b, 0) / scores.length) : 0;
-    const median = scores.length ? (s => {
-      const t = [...s].sort((a, b) => a - b);
-      const m = Math.floor(t.length / 2);
-      return t.length % 2 ? t[m] : (t[m - 1] + t[m]) / 2;
-    })(scores) : 0;
-    const top = Math.max(...scores, 0);
+    
+    // Calculate implemented solutions (at scale, MVP, pilot stage)
+    const implemented = data.filter(d => 
+      d._maturity === 'Implemented at scale' || 
+      d._maturity === 'MVP' || 
+      d._maturity === 'Pilot Stage'
+    ).length;
+    
+    // Calculate emerging solutions (ideas, proof of concept)
+    const emerging = data.filter(d => 
+      d._maturity === 'Idea/Concept' || 
+      d._maturity === 'Proof of Concept'
+    ).length;
     
     return { 
       submissions: data.length, 
       countries: countries.length, 
-      avg, 
-      median, 
-      top 
+      implemented,
+      emerging
     };
   }
 };
@@ -445,27 +449,27 @@ const appState = new AppState();
 // ============================================================================
 
 function renderKPIs(data) {
-  const { submissions, countries, avg, median, top } = DataProcessor.kpis(data);
+  const { submissions, countries, implemented, emerging } = DataProcessor.kpis(data);
   el('kpis').innerHTML = `
-    <div class="kpi">
-      <div class="label">Total Submissions</div>
-      <div class="value">${utils.formatNumber(submissions, 0)}</div>
-      <div class="hint">entries</div>
-    </div>
     <div class="kpi">
       <div class="label">Countries Represented</div>
       <div class="value">${utils.formatNumber(countries, 0)}</div>
       <div class="hint">unique countries</div>
     </div>
     <div class="kpi">
-      <div class="label">Average Score</div>
-      <div class="value">${utils.formatNumber(avg)}</div>
-      <div class="hint">mean</div>
+      <div class="label">Total Submissions</div>
+      <div class="value">${utils.formatNumber(submissions, 0)}</div>
+      <div class="hint">entries</div>
     </div>
     <div class="kpi">
-      <div class="label">Top Score</div>
-      <div class="value">${utils.formatNumber(top)}</div>
-      <div class="hint">max</div>
+      <div class="label">Implemented Solutions</div>
+      <div class="value">${utils.formatNumber(implemented, 0)}</div>
+      <div class="hint">at scale, MVP & pilot</div>
+    </div>
+    <div class="kpi">
+      <div class="label">Emerging Solutions</div>
+      <div class="value">${utils.formatNumber(emerging, 0)}</div>
+      <div class="hint">ideas & concepts</div>
     </div>
   `;
 }
