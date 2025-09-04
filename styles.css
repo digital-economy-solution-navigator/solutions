@@ -441,9 +441,14 @@ footer {
   color: white;
   padding: 4px 8px;
   border-radius: 12px;
-  font-size: 12px;
+  font-size: 14px;
   font-weight: 500;
   white-space: nowrap;
+  min-width: 80px;
+  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .submission-details {

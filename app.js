@@ -40,6 +40,44 @@ const utils = {
   }
 };
 
+// Elegant score display function
+function getScoreDisplay(score) {
+  const num = utils.safeNumber(score);
+  
+  // Option 1: Star rating system (1-5 stars)
+  if (num >= 90) return '⭐⭐⭐⭐⭐';
+  if (num >= 80) return '⭐⭐⭐⭐☆';
+  if (num >= 70) return '⭐⭐⭐☆☆';
+  if (num >= 50) return '⭐⭐☆☆☆';
+  if (num > 0) return '⭐☆☆☆☆';
+  return '☆☆☆☆☆';
+  
+  // Alternative options (uncomment one of these instead):
+  
+  // Option 2: Simple numeric with emoji
+  // return `${utils.formatNumber(num)} ⭐`;
+  
+  // Option 3: Grade system
+  // if (num >= 90) return 'A+';
+  // if (num >= 80) return 'A';
+  // if (num >= 70) return 'B+';
+  // if (num >= 60) return 'B';
+  // if (num >= 50) return 'C+';
+  // if (num >= 40) return 'C';
+  // if (num >= 30) return 'D';
+  // return 'F';
+  
+  // Option 4: Performance level
+  // if (num >= 80) return '🏆 Excellent';
+  // if (num >= 60) return '🥈 Good';
+  // if (num >= 40) return '🥉 Fair';
+  // if (num >= 20) return '📈 Developing';
+  // return '🌱 Early';
+  
+  // Option 5: Just the number with a subtle indicator
+  // return `${utils.formatNumber(num)}`;
+}
+
 const el = id => document.getElementById(id);
 
 // ============================================================================
@@ -276,22 +314,22 @@ class AppState {
     modal.innerHTML = `
       <div class="modal-content">
         <div class="modal-header">
-          <h3>🏳️ ${countryName}</h3>
-          <div class="modal-stats">
+          <h3>${countryName}: ${submissions.length} submission${submissions.length !== 1 ? 's' : ''}</h3>
+          <!-- <div class="modal-stats">
             <span class="stat">${submissions.length} submission${submissions.length !== 1 ? 's' : ''}</span>
             <span class="stat">Avg Score: ${utils.formatNumber(submissions.reduce((sum, s) => sum + s._score, 0) / submissions.length)}</span>
-          </div>
+          </div> -->
           <button class="modal-close" onclick="appState.hideSubmissionsModal()">×</button>
         </div>
         <div class="modal-body">
-          <div class="modal-actions">
+          <!-- <div class="modal-actions">
             <button class="btn primary" onclick="appState.filterByCountry('${countryName}')">
               🔍 Filter by ${countryName}
             </button>
             <button class="btn secondary" onclick="appState.clearCountrySelection()">
               🗑️ Clear Selection
             </button>
-          </div>
+          </div> -->
           <div class="submissions-list">
             ${submissions.map((submission, index) => `
               <div class="submission-card">
@@ -299,7 +337,9 @@ class AppState {
                   <div class="submission-title">
                     ${submission['Title'] || 'Untitled Solution'}
                   </div>
-                  <div class="submission-score">Score: ${utils.formatNumber(submission._score)}</div>
+                  <div class="submission-score" title="Solution Score: ${utils.formatNumber(submission._score)}">
+                    ${getScoreDisplay(submission._score)}
+                  </div>
                 </div>
                 <div class="submission-details">
                   <div class="detail-row">
