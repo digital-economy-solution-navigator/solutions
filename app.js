@@ -204,6 +204,8 @@ class AppState {
     this.countryRegionMapping = null;
     this.kiosk = true; // default kiosk ON - controls hidden initially
     this.mapProjection = localStorage.getItem('unga-map-projection') || 'equirectangular';
+    this.selectedCountry = null; // Track currently selected country
+    this.submissionsModal = null; // Reference to submissions modal
   }
   
   getFilteredData() {
@@ -241,6 +243,158 @@ class AppState {
       btn.title = this.mapProjection === 'equirectangular' ? 'Switch to 3D Globe view' : 'Switch to 2D Flat view';
       btn.classList.toggle('active', this.mapProjection === 'globe');
     }
+  }
+  
+  selectCountry(countryName) {
+    this.selectedCountry = countryName;
+    this.showCountrySubmissions(countryName);
+  }
+  
+  clearCountrySelection() {
+    this.selectedCountry = null;
+    this.hideSubmissionsModal();
+  }
+  
+  getCountrySubmissions(countryName) {
+    return this.rawData.filter(r => r._country === countryName);
+  }
+  
+  showCountrySubmissions(countryName) {
+    const submissions = this.getCountrySubmissions(countryName);
+    if (submissions.length === 0) return;
+    
+    this.createSubmissionsModal(countryName, submissions);
+  }
+  
+  createSubmissionsModal(countryName, submissions) {
+    // Remove existing modal if any
+    this.hideSubmissionsModal();
+    
+    const modal = document.createElement('div');
+    modal.id = 'submissions-modal';
+    modal.className = 'submissions-modal';
+    modal.innerHTML = `
+      <div class="modal-content">
+        <div class="modal-header">
+          <h3>🏳️ ${countryName}</h3>
+          <div class="modal-stats">
+            <span class="stat">${submissions.length} submission${submissions.length !== 1 ? 's' : ''}</span>
+            <span class="stat">Avg Score: ${utils.formatNumber(submissions.reduce((sum, s) => sum + s._score, 0) / submissions.length)}</span>
+          </div>
+          <button class="modal-close" onclick="appState.hideSubmissionsModal()">×</button>
+        </div>
+        <div class="modal-body">
+          <div class="modal-actions">
+            <button class="btn primary" onclick="appState.filterByCountry('${countryName}')">
+              🔍 Filter by ${countryName}
+            </button>
+            <button class="btn secondary" onclick="appState.clearCountrySelection()">
+              🗑️ Clear Selection
+            </button>
+          </div>
+          <div class="submissions-list">
+            ${submissions.map((submission, index) => `
+              <div class="submission-card">
+                <div class="submission-header">
+                  <div class="submission-title">
+                    ${submission['Title'] || 'Untitled Solution'}
+                  </div>
+                  <div class="submission-score">Score: ${utils.formatNumber(submission._score)}</div>
+                </div>
+                <div class="submission-details">
+                  <div class="detail-row">
+                    <span class="label">🏢 Organization:</span>
+                    <span class="value">${submission._org}</span>
+                  </div>
+                  <div class="detail-row">
+                    <span class="label">📈 Maturity:</span>
+                    <span class="value">${submission._maturity}</span>
+                  </div>
+                  <div class="detail-row">
+                    <span class="label">🎯 SDGs:</span>
+                    <span class="value">${submission._sdgs.join(', ')}</span>
+                  </div>
+                  ${submission._theme ? `
+                    <div class="detail-row">
+                      <span class="label">🎨 Theme:</span>
+                      <span class="value">${submission._theme}</span>
+                    </div>
+                  ` : ''}
+                </div>
+              </div>
+            `).join('')}
+          </div>
+        </div>
+      </div>
+    `;
+    
+    document.body.appendChild(modal);
+    this.submissionsModal = modal;
+    
+    // Add click outside to close
+    modal.addEventListener('click', (e) => {
+      if (e.target === modal) {
+        this.hideSubmissionsModal();
+      }
+    });
+  }
+  
+  hideSubmissionsModal() {
+    if (this.submissionsModal) {
+      this.submissionsModal.remove();
+      this.submissionsModal = null;
+    }
+  }
+  
+  filterByCountry(countryName) {
+    // Clear other filters and set country filter
+    this.clearFilters();
+    this.filters.country.add(countryName);
+    
+    // Update UI
+    const countrySelect = el('fCountry');
+    if (countrySelect) {
+      const option = Array.from(countrySelect.options).find(opt => opt.value === countryName);
+      if (option) option.selected = true;
+    }
+    
+    // Re-render everything
+    renderAll();
+    
+    // Close modal
+    this.hideSubmissionsModal();
+    
+    // Show a brief success message
+    this.showNotification(`Filtered to show submissions from ${countryName}`);
+  }
+  
+  showNotification(message) {
+    const notification = document.createElement('div');
+    notification.className = 'notification';
+    notification.textContent = message;
+    notification.style.cssText = `
+      position: fixed; top: 20px; right: 20px; z-index: 10000;
+      background: var(--brand); color: white; padding: 12px 20px;
+      border-radius: 6px; font-size: 14px; box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+      transform: translateX(100%); transition: transform 0.3s ease;
+    `;
+    
+    document.body.appendChild(notification);
+    
+    // Animate in
+    setTimeout(() => {
+      notification.style.transform = 'translateX(0)';
+    }, 100);
+    
+    // Remove after 3 seconds
+    setTimeout(() => {
+      notification.style.transform = 'translateX(100%)';
+      setTimeout(() => {
+        if (notification.parentNode) {
+          notification.parentNode.removeChild(notification);
+        }
+      }, 300);
+    }, 3000);
   }
 }
 
@@ -554,7 +708,25 @@ function renderMap(data) {
           }
         });
 
-        // Add click handlers
+        // Add click handlers for country boundaries
+        window.map.on('click', 'submissions-fill', (e) => {
+          const features = window.map.queryRenderedFeatures(e.point, { layers: ['submissions-fill'] });
+          if (features.length > 0) {
+            const feature = features[0];
+            const iso3 = feature.properties.iso_3166_1_alpha_3;
+            
+            // Find country name from ISO3 code
+            const countryName = Object.keys(window.COUNTRY_TO_ISO3 || {}).find(
+              country => window.COUNTRY_TO_ISO3[country] === iso3
+            );
+            
+            if (countryName) {
+              appState.selectCountry(countryName);
+            }
+          }
+        });
+
+        // Add click handlers for clusters
         window.map.on('click', 'clusters', (e) => {
           const features = window.map.queryRenderedFeatures(e.point, { layers: ['clusters'] });
           const clusterId = features[0].properties.cluster_id;
@@ -567,7 +739,17 @@ function renderMap(data) {
           });
         });
 
+        // Add click handlers for individual submission points
         window.map.on('click', 'unclustered-point', (e) => {
+          // Prevent all default behaviors
+          e.preventDefault();
+          e.stopPropagation();
+          e.stopImmediatePropagation();
+          
+          // Temporarily disable zoom to prevent unwanted zoom behavior
+          window.map.scrollZoom.disable();
+          window.map.doubleClickZoom.disable();
+          
           const coordinates = e.features[0].geometry.coordinates.slice();
           const props = e.features[0].properties;
           
@@ -578,11 +760,29 @@ function renderMap(data) {
               <div style="color:var(--muted)">Organization: ${props.org}</div>
               <div style="color:var(--muted)">Maturity: ${props.maturity}</div>
               <div style="color:var(--muted)">Score: ${props.score}</div>
+              <div style="margin-top:8px; padding-top:8px; border-top:1px solid var(--border);">
+                <button onclick="appState.selectCountry('${props.country}')" 
+                        style="background:var(--brand); color:white; border:none; padding:4px 8px; border-radius:4px; font-size:12px; cursor:pointer;">
+                  View All Submissions
+                </button>
+              </div>
             `)
             .addTo(window.map);
+          
+          // Re-enable zoom after a short delay
+          setTimeout(() => {
+            window.map.scrollZoom.enable();
+            window.map.doubleClickZoom.enable();
+          }, 100);
         });
 
         // Change cursor on hover
+        window.map.on('mouseenter', 'submissions-fill', () => {
+          window.map.getCanvas().style.cursor = 'pointer';
+        });
+        window.map.on('mouseleave', 'submissions-fill', () => {
+          window.map.getCanvas().style.cursor = '';
+        });
         window.map.on('mouseenter', 'clusters', () => {
           window.map.getCanvas().style.cursor = 'pointer';
         });
@@ -612,9 +812,23 @@ function renderMap(data) {
         style: mapStyle,
         center: [0, 20],
         zoom: 1,
-        projection: appState.mapProjection
+        minZoom: 1,              // Minimum zoom level
+        maxZoom: 2,              // Maximum zoom level
+        projection: appState.mapProjection,
+        doubleClickZoom: true,   // Enable double-click zoom
+        scrollZoom: true,        // Enable scroll zoom
+        boxZoom: false,          // Disable box zoom
+        dragRotate: false,       // Disable drag rotate
+        dragPan: true,           // Keep drag pan enabled
+        keyboard: true,          // Enable keyboard zoom
+        touchZoomRotate: true    // Enable touch zoom
       });
-      window.map.addControl(new mapboxgl.NavigationControl(), 'top-right');
+      
+      // Add navigation control with zoom buttons
+      window.map.addControl(new mapboxgl.NavigationControl({
+        showZoom: true,     // Show zoom buttons
+        showCompass: false  // Hide compass
+      }), 'top-right');
 
       window.map.on('error', (e) => {
         console.error('Mapbox error:', e);
