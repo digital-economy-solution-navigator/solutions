@@ -508,13 +508,65 @@ function renderScoreHist(data) {
   Plotly.newPlot('scoreHist', [trace], layout, { displayModeBar: false, responsive: true });
 }
 
+function renderOrgPie(data) {
+  // Count organization types
+  const orgCounts = {};
+  data.forEach(d => {
+    const org = d._org || 'Unknown';
+    orgCounts[org] = (orgCounts[org] || 0) + 1;
+  });
+  
+  // Convert to arrays for Plotly
+  const labels = Object.keys(orgCounts);
+  const values = Object.values(orgCounts);
+  
+  // Calculate percentages for hover text
+  const total = values.reduce((sum, val) => sum + val, 0);
+  const percentages = values.map(val => ((val / total) * 100).toFixed(1));
+  
+  const trace = {
+    type: 'pie',
+    labels: labels,
+    values: values,
+    textinfo: 'label+percent',
+    textposition: 'outside',
+    textfont: {
+      size: 14,
+      color: 'var(--text)',
+      family: 'inherit'
+    },
+    hovertemplate: '<b>%{label}</b><br>Count: %{value}<br>Percentage: %{percent}<extra></extra>',
+    marker: {
+      colors: CONFIG.CHART_COLORS,
+      line: {
+        color: 'var(--bg)',
+        width: 2
+      }
+    }
+  };
+  
+  const layout = {
+    ...commonLayout,
+    margin: { t: 20, r: 20, b: 20, l: 20 },
+    showlegend: false,
+    font: {
+      size: 14,
+      color: 'var(--text)',
+      family: 'inherit'
+    }
+  };
+  
+  Plotly.newPlot('orgPie', [trace], layout, { displayModeBar: false, responsive: true });
+}
+
 function renderAll() {
   const data = appState.getFilteredData();
   console.log(`🎯 Rendering ${data.length} submissions (filtered from ${appState.rawData.length} total)`);
   renderKPIs(data);
   renderMap(data);
   renderSdgStack(data);
-  renderScoreHist(data);
+  renderOrgPie(data);
+  renderScoreHist(data); // Keep for future use
 }
 
 // ============================================================================
