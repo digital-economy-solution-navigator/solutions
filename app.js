@@ -1149,7 +1149,14 @@ async function init() {
     return ai - bi;
   });
   fillSelect('fMaturity', maturityValues);
-  fillSelect('fSDG', utils.unique(appState.rawData.flatMap(r => r._sdgs)));
+  
+  // Sort SDGs numerically (SDG 1, SDG 2, ..., SDG 17)
+  const sdgValues = utils.unique(appState.rawData.flatMap(r => r._sdgs)).sort((a, b) => {
+    const aNum = parseInt(a.replace(/SDG\s*(\d+)/i, '$1'));
+    const bNum = parseInt(b.replace(/SDG\s*(\d+)/i, '$1'));
+    return aNum - bNum;
+  });
+  fillSelect('fSDG', sdgValues);
 
   // Initial render
   renderAll();
