@@ -893,7 +893,69 @@ const getCountryCoordinates = (countryName) => {
     'Bolivia': [-63.5887, -16.2902],
     'Guyana': [-58.9302, 4.8604],
     'Suriname': [-56.0278, 3.9193],
-    'French Guiana': [-53.1258, 3.9339]
+    'French Guiana': [-53.1258, 3.9339],
+    'Algeria': [1.6596, 28.0339],
+    'Libya': [17.2283, 26.3351],
+    'Democratic Republic of the Congo': [21.7587, -4.0383],
+    'Uganda': [32.2903, 1.3733],
+    'Cameroon': [12.3547, 7.3697],
+    'Senegal': [-14.4524, 14.4974],
+    'Guinea': [-9.6966, 9.6412],
+    'Mali': [-3.9962, 17.5707],
+    'South Africa': [22.9375, -30.5595],
+    'Zambia': [27.8493, -13.1339],
+    'Ethiopia': [40.4897, 9.1450],
+    'Togo': [0.8248, 8.6195],
+    'Tunisia': [9.5375, 33.8869],
+    'Ghana': [-1.0232, 7.9465],
+    'Rwanda': [29.8739, -1.9403],
+    'Tanzania': [34.8888, -6.3690],
+    'Chad': [18.7322, 15.4542],
+    'Niger': [8.0817, 16.0000],
+    'Burkina Faso': [-2.1976, 12.2383],
+    'Sierra Leone': [-11.7799, 8.4606],
+    'Benin': [2.3158, 9.3077],
+    'Côte d\'Ivoire': [-5.5471, 7.5400],
+    'Bangladesh': [90.3563, 23.6850],
+    'Afghanistan': [67.7099, 33.9391],
+    'Armenia': [45.0382, 40.0691],
+    'Bhutan': [90.4336, 27.5142],
+    'Bosnia and Herzegovina': [17.6791, 43.9159],
+    'Botswana': [22.3394, -22.3285],
+    'Burundi': [29.8739, -3.3731],
+    'Cabo Verde': [-24.0132, 16.5388],
+    'Cambodia': [104.9910, 12.5657],
+    'Cuba': [-77.7812, 21.5218],
+    'Djibouti': [42.5903, 11.8251],
+    'Dominican Republic': [-70.1627, 18.7357],
+    'Gabon': [11.6094, -0.8037],
+    'Hong Kong SAR, China': [114.1694, 22.3193],
+    'Iran': [53.6880, 32.4279],
+    'Iraq': [43.6793, 33.2232],
+    'Jordan': [36.2384, 30.5852],
+    'Kyrgyzstan': [74.7661, 41.2044],
+    'Lebanon': [35.8623, 33.8547],
+    'Liberia': [-9.4295, 6.4281],
+    'Madagascar': [46.8691, -18.7669],
+    'Malawi': [34.3015, -13.2543],
+    'Mozambique': [35.5296, -18.6657],
+    'Namibia': [18.4904, -22.9576],
+    'Somalia': [46.1996, 5.1521],
+    'South Sudan': [31.3070, 6.8770],
+    'Uzbekistan': [64.5853, 41.3775],
+    'Yemen': [48.5164, 15.5527],
+    'Zimbabwe': [29.1549, -19.0154],
+    'Pakistan': [69.3451, 30.3753],
+    'Sri Lanka': [80.7718, 7.8731],
+    'Mauritania': [-10.9408, 21.0079],
+    'Moldova': [28.3699, 47.4116],
+    'Mongolia': [103.8467, 46.8625],
+    'Morocco': [-7.0926, 31.6295],
+    'Oman': [55.9233, 21.4735],
+    'Republic of Korea': [127.7669, 35.9078],
+    'Republic of Palau': [134.5825, 7.5150],
+    'Saint Kitts and Nevis': [-62.7829, 17.3578],
+    'Slovenia': [14.9955, 46.1512]
   };
   return countryCoords[countryName] || [0, 0];
 };
@@ -1012,8 +1074,8 @@ function renderMap(data) {
           type: 'geojson',
           data: geoJsonData,
           cluster: true,
-          clusterMaxZoom: 14,
-          clusterRadius: 50
+          clusterMaxZoom: 4,
+          clusterRadius: 20
         });
 
         // Add cluster circles
@@ -1172,7 +1234,7 @@ function renderMap(data) {
         center: [0, 20],
         zoom: 1,
         minZoom: 1,              // Minimum zoom level
-        maxZoom: 2,              // Maximum zoom level
+        maxZoom: 4,              // Maximum zoom level
         projection: appState.mapProjection,
         doubleClickZoom: true,   // Enable double-click zoom
         scrollZoom: true,        // Enable scroll zoom
