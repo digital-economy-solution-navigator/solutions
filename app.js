@@ -570,6 +570,163 @@ function renderAll() {
 }
 
 // ============================================================================
+// FULLSCREEN CONTROL
+// ============================================================================
+
+class FullscreenControl {
+  constructor() {
+    this._isFullscreen = false;
+    this._originalStyle = null;
+    this._originalParent = null;
+    this._originalPosition = null;
+    this._originalZIndex = null;
+  }
+
+  onAdd(map) {
+    this._map = map;
+    this._container = document.createElement('div');
+    this._container.className = 'mapboxgl-ctrl mapboxgl-ctrl-group';
+    this._container.style.cssText = `
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      margin: 10px;
+    `;
+
+    this._button = document.createElement('button');
+    this._button.className = 'mapboxgl-ctrl-icon fullscreen-control';
+    this._button.type = 'button';
+    this._button.title = 'Toggle fullscreen view';
+    this._button.innerHTML = '⛶'; // Fullscreen icon
+    this._button.style.cssText = `
+      width: 30px;
+      height: 30px;
+      background: rgba(0, 0, 0, 0.5);
+      border: none;
+      border-radius: 4px;
+      color: white;
+      font-size: 16px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s ease;
+    `;
+
+    this._button.addEventListener('click', () => {
+      this._toggleFullscreen();
+    });
+
+    this._container.appendChild(this._button);
+
+    // Listen for fullscreen changes
+    document.addEventListener('fullscreenchange', () => {
+      this._updateButton();
+    });
+
+    return this._container;
+  }
+
+  onRemove() {
+    if (this._container && this._container.parentNode) {
+      this._container.parentNode.removeChild(this._container);
+    }
+  }
+
+  _toggleFullscreen() {
+    if (!this._isFullscreen) {
+      this._enterFullscreen();
+    } else {
+      this._exitFullscreen();
+    }
+  }
+
+  _enterFullscreen() {
+    const mapContainer = this._map.getContainer();
+    
+    // Store original styles
+    this._originalStyle = mapContainer.style.cssText;
+    this._originalParent = mapContainer.parentNode;
+    this._originalPosition = mapContainer.style.position;
+    this._originalZIndex = mapContainer.style.zIndex;
+
+    // Create fullscreen container
+    const fullscreenContainer = document.createElement('div');
+    fullscreenContainer.id = 'map-fullscreen-container';
+    fullscreenContainer.style.cssText = `
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: var(--bg);
+      z-index: 9999;
+      display: flex;
+      flex-direction: column;
+    `;
+
+    // Move map to fullscreen container
+    fullscreenContainer.appendChild(mapContainer);
+
+    // Update map container styles
+    mapContainer.style.cssText = `
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 1;
+    `;
+
+    // Add to document
+    document.body.appendChild(fullscreenContainer);
+
+    // Resize map
+    setTimeout(() => {
+      this._map.resize();
+    }, 100);
+
+    this._isFullscreen = true;
+    this._updateButton();
+
+    // Prevent body scroll
+    document.body.style.overflow = 'hidden';
+  }
+
+  _exitFullscreen() {
+    const fullscreenContainer = document.getElementById('map-fullscreen-container');
+    if (fullscreenContainer) {
+      const mapContainer = this._map.getContainer();
+      
+      // Restore original parent and styles
+      this._originalParent.appendChild(mapContainer);
+      mapContainer.style.cssText = this._originalStyle;
+
+      // Remove fullscreen container
+      fullscreenContainer.remove();
+
+      // Resize map
+      setTimeout(() => {
+        this._map.resize();
+      }, 100);
+
+      this._isFullscreen = false;
+      this._updateButton();
+
+      // Restore body scroll
+      document.body.style.overflow = '';
+    }
+  }
+
+  _updateButton() {
+    if (this._button) {
+      this._button.innerHTML = this._isFullscreen ? '⛶' : '⛶';
+      this._button.title = this._isFullscreen ? 'Exit fullscreen view' : 'Enter fullscreen view';
+    }
+  }
+}
+
+// ============================================================================
 // MAP FUNCTIONALITY
 // ============================================================================
 
@@ -925,6 +1082,9 @@ function renderMap(data) {
         showZoom: true,     // Show zoom buttons
         showCompass: false  // Hide compass
       }), 'top-right');
+
+      // Add custom fullscreen control
+      window.map.addControl(new FullscreenControl(), 'top-right');
 
       window.map.on('error', (e) => {
         console.error('Mapbox error:', e);
