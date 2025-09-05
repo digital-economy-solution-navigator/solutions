@@ -22,13 +22,16 @@
         <img src="logo.png" alt="Logo" />
         <div>
           <h1>Global Call for Solutions — Analytics</h1>
-          <div class="subtitle">UNGA Showcase · New York · Sep 2025</div>
+          <div class="subtitle">UNGA Showcase · New York · Sep 2025 (PROTOTYPE)</div>
         </div>
       </div>
       
       <div class="actions">
         <button id="toggleTheme" class="btn secondary" title="Toggle Theme" style="margin-right: 10px;">
           🌙
+        </button>
+        <button id="showExplanation" class="btn secondary" title="How are submissions rated?" style="margin-right: 10px;">
+          👁️
         </button>
         <button id="toggleKiosk" class="btn secondary" title="Show filter controls">
           Show Controls
@@ -125,6 +128,114 @@
         https://account.mapbox.com/
       </a>
     </p>
+  </div>
+
+  <!-- Explanation Modal -->
+  <div id="explanationModal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>📊 How Submissions Are Rated</h2>
+        <button id="closeExplanation" class="close-btn">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div class="rating-explanation">
+          <h3>⭐ Star Rating System</h3>
+          <p>Each submission receives a star rating from 1 to 5 stars based on a comprehensive evaluation framework. Here's how the rating system works:</p>
+          
+          <div class="rating-scale">
+            <div class="rating-item">
+              <span class="stars">⭐⭐⭐⭐⭐</span>
+              <span class="score-range">90-100 points</span>
+              <span class="description">Exceptional submissions that demonstrate outstanding innovation, impact, and feasibility</span>
+            </div>
+            <div class="rating-item">
+              <span class="stars">⭐⭐⭐⭐☆</span>
+              <span class="score-range">80-89 points</span>
+              <span class="description">Excellent submissions with strong potential and clear implementation pathways</span>
+            </div>
+            <div class="rating-item">
+              <span class="stars">⭐⭐⭐☆☆</span>
+              <span class="score-range">70-79 points</span>
+              <span class="description">Good submissions with solid foundations and promising approaches</span>
+            </div>
+            <div class="rating-item">
+              <span class="stars">⭐⭐☆☆☆</span>
+              <span class="score-range">50-69 points</span>
+              <span class="description">Adequate submissions with room for improvement in key areas</span>
+            </div>
+            <div class="rating-item">
+              <span class="stars">⭐☆☆☆☆</span>
+              <span class="score-range">1-49 points</span>
+              <span class="description">Basic submissions that require significant development</span>
+            </div>
+            <div class="rating-item">
+              <span class="stars">☆☆☆☆☆</span>
+              <span class="score-range">0 points</span>
+              <span class="description">Incomplete or non-compliant submissions</span>
+            </div>
+          </div>
+
+          <h3>🎯 Evaluation Criteria</h3>
+          <p>The rating system evaluates submissions across six key dimensions with specific point allocations:</p>
+          
+          <div class="criteria-grid">
+            <div class="criteria-item">
+              <h4>🎯 Relevance & Problem Alignment (25 pts)</h4>
+              <p><strong>Definition:</strong> How well the solution addresses a clearly identified and significant problem aligned with global challenges.</p>
+              <p><strong>Evaluation Areas:</strong> Problem clarity (Q10–Q12), solution overview (Q13), thematic alignment (Q15).</p>
+            </div>
+            <div class="criteria-item">
+              <h4>💡 Innovation & Differentiation (15 pts)</h4>
+              <p><strong>Definition:</strong> The degree of novelty, creativity, and differentiation from existing solutions.</p>
+              <p><strong>Evaluation Areas:</strong> Unique features (Q24), emerging tech (Q23), innovative delivery models (Q13).</p>
+            </div>
+            <div class="criteria-item">
+              <h4>🌍 Impact & Sustainability (25 pts)</h4>
+              <p><strong>Definition:</strong> The expected scale and depth of positive change, with potential for long-term, systemic, and self-sustaining results.</p>
+              <p><strong>Evaluation Areas:</strong> Expected impact (Q22), SDG contribution (Q21), sustainability model (Q25).</p>
+            </div>
+            <div class="criteria-item">
+              <h4>⚡ Feasibility & Scalability (15 pts)</h4>
+              <p><strong>Definition:</strong> The practicality of implementation given resources, context, and readiness, and the ability to expand into new geographies.</p>
+              <p><strong>Evaluation Areas:</strong> Maturity stage (Q17), adaptability (Q16), track record (Q18–Q19), pilot timeline (Q20).</p>
+            </div>
+            <div class="criteria-item">
+              <h4>🤝 Partnerships & Support (10 pts)</h4>
+              <p><strong>Definition:</strong> The strength of organizational capacity, networks, and stakeholder engagement.</p>
+              <p><strong>Evaluation Areas:</strong> Provider credibility (Q14), endorsements/testimonials (Q28).</p>
+            </div>
+            <div class="criteria-item">
+              <h4>💰 Resource Strategy (10 pts)</h4>
+              <p><strong>Definition:</strong> The availability and diversity of resources to sustain and grow the solution.</p>
+              <p><strong>Evaluation Areas:</strong> Funding sources (Q27), cost-effectiveness.</p>
+            </div>
+          </div>
+
+          <h3>🔍 Scoring Process</h3>
+          <p>Each submission undergoes a rigorous evaluation process:</p>
+          <ul>
+            <li><strong>Initial Review:</strong> Technical compliance and completeness check</li>
+            <li><strong>Expert Panel:</strong> Multi-disciplinary experts evaluate each criterion</li>
+            <li><strong>Peer Review:</strong> Cross-validation by additional reviewers</li>
+            <li><strong>Consensus Building:</strong> Discussion and alignment on final scores</li>
+            <li><strong>Quality Assurance:</strong> Final review to ensure consistency and fairness</li>
+          </ul>
+
+          <h3>📊 Understanding the Dashboard</h3>
+          <p>In this dashboard, you can:</p>
+          <ul>
+            <li><strong>Filter by Rating:</strong> Use the maturity stage filter to view submissions by star rating</li>
+            <li><strong>Compare Performance:</strong> See how different countries, regions, or organization types perform</li>
+            <li><strong>Identify Patterns:</strong> Discover trends in high-performing submissions</li>
+            <li><strong>Track Progress:</strong> Monitor the distribution of ratings across all submissions</li>
+          </ul>
+
+          <div class="note">
+            <p><strong>Note:</strong> This rating system is designed to be fair, transparent, and comprehensive. All submissions are evaluated by qualified experts using standardized criteria to ensure consistency and objectivity.</p>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 
   <!-- Scripts -->

@@ -1088,10 +1088,13 @@ function renderMap(data) {
             'circle-color': [
               'step',
               ['get', 'point_count'],
-              '#51bbd6',
-              10, '#f1f075',
-              20, '#f28cb1'
+              '#e3f2fd',
+              10, '#81d4fa',
+              20, '#29b6f6',
+              30, '#0277bd'
             ],
+            'circle-stroke-width': 2,
+            'circle-stroke-color': '#ffffff',
             'circle-radius': [
               'step',
               ['get', 'point_count'],
@@ -1462,5 +1465,43 @@ async function init() {
   toggleKioskMode();
 }
 
+// Modal functionality
+function initializeModal() {
+  const modal = document.getElementById('explanationModal');
+  const showBtn = document.getElementById('showExplanation');
+  const closeBtn = document.getElementById('closeExplanation');
+
+  // Show modal
+  showBtn.addEventListener('click', function() {
+    modal.style.display = 'block';
+    document.body.style.overflow = 'hidden'; // Prevent background scrolling
+  });
+
+  // Close modal
+  closeBtn.addEventListener('click', function() {
+    modal.style.display = 'none';
+    document.body.style.overflow = 'auto'; // Restore scrolling
+  });
+
+  // Close modal when clicking outside
+  window.addEventListener('click', function(event) {
+    if (event.target === modal) {
+      modal.style.display = 'none';
+      document.body.style.overflow = 'auto';
+    }
+  });
+
+  // Close modal with Escape key
+  document.addEventListener('keydown', function(event) {
+    if (event.key === 'Escape' && modal.style.display === 'block') {
+      modal.style.display = 'none';
+      document.body.style.overflow = 'auto';
+    }
+  });
+}
+
 // Start the application
-document.addEventListener('DOMContentLoaded', init);
+document.addEventListener('DOMContentLoaded', function() {
+  init();
+  initializeModal();
+});
