@@ -727,6 +727,112 @@ class FullscreenControl {
 }
 
 // ============================================================================
+// MAP PROJECTION CONTROL
+// ============================================================================
+
+class MapProjectionControl {
+  constructor() {
+    this._isGlobe = false;
+  }
+
+  onAdd(map) {
+    this._map = map;
+    this._container = document.createElement('div');
+    this._container.className = 'mapboxgl-ctrl mapboxgl-ctrl-group';
+    this._container.style.cssText = `
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      margin: 10px;
+    `;
+
+    this._button = document.createElement('button');
+    this._button.className = 'mapboxgl-ctrl-icon projection-control';
+    this._button.type = 'button';
+    this._button.title = 'Toggle between 2D and 3D view';
+    this._button.innerHTML = '🌍 2D';
+    this._button.style.cssText = `
+      width: 30px;
+      height: 30px;
+      background: rgba(0, 0, 0, 0.5);
+      border: none;
+      border-radius: 4px;
+      color: white;
+      font-size: 12px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s ease;
+      font-weight: 600;
+    `;
+
+    this._button.addEventListener('click', () => {
+      this._toggleProjection();
+    });
+
+    this._container.appendChild(this._button);
+
+    // Initialize button state
+    this._updateButton();
+
+    return this._container;
+  }
+
+  onRemove() {
+    if (this._container && this._container.parentNode) {
+      this._container.parentNode.removeChild(this._container);
+    }
+  }
+
+  _toggleProjection() {
+    if (!window.map) return;
+    
+    const newProjection = appState.toggleMapProjection();
+    console.log(`Switching to ${newProjection} projection`);
+    
+    try {
+      window.map.setProjection(newProjection);
+      
+      if (newProjection === 'globe') {
+        const currentZoom = window.map.getZoom();
+        if (currentZoom < 1.5) {
+          window.map.setZoom(1.5);
+        }
+      }
+      
+      this._updateButton();
+      
+      // Show feedback
+      const originalText = this._button.innerHTML;
+      this._button.innerHTML = newProjection === 'equirectangular' ? '✅ 2D' : '✅ 3D';
+      setTimeout(() => {
+        this._button.innerHTML = originalText;
+      }, 1000);
+    } catch (err) {
+      console.error('Error changing projection:', err);
+      console.log('Recreating map with new projection...');
+      window.map.remove();
+      window.map = null;
+      setTimeout(() => {
+        if (typeof renderAll === 'function') {
+          renderAll();
+        }
+      }, 100);
+    }
+  }
+
+  _updateButton() {
+    if (this._button) {
+      const isGlobe = appState.mapProjection === 'globe';
+      this._button.innerHTML = isGlobe ? '🌐 3D' : '🌍 2D';
+      this._button.title = isGlobe ? 'Switch to 2D Flat view' : 'Switch to 3D Globe view';
+      this._button.classList.toggle('active', isGlobe);
+    }
+  }
+}
+
+// ============================================================================
 // MAP FUNCTIONALITY
 // ============================================================================
 
@@ -1086,6 +1192,9 @@ function renderMap(data) {
       // Add custom fullscreen control
       window.map.addControl(new FullscreenControl(), 'top-right');
 
+      // Add custom 2D/3D toggle control
+      window.map.addControl(new MapProjectionControl(), 'top-right');
+
       window.map.on('error', (e) => {
         console.error('Mapbox error:', e);
         showHint('❌ Map error<br><small>Check token or style</small>');
@@ -1126,42 +1235,6 @@ function renderMap(data) {
   }
 }
 
-function toggleMapProjection() {
-  if (!window.map) return;
-  
-  const newProjection = appState.toggleMapProjection();
-  console.log(`Switching to ${newProjection} projection`);
-  
-  try {
-    window.map.setProjection(newProjection);
-    
-    if (newProjection === 'globe') {
-      const currentZoom = window.map.getZoom();
-      if (currentZoom < 1.5) {
-        window.map.setZoom(1.5);
-      }
-    }
-    
-    const btn = el('toggleMapView');
-    if (btn) {
-      const originalText = btn.innerHTML;
-      btn.innerHTML = newProjection === 'equirectangular' ? '✅ 2D' : '✅ 3D';
-      setTimeout(() => {
-        btn.innerHTML = originalText;
-      }, 1000);
-    }
-  } catch (err) {
-    console.error('Error changing projection:', err);
-    console.log('Recreating map with new projection...');
-    window.map.remove();
-    window.map = null;
-    setTimeout(() => {
-      if (typeof renderAll === 'function') {
-        renderAll();
-      }
-    }, 100);
-  }
-}
 
 // ============================================================================
 // FILTER MANAGEMENT
@@ -1279,7 +1352,6 @@ async function init() {
   });
   el('toggleKiosk')?.addEventListener('click', toggleKioskMode);
   el('toggleTheme')?.addEventListener('click', () => { ThemeManager.toggle(); });
-  el('toggleMapView')?.addEventListener('click', toggleMapProjection);
 
   // Load mapping data (optional)
   try { 

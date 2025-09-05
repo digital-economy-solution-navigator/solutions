@@ -335,6 +335,49 @@ h1 {
   background: rgba(0, 0, 0, 0.8) !important;
 }
 
+/* Projection control styling */
+.projection-control {
+  background: rgba(0, 0, 0, 0.5) !important;
+  border: none !important;
+  border-radius: 4px !important;
+  color: white !important;
+  font-size: 12px !important;
+  cursor: pointer !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  transition: all 0.2s ease !important;
+  width: 30px !important;
+  height: 30px !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  font-weight: 600 !important;
+}
+
+.projection-control:hover {
+  background: rgba(0, 0, 0, 0.7) !important;
+  transform: scale(1.1) !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3) !important;
+}
+
+.projection-control:active {
+  transform: scale(0.95) !important;
+}
+
+.projection-control.active {
+  background: var(--accent) !important;
+  color: var(--bg) !important;
+  box-shadow: 0 2px 8px rgba(69, 255, 211, 0.4) !important;
+}
+
+#map-fullscreen-container .projection-control {
+  background: rgba(0, 0, 0, 0.6) !important;
+}
+
+#map-fullscreen-container .projection-control:hover {
+  background: rgba(0, 0, 0, 0.8) !important;
+}
+
 /* Footer note */
 footer {
   padding: 22px clamp(16px, 4vw, 40px);
