@@ -1652,8 +1652,8 @@ footer::before {
   }
 }
 
-/* ===================== SUBMISSIONS MODAL ===================== */
-.submissions-modal {
+/* ===================== SOLUTIONS MODAL ===================== */
+.solutions-modal {
   position: fixed;
   top: 0;
   left: 0;
@@ -1730,6 +1730,10 @@ footer::before {
   padding: 24px;
   overflow-y: auto;
   max-height: calc(80vh - 80px);
+  /* Performance optimizations for smooth scrolling */
+  -webkit-overflow-scrolling: touch;
+  scroll-behavior: smooth;
+  will-change: scroll-position;
 }
 
 .modal-actions {
@@ -1740,18 +1744,21 @@ footer::before {
   border-bottom: 1px solid var(--border);
 }
 
-.submissions-list {
+.solutions-list {
   display: flex;
   flex-direction: column;
   gap: 16px;
 }
 
-.submission-card {
+.solution-card {
   background: var(--card-bg);
   border: 1px solid var(--border);
   border-radius: 8px;
   padding: 16px;
   transition: all 0.2s ease;
+  /* Performance optimizations */
+  contain: layout style paint;
+  will-change: transform;
 }
 
 .submission-card:hover {
@@ -1759,14 +1766,14 @@ footer::before {
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
-.submission-header {
+.solution-header {
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
   margin-bottom: 12px;
 }
 
-.submission-title {
+.solution-title {
   font-weight: 600;
   color: var(--text);
   font-size: 16px;
@@ -1775,7 +1782,7 @@ footer::before {
   margin-right: 12px;
 }
 
-.submission-score {
+.solution-score {
   background: var(--brand);
   color: white;
   padding: 4px 8px;
@@ -1790,7 +1797,7 @@ footer::before {
   justify-content: center;
 }
 
-.submission-details {
+.solution-details {
   display: flex;
   flex-direction: column;
   gap: 8px;
@@ -1817,7 +1824,7 @@ footer::before {
 
 /* Modal responsive styles */
 @media (max-width: 1023px) {
-  .submissions-modal {
+  .solutions-modal {
     padding: 15px;
   }
   
@@ -1841,13 +1848,13 @@ footer::before {
     flex-direction: column;
   }
   
-  .submission-header {
+  .solution-header {
     flex-direction: column;
     align-items: flex-start;
     gap: 8px;
   }
   
-  .submission-title {
+  .solution-title {
     margin-right: 0;
   }
   
@@ -1863,7 +1870,7 @@ footer::before {
 }
 
 @media (max-width: 767px) {
-  .submissions-modal {
+  .solutions-modal {
     padding: 10px;
   }
   
@@ -1889,15 +1896,15 @@ footer::before {
     padding: 3px 8px;
   }
   
-  .submission-card {
+  .solution-card {
     padding: 12px;
   }
   
-  .submission-title {
+  .solution-title {
     font-size: 14px;
   }
   
-  .submission-score {
+  .solution-score {
     font-size: 12px;
     padding: 3px 6px;
     min-width: 60px;
@@ -1910,7 +1917,7 @@ footer::before {
 }
 
 @media (max-width: 479px) {
-  .submissions-modal {
+  .solutions-modal {
     padding: 5px;
   }
   
@@ -1937,15 +1944,15 @@ footer::before {
     padding: 2px 6px;
   }
   
-  .submission-card {
+  .solution-card {
     padding: 10px;
   }
   
-  .submission-title {
+  .solution-title {
     font-size: 13px;
   }
   
-  .submission-score {
+  .solution-score {
     font-size: 11px;
     padding: 2px 5px;
     min-width: 50px;

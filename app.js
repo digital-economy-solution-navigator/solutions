@@ -15,7 +15,7 @@
  * 
  * DATA SOURCE UPDATES:
  * To update with new datasets, modify the DATA_SOURCES section in CONFIG:
- * 1. Update MAIN_DATA path to point to your new submissions data file
+ * 1. Update MAIN_DATA path to point to your new solutions data file
  * 2. Update COUNTRY_MAPPING path if you have new country-region mappings
  * 3. Ensure your data follows the same JSON structure as the original files
  * 4. The dashboard will automatically retry loading and provide helpful error messages
@@ -30,11 +30,11 @@ const CONFIG = {
   // DATA SOURCE CONFIGURATION
   // ============================================================================
   // To update with new datasets, simply change the file paths below:
-  // - MAIN_DATA: Path to your primary submissions data (JSON format)
+  // - MAIN_DATA: Path to your primary solutions data (JSON format)
   // - COUNTRY_MAPPING: Path to country-region mapping file (optional)
   // 
   // Example: To use new data files, update like this:
-  // MAIN_DATA: 'new_submissions_2025.json',
+  // MAIN_DATA: 'new_solutions_2025.json',
   // COUNTRY_MAPPING: 'updated_country_mapping.json'
   // ============================================================================
   
@@ -46,7 +46,7 @@ const CONFIG = {
   
   // Data source configuration - UPDATE THESE PATHS FOR NEW DATASETS
   DATA_SOURCES: {
-    MAIN_DATA: 'data.json',                    // Primary submissions data
+    MAIN_DATA: 'data.json',                    // Primary solutions data
     COUNTRY_MAPPING: 'country_region_mapping.json'  // Optional country-region mappings
   },
   
@@ -61,7 +61,8 @@ const CONFIG = {
   
   // Performance settings
   DEBOUNCE_DELAY: 300,
-  RENDER_DEBOUNCE_DELAY: 250,
+  RENDER_DEBOUNCE_DELAY: 500, // Increased for better performance
+  MODAL_VIRTUALIZATION_THRESHOLD: 50, // Use virtualization for >50 items
   
   // UI settings
   DEFAULT_KIOSK_MODE: true,
@@ -522,7 +523,7 @@ class AppState {
   }
   
   /**
-   * Selects a country and shows its submissions
+   * Selects a country and shows its solutions
    * @param {string} countryName - Name of the country to select
    */
   selectCountry(countryName) {
@@ -539,16 +540,16 @@ class AppState {
   }
   
   /**
-   * Gets all submissions for a specific country
+   * Gets all solutions for a specific country
    * @param {string} countryName - Name of the country
-   * @returns {Array} Array of submissions for the country
+   * @returns {Array} Array of solutions for the country
    */
   getCountrySubmissions(countryName) {
     return this.rawData.filter(r => r._country === countryName);
   }
   
   /**
-   * Shows submissions modal for a specific country
+   * Shows solutions modal for a specific country
    * @param {string} countryName - Name of the country
    */
   showCountrySubmissions(countryName) {
@@ -559,9 +560,9 @@ class AppState {
   }
   
   /**
-   * Creates and displays submissions modal for a country
+   * Creates and displays solutions modal for a country
    * @param {string} countryName - Name of the country
-   * @param {Array} submissions - Array of submissions to display
+   * @param {Array} submissions - Array of solutions to display
    */
   createSubmissionsModal(countryName, submissions) {
     // Remove existing modal if any
@@ -569,14 +570,14 @@ class AppState {
     
     const modal = document.createElement('div');
     modal.id = 'submissions-modal';
-    modal.className = 'submissions-modal';
+    modal.className = 'solutions-modal';
     modal.innerHTML = `
       <div class="modal-content">
         <div class="modal-header">
-          <h3>${countryName}: ${submissions.length} submission${submissions.length !== 1 ? 's' : ''}</h3>
+          <h3>${countryName}: ${submissions.length} solution${submissions.length !== 1 ? 's' : ''}</h3>
           <!-- Hidden feature: Modal stats (preserved for future use) -->
           <!-- <div class="modal-stats">
-            <span class="stat">${submissions.length} submission${submissions.length !== 1 ? 's' : ''}</span>
+            <span class="stat">${submissions.length} solution${submissions.length !== 1 ? 's' : ''}</span>
             <span class="stat">Avg Score: ${utils.formatNumber(submissions.reduce((sum, s) => sum + s._score, 0) / submissions.length)}</span>
           </div> -->
           <button class="modal-close" onclick="appState.hideSubmissionsModal()">×</button>
@@ -591,18 +592,18 @@ class AppState {
               🗑️ Clear Selection
             </button>
           </div> -->
-          <div class="submissions-list">
+          <div class="solutions-list">
             ${submissions.map((submission, index) => `
-              <div class="submission-card">
-                <div class="submission-header">
-                  <div class="submission-title">
+              <div class="solution-card">
+                <div class="solution-header">
+                  <div class="solution-title">
                     ${submission['Title'] || 'Untitled Solution'}
                   </div>
-                  <div class="submission-score" title="Solution Score: ${utils.formatNumber(submission._score)}">
+                  <div class="solution-score" title="Solution Score: ${utils.formatNumber(submission._score)}">
                     ${getScoreDisplay(submission._score)}
                   </div>
                 </div>
-                <div class="submission-details">
+                <div class="solution-details">
                   <div class="detail-row">
                     <span class="label">🏢 Organization:</span>
                     <span class="value">${submission._org}</span>
@@ -641,17 +642,19 @@ class AppState {
   }
   
   /**
-   * Hides the submissions modal
+   * Hides the solutions modal
    */
   hideSubmissionsModal() {
     if (this.submissionsModal) {
+      // Remove event listeners to prevent memory leaks
+      this.submissionsModal.removeEventListener('click', this.modalClickHandler);
       this.submissionsModal.remove();
       this.submissionsModal = null;
     }
   }
   
   /**
-   * Filters data to show only submissions from a specific country
+   * Filters data to show only solutions from a specific country
    * @param {string} countryName - Name of the country to filter by
    */
   filterByCountry(countryName) {
@@ -673,7 +676,7 @@ class AppState {
     this.hideSubmissionsModal();
     
     // Show a brief success message
-    this.showNotification(`Filtered to show submissions from ${countryName}`);
+    this.showNotification(`Filtered to show solutions from ${countryName}`);
   }
   
   /**
@@ -852,14 +855,17 @@ function renderOrgPie(data) {
  */
 function renderAll() {
   const data = appState.getFilteredData();
-  console.log(`🎯 Rendering ${data.length} submissions (filtered from ${appState.rawData.length} total)`);
+  console.log(`🎯 Rendering ${data.length} solutions (filtered from ${appState.rawData.length} total)`);
   
-  // Render all visualizations
-  renderKPIs(data);
-  renderMap(data);
-  renderSdgStack(data);
-  renderOrgPie(data);
-  renderScoreHist(data); // Hidden function - preserved for future use
+  // Use requestAnimationFrame for better performance
+  requestAnimationFrame(() => {
+    // Render all visualizations
+    renderKPIs(data);
+    renderMap(data);
+    renderSdgStack(data);
+    renderOrgPie(data);
+    renderScoreHist(data); // Hidden function - preserved for future use
+  });
 }
 
 // ============================================================================
@@ -1263,7 +1269,7 @@ const getCountryCoordinates = (countryName) => {
 };
 
 /**
- * Renders the interactive world map with submission data
+ * Renders the interactive world map with solution data
  * @param {Array} data - Filtered data array
  */
 function renderMap(data) {
@@ -1458,7 +1464,13 @@ function renderMap(data) {
 
         // Add click handlers for clusters
         window.map.on('click', 'clusters', (e) => {
+          // Prevent default behavior that could cause page reload
+          e.preventDefault();
+          e.stopPropagation();
+          
           const features = window.map.queryRenderedFeatures(e.point, { layers: ['clusters'] });
+          if (features.length === 0) return;
+          
           const clusterId = features[0].properties.cluster_id;
           window.map.getSource('submissions').getClusterExpansionZoom(clusterId, (err, zoom) => {
             if (err) return;
@@ -1493,7 +1505,7 @@ function renderMap(data) {
               <div style="margin-top:8px; padding-top:8px; border-top:1px solid var(--border);">
                 <button onclick="appState.selectCountry('${props.country}')" 
                         style="background:var(--brand); color:white; border:none; padding:4px 8px; border-radius:4px; font-size:12px; cursor:pointer;">
-                  View All Submissions
+                  View All Solutions
                 </button>
               </div>
             `)
@@ -1814,7 +1826,7 @@ async function init() {
   console.log(`🔄 Loading main data from ${CONFIG.DATA_SOURCES.MAIN_DATA}...`);
   const raw = await utils.loadDataWithRetry(CONFIG.DATA_SOURCES.MAIN_DATA);
   if (!Array.isArray(raw) || raw.length === 0) throw new Error('Empty or invalid data');
-  console.log(`✅ Loaded ${raw.length} submissions from ${CONFIG.DATA_SOURCES.MAIN_DATA}`);
+  console.log(`✅ Loaded ${raw.length} solutions from ${CONFIG.DATA_SOURCES.MAIN_DATA}`);
 
   appState.rawData = raw.map(DataProcessor.normalizeRow);
   
