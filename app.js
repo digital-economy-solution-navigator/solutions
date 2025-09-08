@@ -1726,7 +1726,18 @@ async function init() {
   appState.updateMapProjectionButton();
   
   // Apply initial kiosk state (hide controls by default)
-  toggleKioskMode();
+  // Don't call toggleKioskMode() as it would flip the default state
+  // Instead, directly apply the kiosk state
+  const controls = utils.el('controls');
+  if (appState.kiosk) {
+    controls.classList.remove('show');
+    utils.el('toggleKiosk').textContent = 'Show Controls';
+    utils.el('toggleKiosk').title = 'Show filter controls';
+  } else {
+    controls.classList.add('show');
+    utils.el('toggleKiosk').textContent = 'Kiosk';
+    utils.el('toggleKiosk').title = 'Hide filter controls';
+  }
 }
 
 // ============================================================================

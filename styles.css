@@ -66,10 +66,12 @@ body {
 header {
   position: sticky;
   top: 0;
-  z-index: 20;
+  z-index: 100;
   background: linear-gradient(135deg, var(--header-start), var(--header-mid) 55%, var(--header-end));
   border-bottom: var(--border);
   box-shadow: var(--header-shadow);
+  backdrop-filter: blur(10px);
+  transition: all 0.3s ease;
 }
 
 .header-inner {
@@ -384,6 +386,8 @@ h1 {
   padding: 14px clamp(16px, 4vw, 40px) 22px;
   background: linear-gradient(180deg, var(--controls-bg), transparent);
   border-top: var(--border);
+  position: relative;
+  z-index: 99; /* Just below header but above content */
 }
 
 /* Show controls when not in kiosk mode */
