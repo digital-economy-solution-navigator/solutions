@@ -590,18 +590,34 @@ footer {
   font-family: inherit;
 }
 
+/* Dark theme pie chart text styling */
 #orgPie .plotly .pie .text {
   font-size: 14px !important;
-  font-weight: 600 !important;
+  font-weight: 700 !important;
   fill: var(--text) !important;
-  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8) !important;
+  text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.9) !important;
+  stroke: rgba(255, 255, 255, 0.1) !important;
+  stroke-width: 0.5px !important;
 }
 
 #orgPie .plotly .pie .text .textline {
   font-size: 14px !important;
-  font-weight: 600 !important;
+  font-weight: 700 !important;
   fill: var(--text) !important;
-  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8) !important;
+  text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.9) !important;
+  stroke: rgba(255, 255, 255, 0.1) !important;
+  stroke-width: 0.5px !important;
+}
+
+/* Light theme pie chart text styling */
+[data-theme="light"] #orgPie .plotly .pie .text {
+  text-shadow: 1px 1px 2px rgba(255, 255, 255, 0.8) !important;
+  stroke: rgba(0, 0, 0, 0.1) !important;
+}
+
+[data-theme="light"] #orgPie .plotly .pie .text .textline {
+  text-shadow: 1px 1px 2px rgba(255, 255, 255, 0.8) !important;
+  stroke: rgba(0, 0, 0, 0.1) !important;
 }
 
 

@@ -737,8 +737,8 @@ function renderOrgPie(data) {
     textinfo: 'label+percent',
     textposition: 'outside',
     textfont: {
-      size: 14,
-      color: 'var(--text)',
+      size: 15,
+      color: ThemeManager.currentTheme === 'dark' ? '#FFFFFF' : '#0F172A',
       family: 'inherit'
     },
     hovertemplate: '<b>%{label}</b><br>Count: %{value}<br>Percentage: %{percent}<extra></extra>',
@@ -756,8 +756,8 @@ function renderOrgPie(data) {
     margin: { t: 20, r: 20, b: 20, l: 20 },
     showlegend: false,
     font: {
-      size: 14,
-      color: 'var(--text)',
+      size: 15,
+      color: ThemeManager.currentTheme === 'dark' ? '#FFFFFF' : '#0F172A',
       family: 'inherit'
     }
   };
