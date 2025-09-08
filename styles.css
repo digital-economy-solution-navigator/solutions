@@ -570,13 +570,119 @@ h1 {
   background: rgba(0, 0, 0, 0.8) !important;
 }
 
-/* Footer note */
+/* Footer styling */
 footer {
-  padding: 22px clamp(16px, 4vw, 40px);
-  color: var(--muted);
+  padding: 20px clamp(16px, 4vw, 40px);
+  margin-top: 20px;
+  border-top: 1px solid var(--border);
+  background: linear-gradient(180deg, transparent, var(--panel));
+  backdrop-filter: blur(10px);
+  min-height: 80px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+/* Footer decorative elements */
+footer::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 60px;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--brand), transparent);
+  border-radius: 1px;
+}
+
+/* Footer content styling */
+.footer-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  max-width: 1200px;
+  width: 100%;
+}
+
+.footer-links {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
   font-size: 14px;
-  text-align: center;
-  opacity: .8;
+}
+
+.footer-label {
+  color: var(--muted);
+  font-weight: 500;
+  font-size: 13px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-right: 8px;
+}
+
+.footer-link {
+  color: var(--brand);
+  text-decoration: none;
+  font-weight: 500;
+  padding: 6px 12px;
+  border-radius: 8px;
+  background: rgba(0, 163, 224, 0.1);
+  border: 1px solid rgba(0, 163, 224, 0.2);
+  transition: all 0.3s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+}
+
+.footer-link:hover {
+  background: rgba(0, 163, 224, 0.2);
+  border-color: var(--brand);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 163, 224, 0.2);
+}
+
+.footer-link:active {
+  transform: translateY(0);
+}
+
+/* Footer responsive adjustments */
+@media (max-width: 768px) {
+  footer {
+    padding: 16px 16px;
+    min-height: 70px;
+  }
+  
+  .footer-links {
+    flex-direction: column;
+    gap: 10px;
+  }
+  
+  .footer-label {
+    margin-right: 0;
+    margin-bottom: 4px;
+  }
+  
+  .footer-link {
+    font-size: 12px;
+    padding: 5px 10px;
+  }
+}
+
+@media (max-width: 480px) {
+  .footer-links {
+    gap: 8px;
+  }
+  
+  .footer-link {
+    font-size: 11px;
+    padding: 4px 8px;
+  }
 }
 
 /* Map container styling - minimal */
