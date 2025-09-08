@@ -1,6 +1,17 @@
 /**
  * Global Call for Solutions Analytics Dashboard
  * Main application logic for data visualization and filtering
+ * 
+ * Architecture Overview:
+ * - CONFIG: Application configuration and constants
+ * - Utils: Utility functions for data manipulation
+ * - ThemeManager: Handles dark/light theme switching
+ * - DataProcessor: Processes and normalizes raw data
+ * - AppState: Manages application state and filtering
+ * - Renderers: Functions for rendering charts and visualizations
+ * - MapControls: Custom map controls (fullscreen, projection)
+ * - FilterManager: Handles filter UI and logic
+ * - ModalManager: Manages modal dialogs
  */
 
 // ============================================================================
@@ -12,39 +23,116 @@ const CONFIG = {
   CHART_COLORS: ['#00A3E0', '#45FFD3', '#F6C453', '#118E9C', '#1BC7BE'],
   MAX_TOP_SOLUTIONS: 10,
   CSV_FILENAME: 'global_solutions_export.csv',
-  MAPBOX_TOKEN: 'pk.eyJ1Ijoiemlsb25nLXRlY2giLCJhIjoiY21mMmhvZWp0MXZtdjJpcXlzOWswZGM1ZiJ9.tk_JMGIpKj5KS4bSBEukqw'
+  MAPBOX_TOKEN: 'pk.eyJ1Ijoiemlsb25nLXRlY2giLCJhIjoiY21mMmhvZWp0MXZtdjJpcXlzOWswZGM1ZiJ9.tk_JMGIpKj5KS4bSBEukqw',
+  
+  // Performance settings
+  DEBOUNCE_DELAY: 300,
+  RENDER_DEBOUNCE_DELAY: 250,
+  
+  // UI settings
+  DEFAULT_KIOSK_MODE: true,
+  DEFAULT_THEME: 'dark',
+  DEFAULT_MAP_PROJECTION: 'equirectangular'
 };
 
 // ============================================================================
 // UTILITIES
 // ============================================================================
 
+/**
+ * Utility functions for data manipulation and common operations
+ */
 const utils = {
+  /**
+   * Converts value to array if not already an array
+   * @param {*} v - Value to convert
+   * @returns {Array} Array representation of the value
+   */
   toArray: v => Array.isArray(v) ? v : (v ? [v] : []),
+  
+  /**
+   * Returns unique, sorted array of non-empty values
+   * @param {Array} arr - Input array
+   * @returns {Array} Unique, sorted array
+   */
   unique: arr => [...new Set(arr)].filter(Boolean).sort(),
+  
+  /**
+   * Safely converts value to number, returns 0 for invalid numbers
+   * @param {*} v - Value to convert
+   * @returns {number} Safe number value
+   */
   safeNumber: v => { 
     const n = Number(v); 
     return isFinite(n) ? n : 0; 
   },
+  
+  /**
+   * Formats number with appropriate suffixes (K, M)
+   * @param {number} num - Number to format
+   * @param {number} decimals - Number of decimal places
+   * @returns {string} Formatted number string
+   */
   formatNumber: (num, decimals = 1) => {
     if (num >= 1_000_000) return (num / 1_000_000).toFixed(1) + 'M';
     if (num >= 1_000) return (num / 1_000).toFixed(1) + 'K';
     return (+num).toFixed(decimals);
   },
-  debounce: (fn, wait = 300) => { 
+  
+  /**
+   * Creates debounced function to limit execution frequency
+   * @param {Function} fn - Function to debounce
+   * @param {number} wait - Wait time in milliseconds
+   * @returns {Function} Debounced function
+   */
+  debounce: (fn, wait = CONFIG.DEBOUNCE_DELAY) => { 
     let t; 
     return (...a) => { 
       clearTimeout(t); 
       t = setTimeout(() => fn(...a), wait); 
     }; 
-  }
+  },
+  
+  /**
+   * Throttles function execution to limit frequency
+   * @param {Function} fn - Function to throttle
+   * @param {number} limit - Time limit in milliseconds
+   * @returns {Function} Throttled function
+   */
+  throttle: (fn, limit) => {
+    let inThrottle;
+    return function() {
+      const args = arguments;
+      const context = this;
+      if (!inThrottle) {
+        fn.apply(context, args);
+        inThrottle = true;
+        setTimeout(() => inThrottle = false, limit);
+      }
+    };
+  },
+  
+  /**
+   * DOM element selector helper
+   * @param {string} id - Element ID
+   * @returns {HTMLElement|null} DOM element
+   */
+  el: id => document.getElementById(id)
 };
 
-// Elegant score display function
+// ============================================================================
+// SCORE DISPLAY UTILITIES
+// ============================================================================
+
+/**
+ * Converts numeric score to visual star rating display
+ * @param {number|string} score - Score value
+ * @returns {string} Star rating string
+ */
 function getScoreDisplay(score) {
   const num = utils.safeNumber(score);
   
-  // Option 1: Star rating system (1-5 stars)
+  // Star rating system (1-5 stars)
   if (num >= 90) return '⭐⭐⭐⭐⭐';
   if (num >= 80) return '⭐⭐⭐⭐☆';
   if (num >= 70) return '⭐⭐⭐☆☆';
@@ -52,7 +140,7 @@ function getScoreDisplay(score) {
   if (num > 0) return '⭐☆☆☆☆';
   return '☆☆☆☆☆';
   
-  // Alternative options (uncomment one of these instead):
+  // Alternative display options (uncomment one of these instead):
   
   // Option 2: Simple numeric with emoji
   // return `${utils.formatNumber(num)} ⭐`;
@@ -78,12 +166,16 @@ function getScoreDisplay(score) {
   // return `${utils.formatNumber(num)}`;
 }
 
-const el = id => document.getElementById(id);
+// Legacy alias for backward compatibility
+const el = utils.el;
 
 // ============================================================================
 // THEME MANAGEMENT
 // ============================================================================
 
+/**
+ * Plotly.js theme configuration for charts
+ */
 const PlotTheme = {
   paper: 'rgba(0,0,0,0)',
   plot: 'rgba(0,0,0,0)',
@@ -91,6 +183,9 @@ const PlotTheme = {
   grid: 'rgba(255,255,255,.08)'
 };
 
+/**
+ * Common layout configuration for all Plotly charts
+ */
 const commonLayout = {
   paper_bgcolor: PlotTheme.paper,
   plot_bgcolor: PlotTheme.plot,
@@ -100,34 +195,45 @@ const commonLayout = {
   yaxis: { gridcolor: PlotTheme.grid, zeroline: false },
 };
 
+/**
+ * Manages application theme switching between dark and light modes
+ */
 const ThemeManager = {
-  currentTheme: 'dark',
+  currentTheme: CONFIG.DEFAULT_THEME,
   
+  /**
+   * Initialize theme manager and load saved theme
+   */
   init() {
     const savedTheme = localStorage.getItem('unga-theme');
-    if (savedTheme) {
+    if (savedTheme && ['dark', 'light'].includes(savedTheme)) {
       this.setTheme(savedTheme);
+    } else {
+      this.setTheme(CONFIG.DEFAULT_THEME);
     }
   },
   
+  /**
+   * Set application theme
+   * @param {string} theme - Theme name ('dark' or 'light')
+   */
   setTheme(theme) {
     this.currentTheme = theme;
     document.documentElement.setAttribute('data-theme', theme === 'light' ? 'light' : 'dark');
     localStorage.setItem('unga-theme', theme);
     
-    const toggleBtn = document.getElementById('toggleTheme');
-    if (toggleBtn) {
-      toggleBtn.innerHTML = theme === 'light' ? '🌙' : '☀️';
-      toggleBtn.title = theme === 'light' ? 'Switch to Dark Mode' : 'Switch to Light Mode';
-    }
-    
+    this._updateThemeButton();
     console.log(`Theme changed to ${theme}. Map will use ${theme} style on next creation.`);
   },
   
+  /**
+   * Toggle between dark and light themes
+   */
   toggle() {
     const newTheme = this.currentTheme === 'dark' ? 'light' : 'dark';
     this.setTheme(newTheme);
     
+    // Recreate map with new theme if it exists
     if (window.map) {
       console.log('Recreating map with new theme...');
       window.map.remove();
@@ -138,6 +244,18 @@ const ThemeManager = {
         }
       }, 100);
     }
+  },
+  
+  /**
+   * Update theme toggle button appearance
+   * @private
+   */
+  _updateThemeButton() {
+    const toggleBtn = utils.el('toggleTheme');
+    if (toggleBtn) {
+      toggleBtn.innerHTML = this.currentTheme === 'light' ? '🌙' : '☀️';
+      toggleBtn.title = this.currentTheme === 'light' ? 'Switch to Dark Mode' : 'Switch to Light Mode';
+    }
   }
 };
 
@@ -145,10 +263,16 @@ const ThemeManager = {
 // DATA PROCESSING
 // ============================================================================
 
+/**
+ * Normalizes SDG strings from various formats to standard format
+ * @param {string} s - SDG string to normalize
+ * @returns {Array<string>} Array of normalized SDG strings
+ */
 const sdgNormalize = (s) => {
   if (!s) return [];
   return s.split(';').map(x => x.trim()).filter(Boolean)
     .map(x => {
+      // Handle Russian translations
       if (x.includes('ЦУР 10') || x.includes('сокращение неравенства')) return 'SDG 10';
       if (x.includes('ЦУР 12') || x.includes('Ответственное потребление и производство')) return 'SDG 12';
       if (x.includes('ЦУР 8') || x.includes('Достойный труд и экономический рост')) return 'SDG 8';
@@ -157,12 +281,21 @@ const sdgNormalize = (s) => {
     .map(x => x.replace(/^(SDG)?\s*(\d{1,2}).*$/i, (_, __, n) => `SDG ${n}`));
 };
 
+/**
+ * Handles data processing, normalization, and KPI calculations
+ */
 const DataProcessor = {
+  /**
+   * Normalizes a raw data row to standardized format
+   * @param {Object} row - Raw data row
+   * @returns {Object} Normalized data row with computed fields
+   */
   normalizeRow(row) {
     const country = (row['Country'] || '').trim();
     const iso3 = window.COUNTRY_TO_ISO3?.[country] || null;
     const sdgs = sdgNormalize(row['SDGs addressed']);
     
+    // Normalize maturity stage
     let maturity = (row['Maturity stage'] || '').trim();
     if (maturity === 'Пилотный этап (мелкая реализация)') {
       maturity = 'Pilot stage (small-scale implementation)';
@@ -175,6 +308,7 @@ const DataProcessor = {
       maturity = 'Pilot Stage';
     }
     
+    // Normalize organization type
     let org = (row['Please specify the type of organization you are representing.'] || '').replace(/\*+$/, '').trim();
     if (org === 'Частный сектор') {
       org = 'Private sector';
@@ -204,6 +338,11 @@ const DataProcessor = {
     };
   },
   
+  /**
+   * Calculates key performance indicators from data
+   * @param {Array} data - Array of normalized data rows
+   * @returns {Object} KPI metrics
+   */
   kpis(data) {
     const countries = utils.unique(data.map(d => d._country));
     
@@ -233,6 +372,9 @@ const DataProcessor = {
 // APPLICATION STATE
 // ============================================================================
 
+/**
+ * Manages application state including data, filters, and UI state
+ */
 class AppState {
   constructor() {
     this.rawData = [];
@@ -244,12 +386,16 @@ class AppState {
       sdg: new Set()
     };
     this.countryRegionMapping = null;
-    this.kiosk = true; // default kiosk ON - controls hidden initially
-    this.mapProjection = localStorage.getItem('unga-map-projection') || 'equirectangular';
+    this.kiosk = CONFIG.DEFAULT_KIOSK_MODE; // Controls hidden initially
+    this.mapProjection = localStorage.getItem('unga-map-projection') || CONFIG.DEFAULT_MAP_PROJECTION;
     this.selectedCountry = null; // Track currently selected country
     this.submissionsModal = null; // Reference to submissions modal
   }
   
+  /**
+   * Returns filtered data based on current filter settings
+   * @returns {Array} Filtered data array
+   */
   getFilteredData() {
     return this.rawData.filter(r =>
       (this.filters.region.size === 0 || this.filters.region.has(r._region)) &&
@@ -260,6 +406,9 @@ class AppState {
     );
   }
   
+  /**
+   * Clears all active filters and resets filter UI
+   */
   clearFilters() {
     this.filters = {
       region: new Set(),
@@ -271,6 +420,10 @@ class AppState {
     updateFilterUI(false);
   }
   
+  /**
+   * Toggles between 2D and 3D map projections
+   * @returns {string} New projection type
+   */
   toggleMapProjection() {
     this.mapProjection = this.mapProjection === 'equirectangular' ? 'globe' : 'equirectangular';
     this.updateMapProjectionButton();
@@ -278,8 +431,11 @@ class AppState {
     return this.mapProjection;
   }
   
+  /**
+   * Updates map projection button appearance
+   */
   updateMapProjectionButton() {
-    const btn = el('toggleMapView');
+    const btn = utils.el('toggleMapView');
     if (btn) {
       btn.innerHTML = this.mapProjection === 'equirectangular' ? '🌍 2D' : '🌐 3D';
       btn.title = this.mapProjection === 'equirectangular' ? 'Switch to 3D Globe view' : 'Switch to 2D Flat view';
@@ -287,20 +443,36 @@ class AppState {
     }
   }
   
+  /**
+   * Selects a country and shows its submissions
+   * @param {string} countryName - Name of the country to select
+   */
   selectCountry(countryName) {
     this.selectedCountry = countryName;
     this.showCountrySubmissions(countryName);
   }
   
+  /**
+   * Clears country selection and hides modal
+   */
   clearCountrySelection() {
     this.selectedCountry = null;
     this.hideSubmissionsModal();
   }
   
+  /**
+   * Gets all submissions for a specific country
+   * @param {string} countryName - Name of the country
+   * @returns {Array} Array of submissions for the country
+   */
   getCountrySubmissions(countryName) {
     return this.rawData.filter(r => r._country === countryName);
   }
   
+  /**
+   * Shows submissions modal for a specific country
+   * @param {string} countryName - Name of the country
+   */
   showCountrySubmissions(countryName) {
     const submissions = this.getCountrySubmissions(countryName);
     if (submissions.length === 0) return;
@@ -308,6 +480,11 @@ class AppState {
     this.createSubmissionsModal(countryName, submissions);
   }
   
+  /**
+   * Creates and displays submissions modal for a country
+   * @param {string} countryName - Name of the country
+   * @param {Array} submissions - Array of submissions to display
+   */
   createSubmissionsModal(countryName, submissions) {
     // Remove existing modal if any
     this.hideSubmissionsModal();
@@ -319,6 +496,7 @@ class AppState {
       <div class="modal-content">
         <div class="modal-header">
           <h3>${countryName}: ${submissions.length} submission${submissions.length !== 1 ? 's' : ''}</h3>
+          <!-- Hidden feature: Modal stats (preserved for future use) -->
           <!-- <div class="modal-stats">
             <span class="stat">${submissions.length} submission${submissions.length !== 1 ? 's' : ''}</span>
             <span class="stat">Avg Score: ${utils.formatNumber(submissions.reduce((sum, s) => sum + s._score, 0) / submissions.length)}</span>
@@ -326,6 +504,7 @@ class AppState {
           <button class="modal-close" onclick="appState.hideSubmissionsModal()">×</button>
         </div>
         <div class="modal-body">
+          <!-- Hidden feature: Modal actions (preserved for future use) -->
           <!-- <div class="modal-actions">
             <button class="btn primary" onclick="appState.filterByCountry('${countryName}')">
               🔍 Filter by ${countryName}
@@ -383,6 +562,9 @@ class AppState {
     });
   }
   
+  /**
+   * Hides the submissions modal
+   */
   hideSubmissionsModal() {
     if (this.submissionsModal) {
       this.submissionsModal.remove();
@@ -390,13 +572,17 @@ class AppState {
     }
   }
   
+  /**
+   * Filters data to show only submissions from a specific country
+   * @param {string} countryName - Name of the country to filter by
+   */
   filterByCountry(countryName) {
     // Clear other filters and set country filter
     this.clearFilters();
     this.filters.country.add(countryName);
     
     // Update UI
-    const countrySelect = el('fCountry');
+    const countrySelect = utils.el('fCountry');
     if (countrySelect) {
       const option = Array.from(countrySelect.options).find(opt => opt.value === countryName);
       if (option) option.selected = true;
@@ -412,6 +598,10 @@ class AppState {
     this.showNotification(`Filtered to show submissions from ${countryName}`);
   }
   
+  /**
+   * Shows a temporary notification message
+   * @param {string} message - Message to display
+   */
   showNotification(message) {
     const notification = document.createElement('div');
     notification.className = 'notification';
@@ -448,9 +638,13 @@ const appState = new AppState();
 // UI RENDERERS
 // ============================================================================
 
+/**
+ * Renders KPI cards with key metrics
+ * @param {Array} data - Filtered data array
+ */
 function renderKPIs(data) {
   const { submissions, countries, implemented, emerging } = DataProcessor.kpis(data);
-  el('kpis').innerHTML = `
+  utils.el('kpis').innerHTML = `
     <div class="kpi">
       <div class="label">Countries Represented</div>
       <div class="value">${utils.formatNumber(countries, 0)}</div>
@@ -474,6 +668,10 @@ function renderKPIs(data) {
   `;
 }
 
+/**
+ * Renders SDG treemap visualization
+ * @param {Array} data - Filtered data array
+ */
 function renderSdgStack(data) {
   const all = utils.unique(data.flatMap(d => d._sdgs));
   const by = Object.fromEntries(all.map(s => [s, 0]));
@@ -492,6 +690,10 @@ function renderSdgStack(data) {
   Plotly.newPlot('sdgStack', [trace], { ...commonLayout, margin: { t: 10, l: 10, r: 10, b: 10 } }, { displayModeBar: false, responsive: true });
 }
 
+/**
+ * Renders score distribution histogram (HIDDEN FUNCTION - preserved for future use)
+ * @param {Array} data - Filtered data array
+ */
 function renderScoreHist(data) {
   const scores = data.map(d => d._score).filter(s => s > 0);
   const trace = { 
@@ -508,6 +710,10 @@ function renderScoreHist(data) {
   Plotly.newPlot('scoreHist', [trace], layout, { displayModeBar: false, responsive: true });
 }
 
+/**
+ * Renders organization type pie chart
+ * @param {Array} data - Filtered data array
+ */
 function renderOrgPie(data) {
   // Count organization types
   const orgCounts = {};
@@ -559,20 +765,33 @@ function renderOrgPie(data) {
   Plotly.newPlot('orgPie', [trace], layout, { displayModeBar: false, responsive: true });
 }
 
+/**
+ * Main render function that updates all visualizations
+ * Renders all charts and components with current filtered data
+ * 
+ * Performance Note: This function is called frequently during filtering.
+ * Consider implementing render batching or virtualization for large datasets.
+ */
 function renderAll() {
   const data = appState.getFilteredData();
   console.log(`🎯 Rendering ${data.length} submissions (filtered from ${appState.rawData.length} total)`);
+  
+  // Render all visualizations
   renderKPIs(data);
   renderMap(data);
   renderSdgStack(data);
   renderOrgPie(data);
-  renderScoreHist(data); // Keep for future use
+  renderScoreHist(data); // Hidden function - preserved for future use
 }
 
 // ============================================================================
-// FULLSCREEN CONTROL
+// MAP CONTROLS
 // ============================================================================
 
+/**
+ * Custom fullscreen control for map
+ * Allows toggling map between embedded and fullscreen modes
+ */
 class FullscreenControl {
   constructor() {
     this._isFullscreen = false;
@@ -726,10 +945,10 @@ class FullscreenControl {
   }
 }
 
-// ============================================================================
-// MAP PROJECTION CONTROL
-// ============================================================================
-
+/**
+ * Custom map projection control
+ * Allows toggling between 2D flat and 3D globe projections
+ */
 class MapProjectionControl {
   constructor() {
     this._isGlobe = false;
@@ -836,6 +1055,11 @@ class MapProjectionControl {
 // MAP FUNCTIONALITY
 // ============================================================================
 
+/**
+ * Gets coordinates for a country by name
+ * @param {string} countryName - Name of the country
+ * @returns {Array<number>} [longitude, latitude] coordinates
+ */
 const getCountryCoordinates = (countryName) => {
   const countryCoords = {
     'United States': [-95.7129, 37.0902],
@@ -960,10 +1184,14 @@ const getCountryCoordinates = (countryName) => {
   return countryCoords[countryName] || [0, 0];
 };
 
+/**
+ * Renders the interactive world map with submission data
+ * @param {Array} data - Filtered data array
+ */
 function renderMap(data) {
   try {
     const hasToken = CONFIG.MAPBOX_TOKEN && !/example$/.test(CONFIG.MAPBOX_TOKEN);
-    const mapEl = el('map');
+    const mapEl = utils.el('map');
     const HINT_ID = 'map-hint';
 
     const showHint = (html) => {
@@ -1305,18 +1533,31 @@ function renderMap(data) {
 // FILTER MANAGEMENT
 // ============================================================================
 
+/**
+ * Fills a select element with options
+ * @param {string} id - Element ID
+ * @param {Array} values - Array of values to populate
+ */
 function fillSelect(id, values) { 
-  const s = el(id); 
+  const s = utils.el(id); 
   if (!s) return; 
   s.innerHTML = values.map(v => `<option value="${v}">${v}</option>`).join(''); 
 }
 
+/**
+ * Clears all selected options in a select element
+ * @param {string} id - Element ID
+ */
 function clearSelect(id) { 
-  const s = el(id); 
+  const s = utils.el(id); 
   if (!s) return; 
   [...s.options].forEach(o => o.selected = false); 
 }
 
+/**
+ * Updates filter UI elements
+ * @param {boolean} resetCountries - Whether to reset country/region options
+ */
 function updateFilterUI(resetCountries = true) {
   ['fRegion', 'fCountry', 'fOrg', 'fMaturity', 'fSDG'].forEach(id => clearSelect(id));
   if (resetCountries) {
@@ -1325,8 +1566,12 @@ function updateFilterUI(resetCountries = true) {
   }
 }
 
+/**
+ * Sets filter values from select element
+ * @param {string} id - Element ID of the select
+ */
 function setFilterFromSelect(id) {
-  const s = el(id); 
+  const s = utils.el(id); 
   const selected = new Set([...s.selectedOptions].map(o => o.value));
   const key = id.replace('f', '').toLowerCase();
   
@@ -1343,6 +1588,10 @@ function setFilterFromSelect(id) {
   if (key === 'sdg') appState.filters.sdg = selected;
 }
 
+/**
+ * Updates country filter options based on selected regions
+ * @param {Set} selectedRegions - Set of selected region names
+ */
 function updateCountryFilter(selectedRegions) {
   if (!appState.countryRegionMapping) return;
   if (selectedRegions.size === 0) { 
@@ -1360,6 +1609,10 @@ function updateCountryFilter(selectedRegions) {
   clearSelect('fCountry');
 }
 
+/**
+ * Updates region filter options based on selected countries
+ * @param {Set} selectedCountries - Set of selected country names
+ */
 function updateRegionFilter(selectedCountries) {
   if (!appState.countryRegionMapping) return;
   if (selectedCountries.size === 0) { 
@@ -1380,18 +1633,21 @@ function updateRegionFilter(selectedCountries) {
 // UI CONTROLS
 // ============================================================================
 
+/**
+ * Toggles kiosk mode (shows/hides filter controls)
+ */
 function toggleKioskMode() {
   appState.kiosk = !appState.kiosk;
-  const controls = el('controls');
+  const controls = utils.el('controls');
   
   if (appState.kiosk) {
     controls.classList.remove('show');
-    el('toggleKiosk').textContent = 'Show Controls';
-    el('toggleKiosk').title = 'Show filter controls';
+    utils.el('toggleKiosk').textContent = 'Show Controls';
+    utils.el('toggleKiosk').title = 'Show filter controls';
   } else {
     controls.classList.add('show');
-    el('toggleKiosk').textContent = 'Kiosk';
-    el('toggleKiosk').title = 'Hide filter controls';
+    utils.el('toggleKiosk').textContent = 'Kiosk';
+    utils.el('toggleKiosk').title = 'Hide filter controls';
   }
 }
 
@@ -1399,30 +1655,37 @@ function toggleKioskMode() {
 // INITIALIZATION
 // ============================================================================
 
+/**
+ * Initializes the application
+ * Sets up event listeners, loads data, and renders initial state
+ */
 async function init() {
   // Initialize theme manager
   ThemeManager.init();
   
-  // Set up event listeners
+  // Set up event listeners with debounced updates
   ['fRegion', 'fCountry', 'fOrg', 'fMaturity', 'fSDG'].forEach(id => {
-    el(id)?.addEventListener('change', utils.debounce(() => { 
+    utils.el(id)?.addEventListener('change', utils.debounce(() => { 
       setFilterFromSelect(id); 
       renderAll(); 
-    }, 250));
+    }, CONFIG.RENDER_DEBOUNCE_DELAY));
   });
   
-  el('clear')?.addEventListener('click', () => { 
+  // Set up control button event listeners
+  utils.el('clear')?.addEventListener('click', () => { 
     appState.clearFilters(); 
     renderAll(); 
   });
-  el('toggleKiosk')?.addEventListener('click', toggleKioskMode);
-  el('toggleTheme')?.addEventListener('click', () => { ThemeManager.toggle(); });
+  utils.el('toggleKiosk')?.addEventListener('click', toggleKioskMode);
+  utils.el('toggleTheme')?.addEventListener('click', () => { ThemeManager.toggle(); });
 
   // Load mapping data (optional)
   try { 
     const m = await fetch('country_region_mapping.json'); 
     if (m.ok) appState.countryRegionMapping = await m.json(); 
-  } catch { /* noop */ }
+  } catch { 
+    console.warn('Could not load country region mapping'); 
+  }
 
   // Load main data
   const res = await fetch('data.json');
@@ -1437,6 +1700,7 @@ async function init() {
   fillSelect('fCountry', utils.unique(appState.rawData.map(r => r._country)));
   fillSelect('fOrg', utils.unique(appState.rawData.map(r => r._org)));
   
+  // Sort maturity values according to CONFIG order
   const maturityValues = utils.unique(appState.rawData.map(r => r._maturity)).sort((a, b) => {
     const ai = CONFIG.MATURITY_ORDER.indexOf(a);
     const bi = CONFIG.MATURITY_ORDER.indexOf(b);
@@ -1465,11 +1729,23 @@ async function init() {
   toggleKioskMode();
 }
 
-// Modal functionality
+// ============================================================================
+// MODAL MANAGEMENT
+// ============================================================================
+
+/**
+ * Initializes modal functionality for explanation dialog
+ * Sets up event listeners for show/hide/close actions
+ */
 function initializeModal() {
-  const modal = document.getElementById('explanationModal');
-  const showBtn = document.getElementById('showExplanation');
-  const closeBtn = document.getElementById('closeExplanation');
+  const modal = utils.el('explanationModal');
+  const showBtn = utils.el('showExplanation');
+  const closeBtn = utils.el('closeExplanation');
+
+  if (!modal || !showBtn || !closeBtn) {
+    console.warn('Modal elements not found');
+    return;
+  }
 
   // Show modal
   showBtn.addEventListener('click', function() {
@@ -1500,8 +1776,33 @@ function initializeModal() {
   });
 }
 
-// Start the application
+// ============================================================================
+// APPLICATION STARTUP
+// ============================================================================
+
+/**
+ * Application entry point
+ * Initializes the application when DOM is ready
+ */
 document.addEventListener('DOMContentLoaded', function() {
-  init();
-  initializeModal();
+  try {
+    init();
+    initializeModal();
+    console.log('✅ UNGA Analytics Dashboard initialized successfully');
+  } catch (error) {
+    console.error('❌ Failed to initialize application:', error);
+    // Show user-friendly error message
+    const errorDiv = document.createElement('div');
+    errorDiv.style.cssText = `
+      position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
+      background: #ff4444; color: white; padding: 20px; border-radius: 8px;
+      z-index: 10000; text-align: center; max-width: 400px;
+    `;
+    errorDiv.innerHTML = `
+      <h3>⚠️ Application Error</h3>
+      <p>Failed to load the dashboard. Please check the console for details.</p>
+      <p><small>Error: ${error.message}</small></p>
+    `;
+    document.body.appendChild(errorDiv);
+  }
 });
