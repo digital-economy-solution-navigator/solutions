@@ -12,6 +12,13 @@
  * - MapControls: Custom map controls (fullscreen, projection)
  * - FilterManager: Handles filter UI and logic
  * - ModalManager: Manages modal dialogs
+ * 
+ * DATA SOURCE UPDATES:
+ * To update with new datasets, modify the DATA_SOURCES section in CONFIG:
+ * 1. Update MAIN_DATA path to point to your new submissions data file
+ * 2. Update COUNTRY_MAPPING path if you have new country-region mappings
+ * 3. Ensure your data follows the same JSON structure as the original files
+ * 4. The dashboard will automatically retry loading and provide helpful error messages
  */
 
 // ============================================================================
@@ -19,11 +26,38 @@
 // ============================================================================
 
 const CONFIG = {
+  // ============================================================================
+  // DATA SOURCE CONFIGURATION
+  // ============================================================================
+  // To update with new datasets, simply change the file paths below:
+  // - MAIN_DATA: Path to your primary submissions data (JSON format)
+  // - COUNTRY_MAPPING: Path to country-region mapping file (optional)
+  // 
+  // Example: To use new data files, update like this:
+  // MAIN_DATA: 'new_submissions_2025.json',
+  // COUNTRY_MAPPING: 'updated_country_mapping.json'
+  // ============================================================================
+  
   MATURITY_ORDER: ["Idea/Concept", "Proof of Concept", "MVP", "Pilot Stage", "Implemented at scale"],
   CHART_COLORS: ['#00A3E0', '#45FFD3', '#F6C453', '#118E9C', '#1BC7BE'],
   MAX_TOP_SOLUTIONS: 10,
   CSV_FILENAME: 'global_solutions_export.csv',
   MAPBOX_TOKEN: 'pk.eyJ1Ijoiemlsb25nLXRlY2giLCJhIjoiY21mMmhvZWp0MXZtdjJpcXlzOWswZGM1ZiJ9.tk_JMGIpKj5KS4bSBEukqw',
+  
+  // Data source configuration - UPDATE THESE PATHS FOR NEW DATASETS
+  DATA_SOURCES: {
+    MAIN_DATA: 'data.json',                    // Primary submissions data
+    COUNTRY_MAPPING: 'country_region_mapping.json'  // Optional country-region mappings
+  },
+  
+  // Data loading configuration
+  DATA_LOADING: {
+    RETRY_ATTEMPTS: 3,                         // Number of retry attempts for failed loads
+    RETRY_DELAY: 1000,                         // Delay between retry attempts (ms)
+    TIMEOUT: 30000,                            // Request timeout (ms)
+    ENABLE_CACHING: true,                      // Enable browser caching for data files
+    SHOW_LOADING_INDICATOR: true               // Show loading indicator during data fetch
+  },
   
   // Performance settings
   DEBOUNCE_DELAY: 300,
@@ -110,6 +144,49 @@ const utils = {
         setTimeout(() => inThrottle = false, limit);
       }
     };
+  },
+  
+  /**
+   * Loads data from a URL with retry logic and error handling
+   * @param {string} url - URL to fetch data from
+   * @param {Object} options - Fetch options
+   * @returns {Promise<any>} Parsed JSON data
+   */
+  async loadDataWithRetry(url, options = {}) {
+    const { RETRY_ATTEMPTS, RETRY_DELAY, TIMEOUT } = CONFIG.DATA_LOADING;
+    
+    for (let attempt = 1; attempt <= RETRY_ATTEMPTS; attempt++) {
+      try {
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), TIMEOUT);
+        
+        const response = await fetch(url, {
+          ...options,
+          signal: controller.signal,
+          cache: CONFIG.DATA_LOADING.ENABLE_CACHING ? 'default' : 'no-cache'
+        });
+        
+        clearTimeout(timeoutId);
+        
+        if (!response.ok) {
+          throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+        }
+        
+        const data = await response.json();
+        console.log(`✅ Successfully loaded data from ${url} (attempt ${attempt})`);
+        return data;
+        
+      } catch (error) {
+        console.warn(`⚠️ Attempt ${attempt}/${RETRY_ATTEMPTS} failed for ${url}:`, error.message);
+        
+        if (attempt === RETRY_ATTEMPTS) {
+          throw new Error(`Failed to load ${url} after ${RETRY_ATTEMPTS} attempts: ${error.message}`);
+        }
+        
+        // Wait before retrying
+        await new Promise(resolve => setTimeout(resolve, RETRY_DELAY));
+      }
+    }
   },
   
   /**
@@ -1681,17 +1758,18 @@ async function init() {
 
   // Load mapping data (optional)
   try { 
-    const m = await fetch('country_region_mapping.json'); 
-    if (m.ok) appState.countryRegionMapping = await m.json(); 
-  } catch { 
-    console.warn('Could not load country region mapping'); 
+    appState.countryRegionMapping = await utils.loadDataWithRetry(CONFIG.DATA_SOURCES.COUNTRY_MAPPING);
+    console.log('✅ Country region mapping loaded successfully');
+  } catch (error) { 
+    console.warn(`⚠️ Could not load country region mapping from ${CONFIG.DATA_SOURCES.COUNTRY_MAPPING}:`, error.message);
+    console.log('ℹ️ Dashboard will work without country-region filter interdependencies');
   }
 
   // Load main data
-  const res = await fetch('data.json');
-  if (!res.ok) throw new Error('Failed to load data.json');
-  const raw = await res.json();
+  console.log(`🔄 Loading main data from ${CONFIG.DATA_SOURCES.MAIN_DATA}...`);
+  const raw = await utils.loadDataWithRetry(CONFIG.DATA_SOURCES.MAIN_DATA);
   if (!Array.isArray(raw) || raw.length === 0) throw new Error('Empty or invalid data');
+  console.log(`✅ Loaded ${raw.length} submissions from ${CONFIG.DATA_SOURCES.MAIN_DATA}`);
 
   appState.rawData = raw.map(DataProcessor.normalizeRow);
   

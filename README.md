@@ -1,186 +1,106 @@
 # 🌍 Global Call for Solutions Analytics Dashboard
 
-A comprehensive, interactive analytics dashboard for visualizing and analyzing global solution submissions data.
+Interactive analytics dashboard for visualizing global solution submissions data.
 
 ## ✨ Features
+- **Interactive visualizations**: World map, charts, and data tables
+- **Advanced filtering**: Multi-select filters with real-time updates
+- **Export functionality**: Download filtered data as CSV
+- **Responsive design**: Works on desktop and mobile
+- **Theme toggle**: Dark/Light mode
+- **QR Code integration**: Easy solution submission access
 
-### 📊 **Interactive Visualizations**
-- **World Map**: Choropleth map showing submission distribution by country
-- **Organization Types**: Horizontal bar chart of organization type distribution
-- **Thematic Focus**: Treemap visualization of primary thematic areas
-- **SDG Analysis**: Bar chart of Sustainable Development Goals addressed
-- **Score Distribution**: Histogram of solution scores
-- **Score vs Maturity**: Scatter plot showing relationship between scores and maturity stages
-- **Top Solutions Table**: Ranked table of top 20 solutions by score
+## 🚀 Quick Start
 
-### 🔍 **Advanced Filtering**
-- **Multi-select filters** for Region, Country, Organization Type, Maturity Stage, and SDG Focus
-- **Real-time filtering** with debounced updates for better performance
-- **Clear filters** button to reset all selections
-- **Export functionality** to download filtered data as CSV
-
-### 📱 **Responsive Design**
-- **Mobile-friendly** layout that adapts to different screen sizes
-- **Modern UI** with hover effects, smooth transitions, and professional styling
-- **Accessibility features** including proper ARIA labels and keyboard navigation
-
-## 🚀 Getting Started
-
-### Prerequisites
-- Modern web browser with JavaScript enabled
-- Local web server (for development)
-
-### Installation
-1. Clone or download the repository
-2. Ensure all files are in the same directory:
-   - `index.html` - Main dashboard interface
-   - `app.js` - Application logic and visualization code
-   - `iso3-map.js` - Country ISO3 code mappings
-   - `data.json` - Your data file (should contain the refined JSON data)
-
-### Running the Dashboard
-1. **Option 1: Simple HTTP Server**
+1. **Start the server:**
    ```bash
-   # Using Python 3
    python -m http.server 8000
-   
-   # Using Node.js
-   npx http-server
    ```
 
-2. **Option 2: Live Server (VS Code)**
-   - Install the "Live Server" extension
-   - Right-click on `index.html` and select "Open with Live Server"
+2. **Open browser:** Navigate to `http://localhost:8000`
 
-3. **Option 3: Any Web Server**
-   - Place files on any web server (Apache, Nginx, etc.)
-   - Access via web browser
+3. **Dashboard loads automatically** with all visualizations
 
-4. **Open in Browser**
-   - Navigate to `http://localhost:8000` (or your server URL)
-   - The dashboard will load automatically
+## 📁 Key Files
 
-## 📁 File Structure
-
-```
-├── index.html              # Main HTML dashboard interface
-├── app.js                  # Core application logic and visualizations
-├── iso3-map.js            # Country ISO3 code mappings
-├── data.json              # Your data file (refined JSON format)
-├── excel_to_json_refined.py  # Excel to JSON conversion script
-├── requirements.txt        # Python dependencies
-└── README.md              # This documentation
-```
+| File | Purpose |
+|------|---------|
+| `index.html` | Main dashboard interface |
+| `app.js` | Application logic and visualizations |
+| `data.json` | Main submissions data |
+| `country_region_mapping.json` | Country-region mapping |
+| `excel_to_json_refined.py` | Convert Excel to JSON |
+| `generate_country_mapping.py` | Generate country-region mapping |
+| `check_json_structure.py` | Validate data structure |
 
 ## 🔧 Configuration
 
-### Data Format
-The dashboard expects a JSON file (`data.json`) with the following structure:
-```json
-[
-  {
-    "ID": "unique_id",
-    "Country": "Country Name",
-    "Region": "Region Name",
-    "Name of your organization": "Organization Name",
-    "Title": "Solution Title",
-    "Maturity stage": "Concept|Prototype|Piloted|Implemented|Implemented at scale",
-    "Total Score": 85.5,
-    "SDGs addressed": "SDG 1; SDG 3; SDG 8",
-    "Primary thematic focus area": "Theme Name",
-    // ... other fields
-  }
-]
+### Data Sources
+Update file paths in `app.js` CONFIG object:
+```javascript
+DATA_SOURCES: {
+  MAIN_DATA: 'data.json',
+  COUNTRY_MAPPING: 'country_region_mapping.json'
+}
 ```
 
-### Customization
-- **Chart Colors**: Modify `CONFIG.CHART_COLORS` in `app.js`
-- **Chart Limits**: Adjust `CONFIG.MAX_TOP_SOLUTIONS` for table display
-- **CSV Export**: Customize `CONFIG.CSV_FILENAME` for export naming
+### Required Data Fields
+- `Country`, `Region`, `Title`, `Total Score`, `SDGs addressed`
+- `Maturity stage`, `Primary thematic focus area`
+- `Please specify the type of organization you are representing.`
 
-## 🎨 Customization Options
-
-### Styling
-- **CSS Variables**: Modify colors and spacing in `:root` section
-- **Responsive Breakpoints**: Adjust mobile layout in media queries
-- **Chart Themes**: Customize Plotly.js chart appearances
-
-### Functionality
-- **Additional Filters**: Add new filter types in the `AppState` class
-- **New Visualizations**: Create new chart functions in `UIComponents`
-- **Data Processing**: Extend `DataProcessor` class for custom calculations
+## 🎨 Customization
+- **Colors**: Modify CSS variables in `styles.css`
+- **Charts**: Adjust `CONFIG.CHART_COLORS` in `app.js`
+- **Data Sources**: Update `CONFIG.DATA_SOURCES` for different files
 
 ## 🐛 Troubleshooting
 
-### Common Issues
+| Issue | Solution |
+|-------|----------|
+| Charts not loading | Run `python check_json_structure.py` |
+| Map not displaying | Run `python generate_country_mapping.py` |
+| Data loading errors | Check `CONFIG.DATA_SOURCES` paths |
+| Performance issues | Check data size (>10k records may be slow) |
+| Export not working | Check browser download permissions |
 
-1. **Charts Not Loading**
-   - Check browser console for JavaScript errors
-   - Ensure `data.json` is accessible and properly formatted
-   - Verify Plotly.js library is loading correctly
-
-2. **Map Not Displaying**
-   - Check if country names in data match ISO3 mappings
-   - Verify `iso3-map.js` is loaded before `app.js`
-
-3. **Performance Issues**
-   - Large datasets (>10,000 records) may cause slow rendering
-   - Consider implementing data pagination or virtualization
-   - Use browser developer tools to profile performance
-
-4. **Export Not Working**
-   - Ensure browser allows file downloads
-   - Check if data contains special characters that need escaping
-
-### Browser Compatibility
-- **Chrome/Edge**: Full support
-- **Firefox**: Full support
-- **Safari**: Full support
-- **Internet Explorer**: Not supported
+**Browser Support:** Chrome, Firefox, Safari (IE not supported)
 
 ## 🔄 Data Updates
 
-### Adding New Data
-1. Update your Excel file with new submissions
-2. Run the conversion script:
-   ```bash
-   python excel_to_json_refined.py
-   ```
-3. Replace `data.json` with the new output
-4. Refresh the dashboard
+### **Complete Workflow:**
+1. **Update Excel:** Edit `Further analysis.xlsx`
+2. **Convert to JSON:** `python excel_to_json_refined.py`
+3. **Generate mapping:** `python generate_country_mapping.py`
+4. **Validate data:** `python check_json_structure.py`
+5. **Deploy:** Replace files and refresh dashboard
 
-### Modifying Data Structure
-1. Update the `DataProcessor.normalizeRow()` function in `app.js`
-2. Adjust filter options and visualization logic as needed
-3. Test with sample data before deploying
+### **Scripts:**
+| Script | Purpose |
+|--------|---------|
+| `excel_to_json_refined.py` | Convert Excel to JSON |
+| `generate_country_mapping.py` | Generate country-region mapping |
+| `check_json_structure.py` | Validate data structure |
+| `fix_json_complete.py` | Fix corrupted JSON |
 
-## 📈 Performance Tips
-
-- **Debounced Filtering**: Filters update after 300ms of inactivity
-- **Efficient Rendering**: Charts only re-render when data changes
-- **Memory Management**: Large datasets are processed in chunks
-- **Lazy Loading**: Consider implementing lazy loading for very large datasets
-
-## 🤝 Contributing
-
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Test thoroughly
-5. Submit a pull request
-
-## 📄 License
-
-This project is open source and available under the [MIT License](LICENSE).
+### **Quick Fixes:**
+- **Corrupted data:** `python fix_json_complete.py`
+- **Mapping issues:** `python generate_country_mapping.py`
+- **Validation:** `python check_json_structure.py`
 
 ## 🆘 Support
 
-For issues or questions:
-1. Check the troubleshooting section above
-2. Review browser console for error messages
-3. Verify data format matches expected structure
-4. Create an issue in the repository
+### **For IT Support:**
+- **Start:** `python -m http.server 8000` → `http://localhost:8000`
+- **Update data:** Follow "Data Updates" workflow above
+- **Issues:** Check troubleshooting table, run diagnostic scripts
+
+### **Emergency:**
+- **Won't load:** Run `python check_json_structure.py`
+- **Wrong data:** Re-run conversion scripts
+- **Performance:** Check data size
 
 ---
 
-**Built with ❤️ using HTML5, CSS3, JavaScript (ES6+), and Plotly.js**
+**Built with HTML5, CSS3, JavaScript, Plotly.js, Python**  
+**Version:** 2.0 | **Maintained by:** UNIDO TCS/DAI
