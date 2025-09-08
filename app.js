@@ -495,6 +495,7 @@ class AppState {
       sdg: new Set()
     };
     updateFilterUI(false);
+    updateFilterDisplay();
   }
   
   /**
@@ -1641,6 +1642,47 @@ function updateFilterUI(resetCountries = true) {
     fillSelect('fRegion', utils.unique(appState.rawData.map(r => r._region)));
     fillSelect('fCountry', utils.unique(appState.rawData.map(r => r._country)));
   }
+  updateFilterDisplay();
+}
+
+/**
+ * Updates the visual display of filter selections
+ * Shows count of selected items instead of "0 Items"
+ */
+function updateFilterDisplay() {
+  const filterConfigs = [
+    { id: 'fRegion', key: 'region', label: 'Region' },
+    { id: 'fCountry', key: 'country', label: 'Country' },
+    { id: 'fOrg', key: 'org', label: 'Organization' },
+    { id: 'fMaturity', key: 'maturity', label: 'Maturity' },
+    { id: 'fSDG', key: 'sdg', label: 'SDG' }
+  ];
+
+  filterConfigs.forEach(config => {
+    const select = utils.el(config.id);
+    if (!select) return;
+
+    const selectedCount = appState.filters[config.key].size;
+    
+    // Add a custom attribute to track selection count on both select and label
+    select.setAttribute('data-selected-count', selectedCount);
+    
+    // Also set the attribute on the parent label for the visual indicator
+    const label = select.closest('label');
+    if (label) {
+      label.setAttribute('data-selected-count', selectedCount);
+    }
+    
+    // Update the title attribute for better accessibility
+    if (selectedCount === 0) {
+      select.title = `Select ${config.label} to filter`;
+    } else if (selectedCount === 1) {
+      const selectedValue = Array.from(appState.filters[config.key])[0];
+      select.title = `Selected: ${selectedValue}`;
+    } else {
+      select.title = `${selectedCount} ${config.label.toLowerCase()}s selected`;
+    }
+  });
 }
 
 /**
@@ -1663,6 +1705,9 @@ function setFilterFromSelect(id) {
   if (key === 'org') appState.filters.org = selected;
   if (key === 'maturity') appState.filters.maturity = selected;
   if (key === 'sdg') appState.filters.sdg = selected;
+  
+  // Update the visual display
+  updateFilterDisplay();
 }
 
 /**
@@ -1723,7 +1768,7 @@ function toggleKioskMode() {
     utils.el('toggleKiosk').title = 'Show filter controls';
   } else {
     controls.classList.add('show');
-    utils.el('toggleKiosk').textContent = 'Kiosk';
+    utils.el('toggleKiosk').textContent = 'Hide Controls';
     utils.el('toggleKiosk').title = 'Hide filter controls';
   }
 }
@@ -1800,6 +1845,9 @@ async function init() {
   // Initial render
   renderAll();
   
+  // Update filter display
+  updateFilterDisplay();
+  
   // Update map projection button text
   appState.updateMapProjectionButton();
   
@@ -1813,7 +1861,7 @@ async function init() {
     utils.el('toggleKiosk').title = 'Show filter controls';
   } else {
     controls.classList.add('show');
-    utils.el('toggleKiosk').textContent = 'Kiosk';
+    utils.el('toggleKiosk').textContent = 'Hide Controls';
     utils.el('toggleKiosk').title = 'Hide filter controls';
   }
 }

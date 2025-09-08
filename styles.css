@@ -499,6 +499,36 @@ h1 {
   gap: 8px;
   min-width: 200px;
   color: var(--text);
+  position: relative;
+}
+
+/* Add selection count indicator */
+.controls label::after {
+  content: attr(data-selected-count);
+  position: absolute;
+  top: 0;
+  right: 0;
+  background: var(--brand);
+  color: white;
+  font-size: 11px;
+  font-weight: 600;
+  padding: 2px 6px;
+  border-radius: 10px;
+  min-width: 16px;
+  text-align: center;
+  opacity: 0;
+  transform: scale(0.8);
+  transition: all 0.2s ease;
+}
+
+.controls label[data-selected-count]:not([data-selected-count="0"])::after {
+  opacity: 1;
+  transform: scale(1);
+}
+
+/* Hide the count indicator when no items are selected */
+.controls label[data-selected-count="0"]::after {
+  display: none;
 }
 
 .controls select {
@@ -512,6 +542,63 @@ h1 {
   touch-action: manipulation;
   /* Ensure minimum touch target size */
   min-height: 44px;
+  /* Custom styling for mobile */
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%239FB3C8' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6,9 12,15 18,9'%3e%3c/polyline%3e%3c/svg%3e");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  background-size: 16px;
+  padding-right: 40px;
+}
+
+/* Custom styling for selected items count */
+.controls select:focus {
+  outline: none;
+  border-color: var(--brand);
+  box-shadow: 0 0 0 2px rgba(0, 163, 224, 0.2);
+}
+
+/* Mobile-specific select styling */
+@media (max-width: 767px) {
+  .controls select {
+    font-size: 16px; /* Prevents zoom on iOS */
+    padding: 12px 40px 12px 12px;
+    min-height: 48px;
+    background-size: 18px;
+    background-position: right 14px center;
+  }
+  
+  /* Hide the default "0 Items" text and show custom placeholder */
+  .controls select option:first-child {
+    color: var(--muted);
+    font-style: italic;
+  }
+  
+  /* Style for when items are selected */
+  .controls select:not([size="0"]) {
+    color: var(--text);
+  }
+  
+  /* Improve label styling on mobile */
+  .controls label {
+    min-width: auto;
+    font-size: 14px;
+  }
+  
+  /* Make selection count indicator more prominent on mobile */
+  .controls label::after {
+    font-size: 12px;
+    padding: 3px 7px;
+    min-width: 18px;
+  }
+  
+  /* Add visual feedback for active filters */
+  .controls select[data-selected-count]:not([data-selected-count="0"]) {
+    border-color: var(--brand);
+    background: rgba(0, 163, 224, 0.05);
+  }
 }
 
 .btn {
