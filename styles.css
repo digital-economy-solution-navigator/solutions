@@ -55,6 +55,75 @@ body {
   background: var(--bg);
   color: var(--text);
   font: 500 18px/1.6 -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Inter, system-ui, sans-serif;
+  /* Improve text rendering on mobile */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  /* Prevent horizontal scroll on mobile */
+  overflow-x: hidden;
+}
+
+/* Landscape suggestion banner */
+.landscape-suggestion {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  background: linear-gradient(135deg, var(--brand), var(--accent));
+  color: white;
+  padding: 12px 16px;
+  text-align: center;
+  font-size: 14px;
+  font-weight: 600;
+  z-index: 10001;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  animation: slideDown 0.3s ease-out;
+}
+
+.landscape-suggestion.show {
+  display: block;
+}
+
+.landscape-suggestion .icon {
+  font-size: 18px;
+  margin-right: 8px;
+  display: inline-block;
+  animation: rotate 2s ease-in-out infinite;
+}
+
+@keyframes slideDown {
+  from {
+    transform: translateY(-100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes rotate {
+  0%, 100% { transform: rotate(0deg); }
+  50% { transform: rotate(90deg); }
+}
+
+.landscape-suggestion .close-btn {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  color: white;
+  font-size: 18px;
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 4px;
+  transition: background-color 0.2s ease;
+}
+
+.landscape-suggestion .close-btn:hover {
+  background: rgba(255, 255, 255, 0.2);
 }
 
 /* Smooth theme transitions */
@@ -72,6 +141,21 @@ header {
   box-shadow: var(--header-shadow);
   backdrop-filter: blur(10px);
   transition: all 0.3s ease;
+}
+
+/* Adjust header position when landscape banner is shown */
+body:has(.landscape-suggestion.show) header {
+  top: 48px; /* Height of the landscape suggestion banner */
+}
+
+/* Fallback for browsers that don't support :has() */
+.landscape-suggestion.show ~ header {
+  top: 48px;
+}
+
+/* Alternative approach using JavaScript class */
+body.landscape-banner-shown header {
+  top: 48px;
 }
 
 .header-inner {
@@ -423,6 +507,11 @@ h1 {
   border: var(--border);
   background: var(--panel);
   color: var(--text);
+  /* Touch-friendly improvements */
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+  /* Ensure minimum touch target size */
+  min-height: 44px;
 }
 
 .btn {
@@ -438,6 +527,12 @@ h1 {
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  /* Touch-friendly improvements */
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+  user-select: none;
+  /* Ensure minimum touch target size */
+  min-height: 44px;
 }
 
 .btn.secondary {
@@ -445,11 +540,29 @@ h1 {
   color: var(--text);
 }
 
+/* Header actions container */
+.actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+/* Header action buttons styling */
+.actions .btn {
+  min-width: auto;
+  padding: 8px 12px;
+  font-size: 14px;
+  height: 36px;
+  white-space: nowrap;
+  transition: all 0.3s ease;
+}
+
 /* Theme toggle button styling */
 #toggleTheme {
-  font-size: 18px;
-  padding: 10px 12px;
-  transition: all 0.3s ease;
+  font-size: 16px;
+  padding: 8px 10px;
+  min-width: 40px;
 }
 
 #toggleTheme:hover {
@@ -827,19 +940,628 @@ footer::before {
 }
 
 
-/* Responsive */
-@media (max-width: 1024px) {
-  .kpis {
-    grid-template-columns: repeat(2, 1fr);
+/* ===================== RESPONSIVE DESIGN ===================== */
+
+/* Large screens and ultra-wide displays (1400px+) */
+@media (min-width: 1400px) {
+  .grid {
+    max-width: 2000px;
+    padding: 0 clamp(20px, 5vw, 60px) clamp(30px, 7vw, 60px);
   }
-  .card {
-    grid-column: 1 / -1;
+  
+  .kpis {
+    max-width: 1800px;
+    padding: clamp(20px, 5vw, 60px);
+  }
+  
+  .kpi .value {
+    font-size: clamp(48px, 7vw, 80px);
+  }
+  
+  .header-inner {
+    padding: 28px clamp(20px, 5vw, 60px);
+  }
+  
+  h1 {
+    font-size: clamp(28px, 4vw, 42px);
   }
 }
 
-@media (max-width: 640px) {
+/* Desktop and large tablets (1024px - 1399px) */
+@media (max-width: 1399px) and (min-width: 1024px) {
+  .grid {
+    max-width: 1600px;
+  }
+  
+  .kpis {
+    grid-template-columns: repeat(4, 1fr);
+    gap: 24px;
+  }
+  
+  .card {
+    grid-column: span 6;
+  }
+}
+
+/* Tablets and small desktops (768px - 1023px) */
+@media (max-width: 1023px) and (min-width: 768px) {
+  .kpis {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+    padding: clamp(16px, 4vw, 32px);
+  }
+  
+  .card {
+    grid-column: 1 / -1;
+  }
+  
+  /* Stack SDGs and Organization Type charts vertically on tablets */
+  .card:nth-of-type(2), /* SDGs chart */
+  .card:nth-of-type(3) { /* Organization Type chart */
+    grid-column: 1 / -1;
+  }
+  
   .kpi .value {
-    font-size: 40px;
+    font-size: clamp(36px, 5vw, 48px);
+  }
+  
+  .header-inner {
+    padding: 20px clamp(16px, 4vw, 32px);
+  }
+  
+  h1 {
+    font-size: clamp(20px, 3vw, 28px);
+  }
+  
+  .branding img {
+    height: 48px;
+  }
+  
+  .controls {
+    padding: 12px clamp(16px, 4vw, 32px) 18px;
+  }
+  
+  .controls label {
+    min-width: 180px;
+  }
+  
+  /* Map adjustments for tablets */
+  #map {
+    height: 480px;
+  }
+  
+  /* Chart height adjustments for tablets */
+  #sdgStack,
+  #orgPie {
+    height: 400px !important;
+  }
+}
+
+/* Mobile landscape and small tablets (640px - 767px) */
+@media (max-width: 767px) and (min-width: 640px) {
+  .kpis {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+    padding: clamp(12px, 3vw, 24px);
+  }
+  
+  .kpi {
+    padding: 20px;
+  }
+  
+  .kpi .value {
+    font-size: clamp(32px, 4vw, 40px);
+  }
+  
+  .header-inner {
+    padding: 16px clamp(12px, 3vw, 24px);
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+  
+  .branding {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+  
+  .branding img {
+    height: 40px;
+  }
+  
+  h1 {
+    font-size: clamp(18px, 2.5vw, 24px);
+  }
+  
+  .subtitle {
+    font-size: clamp(11px, 1.2vw, 13px);
+  }
+  
+  /* Header actions responsive */
+  .actions {
+    gap: 6px;
+    justify-content: flex-start;
+  }
+  
+  .actions .btn {
+    padding: 6px 10px;
+    font-size: 13px;
+    height: 32px;
+  }
+  
+  #toggleTheme {
+    padding: 6px 8px;
+    min-width: 36px;
+    font-size: 14px;
+  }
+  
+  #toggleKiosk {
+    padding: 6px 8px;
+    font-size: 12px;
+  }
+  
+  .controls {
+    padding: 10px clamp(12px, 3vw, 24px) 16px;
+    flex-direction: column;
+    align-items: stretch;
+  }
+  
+  .controls label {
+    min-width: auto;
+  }
+  
+  .controls select {
+    width: 100%;
+  }
+  
+  .btn {
+    width: 100%;
+    min-width: auto;
+  }
+  
+  .grid {
+    padding: 0 clamp(12px, 3vw, 24px) clamp(16px, 4vw, 32px);
+    gap: 16px;
+  }
+  
+  .card .head {
+    padding: 14px 16px;
+  }
+  
+  .card .body {
+    padding: 12px 16px;
+  }
+  
+  /* Map adjustments */
+  #map {
+    height: 400px;
+  }
+  
+  /* Chart height adjustments for mobile landscape */
+  #sdgStack,
+  #orgPie {
+    height: 350px !important;
+  }
+  
+  /* Footer adjustments */
+  footer {
+    padding: 16px clamp(12px, 3vw, 24px);
+  }
+}
+
+/* Mobile portrait (480px - 639px) */
+@media (max-width: 639px) and (min-width: 480px) {
+  .kpis {
+    grid-template-columns: 1fr;
+    gap: 14px;
+    padding: clamp(10px, 2.5vw, 20px);
+  }
+  
+  .kpi {
+    padding: 18px;
+  }
+  
+  .kpi .value {
+    font-size: clamp(28px, 3.5vw, 36px);
+  }
+  
+  .kpi .label {
+    font-size: 12px;
+  }
+  
+  .kpi .hint {
+    font-size: 12px;
+  }
+  
+  .header-inner {
+    padding: 14px clamp(10px, 2.5vw, 20px);
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+  
+  .branding {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 6px;
+  }
+  
+  .branding img {
+    height: 36px;
+  }
+  
+  h1 {
+    font-size: clamp(16px, 2.2vw, 22px);
+  }
+  
+  .subtitle {
+    font-size: clamp(10px, 1.1vw, 12px);
+  }
+  
+  /* Header actions responsive */
+  .actions {
+    gap: 4px;
+    justify-content: flex-start;
+    flex-wrap: wrap;
+  }
+  
+  .actions .btn {
+    padding: 5px 8px;
+    font-size: 12px;
+    height: 30px;
+    flex-shrink: 0;
+  }
+  
+  #toggleTheme {
+    padding: 5px 6px;
+    min-width: 32px;
+    font-size: 12px;
+  }
+  
+  #toggleKiosk {
+    padding: 5px 6px;
+    font-size: 11px;
+  }
+  
+  .controls {
+    padding: 8px clamp(10px, 2.5vw, 20px) 14px;
+    flex-direction: column;
+    align-items: stretch;
+  }
+  
+  .controls label {
+    min-width: auto;
+    gap: 6px;
+  }
+  
+  .controls select {
+    width: 100%;
+    padding: 8px 10px;
+    font-size: 14px;
+  }
+  
+  .btn {
+    width: 100%;
+    min-width: auto;
+    padding: 8px 12px;
+    font-size: 14px;
+    height: 36px;
+  }
+  
+  .grid {
+    padding: 0 clamp(10px, 2.5vw, 20px) clamp(12px, 3vw, 24px);
+    gap: 14px;
+  }
+  
+  .card .head {
+    padding: 12px 14px;
+  }
+  
+  .card .body {
+    padding: 10px 14px;
+  }
+  
+  .card .head .title {
+    font-size: 16px;
+  }
+  
+  /* Map adjustments */
+  #map {
+    height: 350px;
+  }
+  
+  /* Chart height adjustments for mobile portrait */
+  #sdgStack,
+  #orgPie {
+    height: 300px !important;
+  }
+  
+  /* Footer adjustments */
+  footer {
+    padding: 12px clamp(10px, 2.5vw, 20px);
+    min-height: 60px;
+  }
+  
+  .footer-links {
+    flex-direction: column;
+    gap: 8px;
+  }
+  
+  .footer-label {
+    margin-right: 0;
+    margin-bottom: 4px;
+  }
+  
+  .footer-link {
+    font-size: 12px;
+    padding: 4px 8px;
+  }
+}
+
+/* Small mobile devices (320px - 479px) */
+@media (max-width: 479px) {
+  .kpis {
+    grid-template-columns: 1fr;
+    gap: 12px;
+    padding: clamp(8px, 2vw, 16px);
+  }
+  
+  .kpi {
+    padding: 16px;
+  }
+  
+  .kpi .value {
+    font-size: clamp(24px, 3vw, 32px);
+  }
+  
+  .kpi .label {
+    font-size: 11px;
+  }
+  
+  .kpi .hint {
+    font-size: 11px;
+  }
+  
+  .header-inner {
+    padding: 12px clamp(8px, 2vw, 16px);
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+  
+  .branding {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+  }
+  
+  .branding img {
+    height: 32px;
+  }
+  
+  h1 {
+    font-size: clamp(14px, 1.8vw, 20px);
+  }
+  
+  .subtitle {
+    font-size: clamp(9px, 1vw, 11px);
+  }
+  
+  /* Header actions responsive - very compact */
+  .actions {
+    gap: 3px;
+    justify-content: flex-start;
+    flex-wrap: wrap;
+  }
+  
+  .actions .btn {
+    padding: 4px 6px;
+    font-size: 11px;
+    height: 28px;
+    flex-shrink: 0;
+  }
+  
+  #toggleTheme {
+    padding: 4px 5px;
+    min-width: 28px;
+    font-size: 11px;
+  }
+  
+  #toggleKiosk {
+    padding: 4px 5px;
+    font-size: 10px;
+  }
+  
+  .controls {
+    padding: 6px clamp(8px, 2vw, 16px) 12px;
+    flex-direction: column;
+    align-items: stretch;
+  }
+  
+  .controls label {
+    min-width: auto;
+    gap: 4px;
+  }
+  
+  .controls select {
+    width: 100%;
+    padding: 6px 8px;
+    font-size: 13px;
+  }
+  
+  .btn {
+    width: 100%;
+    min-width: auto;
+    padding: 6px 10px;
+    font-size: 13px;
+    height: 32px;
+  }
+  
+  .grid {
+    padding: 0 clamp(8px, 2vw, 16px) clamp(10px, 2.5vw, 20px);
+    gap: 12px;
+  }
+  
+  .card .head {
+    padding: 10px 12px;
+  }
+  
+  .card .body {
+    padding: 8px 12px;
+  }
+  
+  .card .head .title {
+    font-size: 14px;
+  }
+  
+  /* Map adjustments */
+  #map {
+    height: 300px;
+  }
+  
+  /* Chart height adjustments for small mobile */
+  #sdgStack,
+  #orgPie {
+    height: 280px !important;
+  }
+  
+  /* Footer adjustments */
+  footer {
+    padding: 10px clamp(8px, 2vw, 16px);
+    min-height: 50px;
+  }
+  
+  .footer-links {
+    flex-direction: column;
+    gap: 6px;
+  }
+  
+  .footer-label {
+    margin-right: 0;
+    margin-bottom: 2px;
+    font-size: 11px;
+  }
+  
+  .footer-link {
+    font-size: 11px;
+    padding: 3px 6px;
+  }
+  
+  /* Modal adjustments for small screens */
+  .modal-content {
+    width: 95%;
+    margin: 5% auto;
+  }
+  
+  .modal-header {
+    padding: 16px 18px;
+  }
+  
+  .modal-body {
+    padding: 18px;
+  }
+  
+  .modal-header h3 {
+    font-size: 18px;
+  }
+  
+  .modal-stats .stat {
+    font-size: 11px;
+    padding: 3px 8px;
+  }
+}
+
+/* Extra small devices (below 320px) */
+@media (max-width: 319px) {
+  .kpis {
+    padding: 6px;
+  }
+  
+  .kpi {
+    padding: 12px;
+  }
+  
+  .kpi .value {
+    font-size: 20px;
+  }
+  
+  .header-inner {
+    padding: 8px 6px;
+  }
+  
+  .branding img {
+    height: 28px;
+  }
+  
+  h1 {
+    font-size: 16px;
+  }
+  
+  .subtitle {
+    font-size: 10px;
+  }
+  
+  /* Header actions responsive - ultra compact */
+  .actions {
+    gap: 2px;
+    justify-content: flex-start;
+    flex-wrap: wrap;
+  }
+  
+  .actions .btn {
+    padding: 3px 4px;
+    font-size: 10px;
+    height: 24px;
+    flex-shrink: 0;
+  }
+  
+  #toggleTheme {
+    padding: 3px 4px;
+    min-width: 24px;
+    font-size: 10px;
+  }
+  
+  #toggleKiosk {
+    padding: 3px 4px;
+    font-size: 9px;
+  }
+  
+  .controls {
+    padding: 4px 6px 8px;
+  }
+  
+  .grid {
+    padding: 0 6px 8px;
+    gap: 8px;
+  }
+  
+  .card .head {
+    padding: 8px 10px;
+  }
+  
+  .card .body {
+    padding: 6px 10px;
+  }
+  
+  #map {
+    height: 250px;
+  }
+  
+  /* Chart height adjustments for extra small devices */
+  #sdgStack,
+  #orgPie {
+    height: 250px !important;
+  }
+  
+  footer {
+    padding: 8px 6px;
+    min-height: 40px;
+  }
+  
+  .modal-content {
+    width: 98%;
+    margin: 1% auto;
   }
 }
 
@@ -1007,13 +1729,14 @@ footer::before {
 }
 
 /* Modal responsive styles */
-@media (max-width: 768px) {
+@media (max-width: 1023px) {
   .submissions-modal {
-    padding: 10px;
+    padding: 15px;
   }
   
   .modal-content {
-    max-height: 90vh;
+    max-height: 85vh;
+    width: 95%;
   }
   
   .modal-header {
@@ -1052,11 +1775,129 @@ footer::before {
   }
 }
 
+@media (max-width: 767px) {
+  .submissions-modal {
+    padding: 10px;
+  }
+  
+  .modal-content {
+    max-height: 90vh;
+    width: 98%;
+  }
+  
+  .modal-header {
+    padding: 16px 18px;
+  }
+  
+  .modal-body {
+    padding: 18px;
+  }
+  
+  .modal-header h3 {
+    font-size: 18px;
+  }
+  
+  .modal-stats .stat {
+    font-size: 11px;
+    padding: 3px 8px;
+  }
+  
+  .submission-card {
+    padding: 12px;
+  }
+  
+  .submission-title {
+    font-size: 14px;
+  }
+  
+  .submission-score {
+    font-size: 12px;
+    padding: 3px 6px;
+    min-width: 60px;
+  }
+  
+  .detail-row .label,
+  .detail-row .value {
+    font-size: 12px;
+  }
+}
+
+@media (max-width: 479px) {
+  .submissions-modal {
+    padding: 5px;
+  }
+  
+  .modal-content {
+    max-height: 95vh;
+    width: 100%;
+    margin: 2.5% auto;
+  }
+  
+  .modal-header {
+    padding: 12px 14px;
+  }
+  
+  .modal-body {
+    padding: 14px;
+  }
+  
+  .modal-header h3 {
+    font-size: 16px;
+  }
+  
+  .modal-stats .stat {
+    font-size: 10px;
+    padding: 2px 6px;
+  }
+  
+  .submission-card {
+    padding: 10px;
+  }
+  
+  .submission-title {
+    font-size: 13px;
+  }
+  
+  .submission-score {
+    font-size: 11px;
+    padding: 2px 5px;
+    min-width: 50px;
+  }
+  
+  .detail-row .label,
+  .detail-row .value {
+    font-size: 11px;
+  }
+}
+
 /* QR Code Modal Responsive Styles */
-@media (max-width: 768px) {
+@media (max-width: 1023px) {
+  .qr-code-container {
+    gap: 24px;
+  }
+  
+  .qr-code-wrapper {
+    padding: 18px;
+  }
+  
+  .qr-code-image {
+    width: 160px;
+    height: 160px;
+  }
+  
+  .qr-code-info h3 {
+    font-size: 22px;
+  }
+  
+  .qr-code-info p {
+    font-size: 15px;
+  }
+}
+
+@media (max-width: 767px) {
   .qr-code-container {
     flex-direction: column;
-    gap: 24px;
+    gap: 20px;
     text-align: center;
   }
   
@@ -1090,17 +1931,185 @@ footer::before {
   }
 }
 
-@media (max-width: 480px) {
-  .qr-code-image {
-    width: 120px;
-    height: 120px;
+@media (max-width: 479px) {
+  .qr-code-container {
+    gap: 16px;
   }
   
   .qr-code-wrapper {
     padding: 12px;
   }
   
+  .qr-code-image {
+    width: 120px;
+    height: 120px;
+  }
+  
   .qr-code-info h3 {
     font-size: 18px;
+  }
+  
+  .qr-code-info p {
+    font-size: 13px;
+  }
+  
+  .feature span:last-child {
+    font-size: 13px;
+  }
+}
+
+@media (max-width: 319px) {
+  .qr-code-container {
+    gap: 12px;
+  }
+  
+  .qr-code-wrapper {
+    padding: 10px;
+  }
+  
+  .qr-code-image {
+    width: 100px;
+    height: 100px;
+  }
+  
+  .qr-code-info h3 {
+    font-size: 16px;
+  }
+  
+  .qr-code-info p {
+    font-size: 12px;
+  }
+  
+  .feature span:last-child {
+    font-size: 12px;
+  }
+}
+
+/* ===================== RESPONSIVE UTILITIES ===================== */
+
+/* Hide elements on small screens */
+@media (max-width: 767px) {
+  .hide-mobile {
+    display: none !important;
+  }
+}
+
+/* Hide elements on large screens */
+@media (min-width: 768px) {
+  .hide-desktop {
+    display: none !important;
+  }
+}
+
+/* Show elements only on mobile */
+@media (max-width: 479px) {
+  .show-mobile-only {
+    display: block !important;
+  }
+}
+
+@media (min-width: 480px) {
+  .show-mobile-only {
+    display: none !important;
+  }
+}
+
+/* Responsive text utilities */
+@media (max-width: 767px) {
+  .text-responsive {
+    font-size: clamp(14px, 2.5vw, 18px) !important;
+  }
+  
+  .text-responsive-sm {
+    font-size: clamp(12px, 2vw, 16px) !important;
+  }
+  
+  .text-responsive-lg {
+    font-size: clamp(18px, 3vw, 24px) !important;
+  }
+}
+
+/* Responsive spacing utilities */
+@media (max-width: 767px) {
+  .p-responsive {
+    padding: clamp(8px, 2vw, 16px) !important;
+  }
+  
+  .m-responsive {
+    margin: clamp(8px, 2vw, 16px) !important;
+  }
+  
+  .gap-responsive {
+    gap: clamp(8px, 2vw, 16px) !important;
+  }
+}
+
+/* Landscape orientation adjustments for mobile */
+@media (max-width: 767px) and (orientation: landscape) {
+  .header-inner {
+    padding: 12px clamp(12px, 3vw, 24px);
+  }
+  
+  .kpis {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+    padding: clamp(8px, 2vw, 16px);
+  }
+  
+  .kpi {
+    padding: 12px;
+  }
+  
+  .kpi .value {
+    font-size: clamp(24px, 3vw, 32px);
+  }
+  
+  #map {
+    height: 300px;
+  }
+  
+  .controls {
+    padding: 6px clamp(12px, 3vw, 24px) 10px;
+  }
+}
+
+/* High DPI display optimizations */
+@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+  .branding img {
+    image-rendering: -webkit-optimize-contrast;
+    image-rendering: crisp-edges;
+  }
+}
+
+/* Print styles */
+@media print {
+  .controls,
+  .btn,
+  .modal,
+  .submissions-modal,
+  footer {
+    display: none !important;
+  }
+  
+  .kpis {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+  }
+  
+  .card {
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+  
+  body {
+    background: white !important;
+    color: black !important;
+  }
+  
+  .kpi,
+  .card {
+    background: white !important;
+    border: 1px solid #ccc !important;
+    box-shadow: none !important;
   }
 }

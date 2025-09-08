@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Global Call for Solutions — UNGA Dashboard</title>
+  <title>Global Call for Solutions — Insights Dashboard</title>
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌍</text></svg>">
   
   <!-- External Libraries -->
@@ -15,25 +15,32 @@
   <link href="styles.css" rel="stylesheet">
 </head>
 
-<body>
-  <header>
+  <body>
+    <!-- Landscape mode suggestion banner -->
+    <div class="landscape-suggestion" id="landscapeSuggestion">
+      <span class="icon">📱</span>
+      For the best experience, please rotate your device to landscape mode
+      <button class="close-btn" onclick="hideLandscapeSuggestion()">×</button>
+    </div>
+    
+    <header>
     <div class="header-inner">
       <div class="branding">
         <img src="logo.png" alt="Logo" />
         <div>
-          <h1>Global Call for Solutions — Analytics</h1>
+          <h1>Global Call for Solutions — Insights Dashboard</h1>
           <div class="subtitle">UNGA Showcase · New York · Sep 2025 (PROTOTYPE)</div>
         </div>
       </div>
       
       <div class="actions">
-        <button id="toggleTheme" class="btn secondary" title="Toggle Theme" style="margin-right: 10px;">
+        <button id="toggleTheme" class="btn secondary" title="Toggle Theme">
           🌙
         </button>
-        <button id="showExplanation" class="btn secondary" title="How are submissions rated?" style="margin-right: 10px;">
+        <button id="showExplanation" class="btn secondary" title="How are submissions rated?">
           👁️
         </button>
-        <button id="showQRCode" class="btn secondary" title="Submit Your Solution" style="margin-right: 10px;">
+        <button id="showQRCode" class="btn secondary" title="Submit Your Solution">
           📝
         </button>
         <button id="toggleKiosk" class="btn secondary" title="Show filter controls">

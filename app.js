@@ -728,7 +728,7 @@ function renderKPIs(data) {
       <div class="hint">unique countries</div>
     </div>
     <div class="kpi">
-      <div class="label">Total Submissions</div>
+      <div class="label">Total Solutions</div>
       <div class="value">${utils.formatNumber(submissions, 0)}</div>
       <div class="hint">entries</div>
     </div>
@@ -1939,3 +1939,53 @@ document.addEventListener('DOMContentLoaded', function() {
     document.body.appendChild(errorDiv);
   }
 });
+
+// ===================== LANDSCAPE MODE SUGGESTION =====================
+
+// Landscape mode suggestion functionality
+function showLandscapeSuggestion() {
+  const banner = document.getElementById('landscapeSuggestion');
+  if (banner && !localStorage.getItem('landscapeSuggestionDismissed')) {
+    banner.classList.add('show');
+    document.body.classList.add('landscape-banner-shown');
+  }
+}
+
+function hideLandscapeSuggestion() {
+  const banner = document.getElementById('landscapeSuggestion');
+  if (banner) {
+    banner.classList.remove('show');
+    document.body.classList.remove('landscape-banner-shown');
+    localStorage.setItem('landscapeSuggestionDismissed', 'true');
+  }
+}
+
+// Check if device is in portrait mode on mobile
+function checkOrientation() {
+  const isMobile = window.innerWidth <= 768;
+  const isPortrait = window.innerHeight > window.innerWidth;
+  
+  if (isMobile && isPortrait) {
+    // Show suggestion after a short delay to avoid being too aggressive
+    setTimeout(showLandscapeSuggestion, 2000);
+  } else {
+    // Hide suggestion if in landscape
+    const banner = document.getElementById('landscapeSuggestion');
+    if (banner) {
+      banner.classList.remove('show');
+      document.body.classList.remove('landscape-banner-shown');
+    }
+  }
+}
+
+// Listen for orientation changes
+window.addEventListener('orientationchange', () => {
+  // Small delay to allow orientation change to complete
+  setTimeout(checkOrientation, 100);
+});
+
+// Listen for window resize (handles both orientation and window resize)
+window.addEventListener('resize', checkOrientation);
+
+// Check orientation on page load
+document.addEventListener('DOMContentLoaded', checkOrientation);
