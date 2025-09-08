@@ -178,6 +178,20 @@ h1 {
   font-size: 16px;
 }
 
+.desktop-link {
+  color: var(--brand);
+  text-decoration: none;
+  font-weight: 600;
+  border-bottom: 1px solid transparent;
+  transition: all 0.3s ease;
+}
+
+.desktop-link:hover {
+  color: var(--accent);
+  border-bottom-color: var(--accent);
+  text-decoration: none;
+}
+
 .qr-code-features {
   display: flex;
   flex-direction: column;
