@@ -33,6 +33,9 @@
         <button id="showExplanation" class="btn secondary" title="How are submissions rated?" style="margin-right: 10px;">
           👁️
         </button>
+        <button id="showQRCode" class="btn secondary" title="Submit Your Solution" style="margin-right: 10px;">
+          📝
+        </button>
         <button id="toggleKiosk" class="btn secondary" title="Show filter controls">
           Show Controls
         </button>
@@ -138,6 +141,41 @@
         https://account.mapbox.com/
       </a>
     </p>
+  </div>
+
+  <!-- QR Code Modal -->
+  <div id="qrCodeModal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>📝 Submit Your Solution</h2>
+        <button id="closeQRCode" class="close-btn">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div class="qr-code-container">
+          <div class="qr-code-wrapper">
+            <img src="form_qr.png" alt="QR Code to Submit Solution" class="qr-code-image" />
+          </div>
+          <div class="qr-code-info">
+            <h3>Join the Global Call for Solutions</h3>
+            <p>Scan this QR code with your mobile device to submit your innovative solution and be part of the global movement for positive change.</p>
+            <div class="qr-code-features">
+              <div class="feature">
+                <span class="feature-icon">🌍</span>
+                <span>Global Impact</span>
+              </div>
+              <div class="feature">
+                <span class="feature-icon">🚀</span>
+                <span>Innovation Focus</span>
+              </div>
+              <div class="feature">
+                <span class="feature-icon">🤝</span>
+                <span>Community Driven</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 
   <!-- Explanation Modal -->

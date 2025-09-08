@@ -1776,6 +1776,49 @@ function initializeModal() {
   });
 }
 
+/**
+ * Initializes QR code modal functionality
+ * Sets up event listeners for show/hide/close actions
+ */
+function initializeQRCodeModal() {
+  const modal = utils.el('qrCodeModal');
+  const showBtn = utils.el('showQRCode');
+  const closeBtn = utils.el('closeQRCode');
+
+  if (!modal || !showBtn || !closeBtn) {
+    console.warn('QR Code modal elements not found');
+    return;
+  }
+
+  // Show modal
+  showBtn.addEventListener('click', function() {
+    modal.style.display = 'block';
+    document.body.style.overflow = 'hidden'; // Prevent background scrolling
+  });
+
+  // Close modal
+  closeBtn.addEventListener('click', function() {
+    modal.style.display = 'none';
+    document.body.style.overflow = 'auto'; // Restore scrolling
+  });
+
+  // Close modal when clicking outside
+  window.addEventListener('click', function(event) {
+    if (event.target === modal) {
+      modal.style.display = 'none';
+      document.body.style.overflow = 'auto';
+    }
+  });
+
+  // Close modal with Escape key
+  document.addEventListener('keydown', function(event) {
+    if (event.key === 'Escape' && modal.style.display === 'block') {
+      modal.style.display = 'none';
+      document.body.style.overflow = 'auto';
+    }
+  });
+}
+
 // ============================================================================
 // APPLICATION STARTUP
 // ============================================================================
@@ -1788,6 +1831,7 @@ document.addEventListener('DOMContentLoaded', function() {
   try {
     init();
     initializeModal();
+    initializeQRCodeModal();
     console.log('✅ UNGA Analytics Dashboard initialized successfully');
   } catch (error) {
     console.error('❌ Failed to initialize application:', error);

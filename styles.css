@@ -119,6 +119,88 @@ h1 {
   backdrop-filter: blur(4px);
 }
 
+/* QR Code Modal Specific Styles */
+.qr-code-container {
+  display: flex;
+  gap: 32px;
+  align-items: center;
+  justify-content: center;
+  padding: 20px 0;
+}
+
+.qr-code-wrapper {
+  flex-shrink: 0;
+  background: white;
+  padding: 20px;
+  border-radius: 16px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+  border: 3px solid var(--brand);
+  position: relative;
+}
+
+.qr-code-wrapper::before {
+  content: '';
+  position: absolute;
+  top: -3px;
+  left: -3px;
+  right: -3px;
+  bottom: -3px;
+  background: linear-gradient(45deg, var(--brand), var(--accent));
+  border-radius: 16px;
+  z-index: -1;
+}
+
+.qr-code-image {
+  width: 180px;
+  height: 180px;
+  display: block;
+  border-radius: 8px;
+}
+
+.qr-code-info {
+  flex: 1;
+  max-width: 400px;
+}
+
+.qr-code-info h3 {
+  color: var(--text);
+  margin: 0 0 16px 0;
+  font-size: 24px;
+  font-weight: 700;
+}
+
+.qr-code-info p {
+  color: var(--muted);
+  line-height: 1.6;
+  margin-bottom: 24px;
+  font-size: 16px;
+}
+
+.qr-code-features {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.feature {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 0;
+}
+
+.feature-icon {
+  font-size: 20px;
+  width: 32px;
+  text-align: center;
+}
+
+.feature span:last-child {
+  color: var(--text);
+  font-weight: 500;
+  font-size: 14px;
+}
+
 .modal-content {
   background-color: var(--card-bg);
   margin: 2% auto;
@@ -949,5 +1031,58 @@ footer::before {
   
   .detail-row .label {
     min-width: auto;
+  }
+}
+
+/* QR Code Modal Responsive Styles */
+@media (max-width: 768px) {
+  .qr-code-container {
+    flex-direction: column;
+    gap: 24px;
+    text-align: center;
+  }
+  
+  .qr-code-wrapper {
+    padding: 16px;
+  }
+  
+  .qr-code-image {
+    width: 150px;
+    height: 150px;
+  }
+  
+  .qr-code-info {
+    max-width: 100%;
+  }
+  
+  .qr-code-info h3 {
+    font-size: 20px;
+  }
+  
+  .qr-code-info p {
+    font-size: 14px;
+  }
+  
+  .qr-code-features {
+    align-items: center;
+  }
+  
+  .feature {
+    justify-content: center;
+  }
+}
+
+@media (max-width: 480px) {
+  .qr-code-image {
+    width: 120px;
+    height: 120px;
+  }
+  
+  .qr-code-wrapper {
+    padding: 12px;
+  }
+  
+  .qr-code-info h3 {
+    font-size: 18px;
   }
 }
