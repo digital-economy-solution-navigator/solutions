@@ -66,8 +66,8 @@ const CONFIG = {
   
   // UI settings
   DEFAULT_KIOSK_MODE: true,
-  DEFAULT_THEME: 'dark',
-  DEFAULT_MAP_PROJECTION: 'equirectangular'
+  DEFAULT_THEME: 'light',
+  DEFAULT_MAP_PROJECTION: 'globe'
 };
 
 // ============================================================================
