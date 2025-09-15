@@ -1969,6 +1969,44 @@ function initializeQRCodeModal() {
 }
 
 // ============================================================================
+// DISCLAIMER FUNCTIONALITY
+// ============================================================================
+
+/**
+ * Initializes disclaimer button functionality
+ * Sets up event listeners for show/hide/close actions
+ */
+function initializeDisclaimer() {
+  const disclaimerBtn = utils.el('disclaimerBtn');
+  const disclaimerTooltip = utils.el('disclaimerTooltip');
+
+  if (!disclaimerBtn || !disclaimerTooltip) {
+    console.warn('Disclaimer elements not found');
+    return;
+  }
+
+  // Show disclaimer on button click
+  disclaimerBtn.addEventListener('click', function(e) {
+    e.stopPropagation();
+    disclaimerTooltip.classList.toggle('show');
+  });
+
+  // Hide disclaimer when clicking outside
+  document.addEventListener('click', function(event) {
+    if (!disclaimerBtn.contains(event.target) && !disclaimerTooltip.contains(event.target)) {
+      disclaimerTooltip.classList.remove('show');
+    }
+  });
+
+  // Hide disclaimer on escape key
+  document.addEventListener('keydown', function(event) {
+    if (event.key === 'Escape' && disclaimerTooltip.classList.contains('show')) {
+      disclaimerTooltip.classList.remove('show');
+    }
+  });
+}
+
+// ============================================================================
 // APPLICATION STARTUP
 // ============================================================================
 
@@ -1981,6 +2019,7 @@ document.addEventListener('DOMContentLoaded', function() {
     init();
     initializeModal();
     initializeQRCodeModal();
+    initializeDisclaimer();
     console.log('✅ UNGA Analytics Dashboard initialized successfully');
   } catch (error) {
     console.error('❌ Failed to initialize application:', error);
