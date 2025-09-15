@@ -159,7 +159,7 @@ window.COUNTRY_TO_ISO3 = {
   "Solomon Islands": "SLB",
   "Somalia": "SOM",
   "South Africa": "ZAF",
-  "South Korea": "KOR",
+  "Republic of Korea": "KOR",
   "South Sudan": "SSD",
   "Spain": "ESP",
   "Sri Lanka": "LKA",
