@@ -24,10 +24,11 @@ unga/
 ├── assets/                       # Static assets
 │   ├── logo.png                  # Application logo
 │   └── form_qr.png               # QR code for form submission
+├── data/                         # Data files
+│   ├── data.json                 # Solutions data
+│   └── country_region_mapping.json # Region mappings
 ├── index.html                    # Main HTML file
 ├── styles.css                    # CSS styles
-├── data.json                     # Solutions data
-├── country_region_mapping.json   # Region mappings
 └── app-original-backup.js        # Original monolithic file
 ```
 

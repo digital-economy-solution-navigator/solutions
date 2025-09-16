@@ -24,8 +24,8 @@ const CONFIG = {
   
   // Data source configuration - UPDATE THESE PATHS FOR NEW DATASETS
   DATA_SOURCES: {
-    MAIN_DATA: 'data.json',                    // Primary solutions data
-    COUNTRY_MAPPING: 'country_region_mapping.json'  // Optional country-region mappings
+    MAIN_DATA: 'data/data.json',                    // Primary solutions data
+    COUNTRY_MAPPING: 'data/country_region_mapping.json'  // Optional country-region mappings
   },
   
   // Data loading configuration
