@@ -20,6 +20,9 @@
   --header-end: #103B5C;
   --header-shadow: 0 8px 24px rgba(0,0,0,.35);
   --controls-bg: rgba(255,255,255,.03);
+  --card-bg: #1A2332;           /* semi-dark card background */
+  --header-bg: #1A2332;         /* header background */
+  --hover: rgba(255,255,255,.08); /* hover state background */
 }
 
 /* Light theme */
@@ -40,6 +43,9 @@
   --header-end: #007FB8;
   --header-shadow: 0 8px 24px rgba(0,0,0,.1);
   --controls-bg: rgba(0,0,0,.02);
+  --card-bg: #FFFFFF;           /* white card background for light theme */
+  --header-bg: #FFFFFF;         /* white header background for light theme */
+  --hover: rgba(0,0,0,.04);     /* hover state background for light theme */
 }
 
 /* Smooth theme transitions */
