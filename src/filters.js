@@ -1,0 +1,175 @@
+/**
+ * Filter management functionality
+ */
+
+/**
+ * Fills a select element with options
+ * @param {string} id - Element ID
+ * @param {Array} values - Array of values to populate
+ */
+function fillSelect(id, values) { 
+  const s = utils.el(id); 
+  if (!s) return; 
+  s.innerHTML = values.map(v => `<option value="${v}">${v}</option>`).join(''); 
+}
+
+/**
+ * Clears all selected options in a select element
+ * @param {string} id - Element ID
+ */
+function clearSelect(id) { 
+  const s = utils.el(id); 
+  if (!s) return; 
+  [...s.options].forEach(o => o.selected = false); 
+}
+
+/**
+ * Updates filter UI elements
+ * @param {boolean} resetCountries - Whether to reset country/region options
+ */
+function updateFilterUI(resetCountries = true) {
+  ['fRegion', 'fCountry', 'fOrg', 'fMaturity', 'fSDG'].forEach(id => clearSelect(id));
+  if (resetCountries) {
+    fillSelect('fRegion', utils.unique(appState.rawData.map(r => r._region)));
+    fillSelect('fCountry', utils.unique(appState.rawData.map(r => r._country)));
+  }
+  updateFilterDisplay();
+}
+
+/**
+ * Updates the visual display of filter selections
+ * Shows count of selected items instead of "0 Items"
+ */
+function updateFilterDisplay() {
+  const filterConfigs = [
+    { id: 'fRegion', key: 'region', label: 'Region' },
+    { id: 'fCountry', key: 'country', label: 'Country' },
+    { id: 'fOrg', key: 'org', label: 'Organization' },
+    { id: 'fMaturity', key: 'maturity', label: 'Maturity' },
+    { id: 'fSDG', key: 'sdg', label: 'SDG' }
+  ];
+
+  filterConfigs.forEach(config => {
+    const select = utils.el(config.id);
+    if (!select) return;
+
+    const selectedCount = appState.filters[config.key].size;
+    
+    // Add a custom attribute to track selection count on both select and label
+    select.setAttribute('data-selected-count', selectedCount);
+    
+    // Also set the attribute on the parent label for the visual indicator
+    const label = select.closest('label');
+    if (label) {
+      label.setAttribute('data-selected-count', selectedCount);
+    }
+    
+    // Update the title attribute for better accessibility
+    if (selectedCount === 0) {
+      select.title = `Select ${config.label} to filter`;
+    } else if (selectedCount === 1) {
+      const selectedValue = Array.from(appState.filters[config.key])[0];
+      select.title = `Selected: ${selectedValue}`;
+    } else {
+      select.title = `${selectedCount} ${config.label.toLowerCase()}s selected`;
+    }
+  });
+}
+
+/**
+ * Sets filter values from select element
+ * @param {string} id - Element ID of the select
+ */
+function setFilterFromSelect(id) {
+  const s = utils.el(id); 
+  const selected = new Set([...s.selectedOptions].map(o => o.value));
+  const key = id.replace('f', '').toLowerCase();
+  
+  if (key === 'region') { 
+    appState.filters.region = selected; 
+    updateCountryFilter(selected); 
+  }
+  if (key === 'country') { 
+    appState.filters.country = selected; 
+    updateRegionFilter(selected); 
+  }
+  if (key === 'org') appState.filters.org = selected;
+  if (key === 'maturity') appState.filters.maturity = selected;
+  if (key === 'sdg') appState.filters.sdg = selected;
+  
+  // Update the visual display
+  updateFilterDisplay();
+}
+
+/**
+ * Updates country filter options based on selected regions
+ * @param {Set} selectedRegions - Set of selected region names
+ */
+function updateCountryFilter(selectedRegions) {
+  if (!appState.countryRegionMapping) return;
+  if (selectedRegions.size === 0) { 
+    fillSelect('fCountry', utils.unique(appState.rawData.map(r => r._country))); 
+    return; 
+  }
+  const valid = new Set();
+  selectedRegions.forEach(region => {
+    (appState.countryRegionMapping.region_to_countries[region] || []).forEach(c => { 
+      if (appState.rawData.some(r => r._country === c)) valid.add(c); 
+    });
+  });
+  fillSelect('fCountry', Array.from(valid).sort()); 
+  appState.filters.country.clear(); 
+  clearSelect('fCountry');
+}
+
+/**
+ * Updates region filter options based on selected countries
+ * @param {Set} selectedCountries - Set of selected country names
+ */
+function updateRegionFilter(selectedCountries) {
+  if (!appState.countryRegionMapping) return;
+  if (selectedCountries.size === 0) { 
+    fillSelect('fRegion', utils.unique(appState.rawData.map(r => r._region))); 
+    return; 
+  }
+  const valid = new Set();
+  selectedCountries.forEach(country => { 
+    const region = appState.countryRegionMapping.country_to_region[country]; 
+    if (region) valid.add(region); 
+  });
+  fillSelect('fRegion', Array.from(valid).sort()); 
+  appState.filters.region.clear(); 
+  clearSelect('fRegion');
+}
+
+/**
+ * Toggles kiosk mode (shows/hides filter controls)
+ */
+function toggleKioskMode() {
+  appState.kiosk = !appState.kiosk;
+  const controls = utils.el('controls');
+  
+  if (appState.kiosk) {
+    controls.classList.remove('show');
+    utils.el('toggleKiosk').textContent = 'Show Controls';
+    utils.el('toggleKiosk').title = 'Show filter controls';
+  } else {
+    controls.classList.add('show');
+    utils.el('toggleKiosk').textContent = 'Hide Controls';
+    utils.el('toggleKiosk').title = 'Hide filter controls';
+  }
+}
+
+// Export for use in other modules
+if (typeof module !== 'undefined' && module.exports) {
+  module.exports = { 
+    fillSelect, 
+    clearSelect, 
+    updateFilterUI, 
+    updateFilterDisplay, 
+    setFilterFromSelect, 
+    updateCountryFilter, 
+    updateRegionFilter, 
+    toggleKioskMode 
+  };
+}
