@@ -1,0 +1,128 @@
+/* ================= RESPONSIVE UTILITIES ================= */
+
+/* Hide elements on small screens */
+@media (max-width: 767px) {
+  .hide-mobile {
+    display: none !important;
+  }
+}
+
+/* Hide elements on large screens */
+@media (min-width: 768px) {
+  .hide-desktop {
+    display: none !important;
+  }
+}
+
+/* Show elements only on mobile */
+@media (max-width: 479px) {
+  .show-mobile-only {
+    display: block !important;
+  }
+}
+
+@media (min-width: 480px) {
+  .show-mobile-only {
+    display: none !important;
+  }
+}
+
+/* Responsive text utilities */
+@media (max-width: 767px) {
+  .text-responsive {
+    font-size: clamp(14px, 2.5vw, 18px) !important;
+  }
+  
+  .text-responsive-sm {
+    font-size: clamp(12px, 2vw, 16px) !important;
+  }
+  
+  .text-responsive-lg {
+    font-size: clamp(18px, 3vw, 24px) !important;
+  }
+}
+
+/* Responsive spacing utilities */
+@media (max-width: 767px) {
+  .p-responsive {
+    padding: clamp(8px, 2vw, 16px) !important;
+  }
+  
+  .m-responsive {
+    margin: clamp(8px, 2vw, 16px) !important;
+  }
+  
+  .gap-responsive {
+    gap: clamp(8px, 2vw, 16px) !important;
+  }
+}
+
+/* Landscape orientation adjustments for mobile */
+@media (max-width: 767px) and (orientation: landscape) {
+  .header-inner {
+    padding: 12px clamp(12px, 3vw, 24px);
+  }
+  
+  .kpis {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+    padding: clamp(8px, 2vw, 16px);
+  }
+  
+  .kpi {
+    padding: 12px;
+  }
+  
+  .kpi .value {
+    font-size: clamp(24px, 3vw, 32px);
+  }
+  
+  #map {
+    height: 300px;
+  }
+  
+  .controls {
+    padding: 6px clamp(12px, 3vw, 24px) 10px;
+  }
+}
+
+/* High DPI display optimizations */
+@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+  .branding img {
+    image-rendering: -webkit-optimize-contrast;
+    image-rendering: crisp-edges;
+  }
+}
+
+/* Print styles */
+@media print {
+  .controls,
+  .btn,
+  .modal,
+  .submissions-modal,
+  footer {
+    display: none !important;
+  }
+  
+  .kpis {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+  }
+  
+  .card {
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+  
+  body {
+    background: white !important;
+    color: black !important;
+  }
+  
+  .kpi,
+  .card {
+    background: white !important;
+    border: 1px solid #ccc !important;
+    box-shadow: none !important;
+  }
+}

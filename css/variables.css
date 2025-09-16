@@ -1,0 +1,48 @@
+/* ================= CSS VARIABLES & THEMES ================= */
+
+:root {
+  /* Dark theme (default) */
+  --bg: #0B1324;            /* deep navy */
+  --panel: rgba(255,255,255,.06);
+  --panel-strong: rgba(255,255,255,.10);
+  --text: #EAF4FF;
+  --muted: #9FB3C8;
+  --brand: #00A3E0;         /* UN blue */
+  --accent: #45FFD3;        /* neon aqua */
+  --radius: 20px;
+  --shadow: 0 10px 30px rgba(0,0,0,.35);
+  --border: 1px solid rgba(255,255,255,.08);
+  --gap: 28px;
+  
+  /* Header colors for dark theme */
+  --header-start: #06142E;
+  --header-mid: #0B1E39;
+  --header-end: #103B5C;
+  --header-shadow: 0 8px 24px rgba(0,0,0,.35);
+  --controls-bg: rgba(255,255,255,.03);
+}
+
+/* Light theme */
+[data-theme="light"] {
+  --bg: #F8FAFC;            /* light gray */
+  --panel: rgba(0,0,0,.04);
+  --panel-strong: rgba(0,0,0,.08);
+  --text: #0F172A;
+  --muted: #64748B;
+  --brand: #00A3E0;         /* UN blue (same) */
+  --accent: #0891B2;        /* darker aqua for light mode */
+  --shadow: 0 10px 30px rgba(0,0,0,.1);
+  --border: 1px solid rgba(0,0,0,.08);
+  
+  /* Header colors for light theme - UN Blue */
+  --header-start: #00A3E0;
+  --header-mid: #0091CC;
+  --header-end: #007FB8;
+  --header-shadow: 0 8px 24px rgba(0,0,0,.1);
+  --controls-bg: rgba(0,0,0,.02);
+}
+
+/* Smooth theme transitions */
+* {
+  transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+}

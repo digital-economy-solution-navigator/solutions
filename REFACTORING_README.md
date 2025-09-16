@@ -2,7 +2,7 @@
 
 ## Overview
 
-The original `app.js` file (2,090 lines) has been refactored into a modular architecture with 10 separate files for better maintainability, readability, and organization.
+The original `app.js` file (2,090 lines) has been refactored into a modular architecture with 10 separate files for better maintainability, readability, and organization. Additionally, the `styles.css` file (2,297 lines) has been broken down into 18 modular CSS files.
 
 ## New File Structure
 
@@ -32,9 +32,28 @@ unga/
 │   ├── generate_country_mapping.py # Country mapping generator
 │   ├── check_json_structure.py   # Data validation
 │   ├── fix_json_complete.py      # JSON repair utility
+│   ├── requirements.txt          # Python dependencies
 │   └── Further analysis.xlsx     # Source Excel file
+├── css/                          # Modular CSS styles
+│   ├── main.css                  # Main CSS file (imports all modules)
+│   ├── variables.css             # CSS variables and themes
+│   ├── base.css                  # Base HTML element styles
+│   ├── landscape.css             # Landscape mode banner
+│   ├── header.css                # Header and branding
+│   ├── controls.css              # Filter controls
+│   ├── buttons.css               # Button styles
+│   ├── kpis.css                  # KPI cards
+│   ├── grid.css                  # Grid layout
+│   ├── modals.css                # Modal dialogs
+│   ├── solutions-modal.css       # Solutions modal
+│   ├── map.css                   # Map styles
+│   ├── charts.css                # Chart styling
+│   ├── footer.css                # Footer styles
+│   ├── disclaimer.css            # Disclaimer tooltip
+│   ├── responsive.css            # Responsive design
+│   ├── modal-responsive.css      # Modal responsive
+│   └── utilities.css             # Utility classes
 ├── index.html                    # Main HTML file
-├── styles.css                    # CSS styles
 └── app-original-backup.js        # Original monolithic file
 ```
 
@@ -104,6 +123,98 @@ unga/
     - Initialization logic
     - Event listener setup
     - Application startup
+
+### CSS Modules
+
+1. **`css/variables.css`** (50 lines)
+   - CSS custom properties and theme definitions
+   - Dark and light theme variables
+   - Color schemes and design tokens
+
+2. **`css/base.css`** (25 lines)
+   - Base HTML element styles
+   - Typography and font settings
+   - Global reset and normalization
+
+3. **`css/landscape.css`** (60 lines)
+   - Landscape mode suggestion banner
+   - Mobile orientation handling
+   - Animation keyframes
+
+4. **`css/header.css`** (100 lines)
+   - Header and branding styles
+   - Navigation and actions
+   - Logo and title styling
+
+5. **`css/controls.css`** (120 lines)
+   - Filter controls and form elements
+   - Select dropdowns and inputs
+   - Mobile touch optimizations
+
+6. **`css/buttons.css`** (150 lines)
+   - Button styles and interactions
+   - Map controls and toggles
+   - Hover and active states
+
+7. **`css/kpis.css`** (50 lines)
+   - KPI cards and metrics display
+   - Value formatting and layout
+   - Visual hierarchy
+
+8. **`css/grid.css`** (60 lines)
+   - Grid layout system
+   - Card components
+   - Responsive grid behavior
+
+9. **`css/modals.css`** (200 lines)
+   - Modal dialogs and overlays
+   - QR code modal styling
+   - Rating explanation modal
+
+10. **`css/solutions-modal.css`** (150 lines)
+    - Solutions modal specific styles
+    - Solution cards and details
+    - Performance optimizations
+
+11. **`css/map.css`** (50 lines)
+    - Map container styling
+    - Fullscreen mode styles
+    - Map control positioning
+
+12. **`css/charts.css`** (40 lines)
+    - Chart styling and overrides
+    - Plotly.js customizations
+    - Theme-specific chart colors
+
+13. **`css/footer.css`** (80 lines)
+    - Footer and links styling
+    - Decorative elements
+    - Link hover effects
+
+14. **`css/disclaimer.css`** (80 lines)
+    - Disclaimer button and tooltip
+    - Theme-specific styling
+    - Interactive states
+
+15. **`css/responsive.css`** (400 lines)
+    - Responsive breakpoints
+    - Mobile and tablet styles
+    - Adaptive layouts
+
+16. **`css/modal-responsive.css`** (200 lines)
+    - Modal responsive adjustments
+    - Mobile modal optimizations
+    - Touch-friendly interactions
+
+17. **`css/utilities.css`** (150 lines)
+    - Utility classes
+    - Print styles
+    - Responsive utilities
+
+18. **`css/main.css`** (50 lines)
+    - Main CSS file
+    - Module imports
+    - Documentation
 
 ## Benefits of Refactoring
 
@@ -182,6 +293,7 @@ The refactored application works exactly the same as the original. Simply includ
 
 ## File Size Comparison
 
+### JavaScript Files
 | File | Lines | Purpose |
 |------|-------|---------|
 | Original `app.js` | 2,090 | Monolithic application |
@@ -195,6 +307,35 @@ The refactored application works exactly the same as the original. Simply includ
 | `filters.js` | 200 | Filter management |
 | `modals.js` | 150 | Modal management |
 | `app.js` | 150 | Main coordination |
-| **Total** | **1,892** | **Modular architecture** |
+| **JS Total** | **1,892** | **Modular architecture** |
 
-The refactored code is actually **198 lines shorter** while being much more organized and maintainable!
+### CSS Files
+| File | Lines | Purpose |
+|------|-------|---------|
+| Original `styles.css` | 2,297 | Monolithic stylesheet |
+| `variables.css` | 50 | CSS variables and themes |
+| `base.css` | 25 | Base HTML styles |
+| `landscape.css` | 60 | Landscape mode banner |
+| `header.css` | 100 | Header and branding |
+| `controls.css` | 120 | Filter controls |
+| `buttons.css` | 150 | Button styles |
+| `kpis.css` | 50 | KPI cards |
+| `grid.css` | 60 | Grid layout |
+| `modals.css` | 200 | Modal dialogs |
+| `solutions-modal.css` | 150 | Solutions modal |
+| `map.css` | 50 | Map styles |
+| `charts.css` | 40 | Chart styling |
+| `footer.css` | 80 | Footer styles |
+| `disclaimer.css` | 80 | Disclaimer tooltip |
+| `responsive.css` | 400 | Responsive design |
+| `modal-responsive.css` | 200 | Modal responsive |
+| `utilities.css` | 150 | Utility classes |
+| `main.css` | 50 | Main CSS file |
+| **CSS Total** | **1,995** | **Modular stylesheets** |
+
+### Overall Results
+- **JavaScript**: 2,090 → 1,892 lines (**198 lines shorter**)
+- **CSS**: 2,297 → 1,995 lines (**302 lines shorter**)
+- **Total**: 4,387 → 3,887 lines (**500 lines shorter**)
+
+The refactored code is **500 lines shorter** while being much more organized and maintainable!

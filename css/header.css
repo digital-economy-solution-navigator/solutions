@@ -1,0 +1,91 @@
+/* ================= HEADER STYLES ================= */
+
+header {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: linear-gradient(135deg, var(--header-start), var(--header-mid) 55%, var(--header-end));
+  border-bottom: var(--border);
+  box-shadow: var(--header-shadow);
+  backdrop-filter: blur(10px);
+  transition: all 0.3s ease;
+}
+
+/* Adjust header position when landscape banner is shown */
+body:has(.landscape-suggestion.show) header {
+  top: 48px; /* Height of the landscape suggestion banner */
+}
+
+/* Fallback for browsers that don't support :has() */
+.landscape-suggestion.show ~ header {
+  top: 48px;
+}
+
+/* Alternative approach using JavaScript class */
+body.landscape-banner-shown header {
+  top: 48px;
+}
+
+.header-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 22px clamp(16px, 4vw, 40px);
+}
+
+.branding {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.branding img {
+  height: 56px;
+  width: auto;
+  filter: drop-shadow(0 6px 12px rgba(0,0,0,.35));
+}
+
+h1 {
+  margin: 0;
+  font-size: clamp(22px, 3vw, 34px);
+  letter-spacing: .3px;
+  font-weight: 800;
+  color: white !important;
+}
+
+.subtitle {
+  opacity: .8;
+  font-size: clamp(12px, 1.4vw, 14px);
+  color: white !important;
+}
+
+/* Header actions container */
+.actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+/* Header action buttons styling */
+.actions .btn {
+  min-width: auto;
+  padding: 8px 12px;
+  font-size: 14px;
+  height: 36px;
+  white-space: nowrap;
+  transition: all 0.3s ease;
+}
+
+/* Theme toggle button styling */
+#toggleTheme {
+  font-size: 16px;
+  padding: 8px 10px;
+  min-width: 40px;
+}
+
+#toggleTheme:hover {
+  transform: scale(1.1);
+  background: var(--accent) !important;
+}

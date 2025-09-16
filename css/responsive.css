@@ -1,0 +1,624 @@
+/* ================= RESPONSIVE DESIGN ================= */
+
+/* Large screens and ultra-wide displays (1400px+) */
+@media (min-width: 1400px) {
+  .grid {
+    max-width: 2000px;
+    padding: 0 clamp(20px, 5vw, 60px) clamp(30px, 7vw, 60px);
+  }
+  
+  .kpis {
+    max-width: 1800px;
+    padding: clamp(20px, 5vw, 60px);
+  }
+  
+  .kpi .value {
+    font-size: clamp(48px, 7vw, 80px);
+  }
+  
+  .header-inner {
+    padding: 28px clamp(20px, 5vw, 60px);
+  }
+  
+  h1 {
+    font-size: clamp(28px, 4vw, 42px);
+  }
+}
+
+/* Desktop and large tablets (1024px - 1399px) */
+@media (max-width: 1399px) and (min-width: 1024px) {
+  .grid {
+    max-width: 1600px;
+  }
+  
+  .kpis {
+    grid-template-columns: repeat(4, 1fr);
+    gap: 24px;
+  }
+  
+  .card {
+    grid-column: span 6;
+  }
+}
+
+/* Tablets and small desktops (768px - 1023px) */
+@media (max-width: 1023px) and (min-width: 768px) {
+  .kpis {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+    padding: clamp(16px, 4vw, 32px);
+  }
+  
+  .card {
+    grid-column: 1 / -1;
+  }
+  
+  /* Stack SDGs and Organization Type charts vertically on tablets */
+  .card:nth-of-type(2), /* SDGs chart */
+  .card:nth-of-type(3) { /* Organization Type chart */
+    grid-column: 1 / -1;
+  }
+  
+  .kpi .value {
+    font-size: clamp(36px, 5vw, 48px);
+  }
+  
+  .header-inner {
+    padding: 20px clamp(16px, 4vw, 32px);
+  }
+  
+  h1 {
+    font-size: clamp(20px, 3vw, 28px);
+  }
+  
+  .branding img {
+    height: 48px;
+  }
+  
+  .controls {
+    padding: 12px clamp(16px, 4vw, 32px) 18px;
+  }
+  
+  .controls label {
+    min-width: 180px;
+  }
+  
+  /* Map adjustments for tablets */
+  #map {
+    height: 480px;
+  }
+  
+  /* Chart height adjustments for tablets */
+  #sdgStack,
+  #orgPie {
+    height: 400px !important;
+  }
+}
+
+/* Mobile landscape and small tablets (640px - 767px) */
+@media (max-width: 767px) and (min-width: 640px) {
+  .kpis {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+    padding: clamp(12px, 3vw, 24px);
+  }
+  
+  .kpi {
+    padding: 20px;
+  }
+  
+  .kpi .value {
+    font-size: clamp(32px, 4vw, 40px);
+  }
+  
+  .header-inner {
+    padding: 16px clamp(12px, 3vw, 24px);
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+  
+  .branding {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+  
+  .branding img {
+    height: 40px;
+  }
+  
+  h1 {
+    font-size: clamp(18px, 2.5vw, 24px);
+  }
+  
+  .subtitle {
+    font-size: clamp(11px, 1.2vw, 13px);
+  }
+  
+  /* Header actions responsive */
+  .actions {
+    gap: 6px;
+    justify-content: flex-start;
+  }
+  
+  .actions .btn {
+    padding: 6px 10px;
+    font-size: 13px;
+    height: 32px;
+  }
+  
+  #toggleTheme {
+    padding: 6px 8px;
+    min-width: 36px;
+    font-size: 14px;
+  }
+  
+  #toggleKiosk {
+    padding: 6px 8px;
+    font-size: 12px;
+  }
+  
+  .controls {
+    padding: 10px clamp(12px, 3vw, 24px) 16px;
+    flex-direction: column;
+    align-items: stretch;
+  }
+  
+  .controls label {
+    min-width: auto;
+  }
+  
+  .controls select {
+    width: 100%;
+  }
+  
+  .btn {
+    width: 100%;
+    min-width: auto;
+  }
+  
+  .grid {
+    padding: 0 clamp(12px, 3vw, 24px) clamp(16px, 4vw, 32px);
+    gap: 16px;
+  }
+  
+  .card .head {
+    padding: 14px 16px;
+  }
+  
+  .card .body {
+    padding: 12px 16px;
+  }
+  
+  /* Map adjustments */
+  #map {
+    height: 400px;
+  }
+  
+  /* Chart height adjustments for mobile landscape */
+  #sdgStack,
+  #orgPie {
+    height: 350px !important;
+  }
+  
+  /* Footer adjustments */
+  footer {
+    padding: 16px clamp(12px, 3vw, 24px);
+  }
+}
+
+/* Mobile portrait (480px - 639px) */
+@media (max-width: 639px) and (min-width: 480px) {
+  .kpis {
+    grid-template-columns: 1fr;
+    gap: 14px;
+    padding: clamp(10px, 2.5vw, 20px);
+  }
+  
+  .kpi {
+    padding: 18px;
+  }
+  
+  .kpi .value {
+    font-size: clamp(28px, 3.5vw, 36px);
+  }
+  
+  .kpi .label {
+    font-size: 12px;
+  }
+  
+  .kpi .hint {
+    font-size: 12px;
+  }
+  
+  .header-inner {
+    padding: 14px clamp(10px, 2.5vw, 20px);
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+  
+  .branding {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 6px;
+  }
+  
+  .branding img {
+    height: 36px;
+  }
+  
+  h1 {
+    font-size: clamp(16px, 2.2vw, 22px);
+  }
+  
+  .subtitle {
+    font-size: clamp(10px, 1.1vw, 12px);
+  }
+  
+  /* Header actions responsive */
+  .actions {
+    gap: 4px;
+    justify-content: flex-start;
+    flex-wrap: wrap;
+  }
+  
+  .actions .btn {
+    padding: 5px 8px;
+    font-size: 12px;
+    height: 30px;
+    flex-shrink: 0;
+  }
+  
+  #toggleTheme {
+    padding: 5px 6px;
+    min-width: 32px;
+    font-size: 12px;
+  }
+  
+  #toggleKiosk {
+    padding: 5px 6px;
+    font-size: 11px;
+  }
+  
+  .controls {
+    padding: 8px clamp(10px, 2.5vw, 20px) 14px;
+    flex-direction: column;
+    align-items: stretch;
+  }
+  
+  .controls label {
+    min-width: auto;
+    gap: 6px;
+  }
+  
+  .controls select {
+    width: 100%;
+    padding: 8px 10px;
+    font-size: 14px;
+  }
+  
+  .btn {
+    width: 100%;
+    min-width: auto;
+    padding: 8px 12px;
+    font-size: 14px;
+    height: 36px;
+  }
+  
+  .grid {
+    padding: 0 clamp(10px, 2.5vw, 20px) clamp(12px, 3vw, 24px);
+    gap: 14px;
+  }
+  
+  .card .head {
+    padding: 12px 14px;
+  }
+  
+  .card .body {
+    padding: 10px 14px;
+  }
+  
+  .card .head .title {
+    font-size: 16px;
+  }
+  
+  /* Map adjustments */
+  #map {
+    height: 350px;
+  }
+  
+  /* Chart height adjustments for mobile portrait */
+  #sdgStack,
+  #orgPie {
+    height: 300px !important;
+  }
+  
+  /* Footer adjustments */
+  footer {
+    padding: 12px clamp(10px, 2.5vw, 20px);
+    min-height: 60px;
+  }
+  
+  .footer-links {
+    flex-direction: column;
+    gap: 8px;
+  }
+  
+  .footer-label {
+    margin-right: 0;
+    margin-bottom: 4px;
+  }
+  
+  .footer-link {
+    font-size: 12px;
+    padding: 4px 8px;
+  }
+}
+
+/* Small mobile devices (320px - 479px) */
+@media (max-width: 479px) {
+  .kpis {
+    grid-template-columns: 1fr;
+    gap: 12px;
+    padding: clamp(8px, 2vw, 16px);
+  }
+  
+  .kpi {
+    padding: 16px;
+  }
+  
+  .kpi .value {
+    font-size: clamp(24px, 3vw, 32px);
+  }
+  
+  .kpi .label {
+    font-size: 11px;
+  }
+  
+  .kpi .hint {
+    font-size: 11px;
+  }
+  
+  .header-inner {
+    padding: 12px clamp(8px, 2vw, 16px);
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+  
+  .branding {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+  }
+  
+  .branding img {
+    height: 32px;
+  }
+  
+  h1 {
+    font-size: clamp(14px, 1.8vw, 20px);
+  }
+  
+  .subtitle {
+    font-size: clamp(9px, 1vw, 11px);
+  }
+  
+  /* Header actions responsive - very compact */
+  .actions {
+    gap: 3px;
+    justify-content: flex-start;
+    flex-wrap: wrap;
+  }
+  
+  .actions .btn {
+    padding: 4px 6px;
+    font-size: 11px;
+    height: 28px;
+    flex-shrink: 0;
+  }
+  
+  #toggleTheme {
+    padding: 4px 5px;
+    min-width: 28px;
+    font-size: 11px;
+  }
+  
+  #toggleKiosk {
+    padding: 4px 5px;
+    font-size: 10px;
+  }
+  
+  .controls {
+    padding: 6px clamp(8px, 2vw, 16px) 12px;
+    flex-direction: column;
+    align-items: stretch;
+  }
+  
+  .controls label {
+    min-width: auto;
+    gap: 4px;
+  }
+  
+  .controls select {
+    width: 100%;
+    padding: 6px 8px;
+    font-size: 13px;
+  }
+  
+  .btn {
+    width: 100%;
+    min-width: auto;
+    padding: 6px 10px;
+    font-size: 13px;
+    height: 32px;
+  }
+  
+  .grid {
+    padding: 0 clamp(8px, 2vw, 16px) clamp(10px, 2.5vw, 20px);
+    gap: 12px;
+  }
+  
+  .card .head {
+    padding: 10px 12px;
+  }
+  
+  .card .body {
+    padding: 8px 12px;
+  }
+  
+  .card .head .title {
+    font-size: 14px;
+  }
+  
+  /* Map adjustments */
+  #map {
+    height: 300px;
+  }
+  
+  /* Chart height adjustments for small mobile */
+  #sdgStack,
+  #orgPie {
+    height: 280px !important;
+  }
+  
+  /* Footer adjustments */
+  footer {
+    padding: 10px clamp(8px, 2vw, 16px);
+    min-height: 50px;
+  }
+  
+  .footer-links {
+    flex-direction: column;
+    gap: 6px;
+  }
+  
+  .footer-label {
+    margin-right: 0;
+    margin-bottom: 2px;
+    font-size: 11px;
+  }
+  
+  .footer-link {
+    font-size: 11px;
+    padding: 3px 6px;
+  }
+  
+  /* Modal adjustments for small screens */
+  .modal-content {
+    width: 95%;
+    margin: 5% auto;
+  }
+  
+  .modal-header {
+    padding: 16px 18px;
+  }
+  
+  .modal-body {
+    padding: 18px;
+  }
+  
+  .modal-header h3 {
+    font-size: 18px;
+  }
+  
+  .modal-stats .stat {
+    font-size: 11px;
+    padding: 3px 8px;
+  }
+}
+
+/* Extra small devices (below 320px) */
+@media (max-width: 319px) {
+  .kpis {
+    padding: 6px;
+  }
+  
+  .kpi {
+    padding: 12px;
+  }
+  
+  .kpi .value {
+    font-size: 20px;
+  }
+  
+  .header-inner {
+    padding: 8px 6px;
+  }
+  
+  .branding img {
+    height: 28px;
+  }
+  
+  h1 {
+    font-size: 16px;
+  }
+  
+  .subtitle {
+    font-size: 10px;
+  }
+  
+  /* Header actions responsive - ultra compact */
+  .actions {
+    gap: 2px;
+    justify-content: flex-start;
+    flex-wrap: wrap;
+  }
+  
+  .actions .btn {
+    padding: 3px 4px;
+    font-size: 10px;
+    height: 24px;
+    flex-shrink: 0;
+  }
+  
+  #toggleTheme {
+    padding: 3px 4px;
+    min-width: 24px;
+    font-size: 10px;
+  }
+  
+  #toggleKiosk {
+    padding: 3px 4px;
+    font-size: 9px;
+  }
+  
+  .controls {
+    padding: 4px 6px 8px;
+  }
+  
+  .grid {
+    padding: 0 6px 8px;
+    gap: 8px;
+  }
+  
+  .card .head {
+    padding: 8px 10px;
+  }
+  
+  .card .body {
+    padding: 6px 10px;
+  }
+  
+  #map {
+    height: 250px;
+  }
+  
+  /* Chart height adjustments for extra small devices */
+  #sdgStack,
+  #orgPie {
+    height: 250px !important;
+  }
+  
+  footer {
+    padding: 8px 6px;
+    min-height: 40px;
+  }
+  
+  .modal-content {
+    width: 98%;
+    margin: 1% auto;
+  }
+}

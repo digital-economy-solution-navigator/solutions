@@ -1,0 +1,49 @@
+/* ================= UNGA ANALYTICS DASHBOARD - MODULAR CSS ================= */
+/* 
+ * This is the main CSS file that imports all modular stylesheets.
+ * The original styles.css (2,297 lines) has been refactored into:
+ * 
+ * - variables.css     - CSS variables and theme definitions
+ * - base.css          - Base HTML element styles
+ * - landscape.css     - Landscape mode suggestion banner
+ * - header.css        - Header and branding styles
+ * - controls.css      - Filter controls and form elements
+ * - buttons.css       - Button styles and interactive elements
+ * - kpis.css          - KPI cards and metrics display
+ * - grid.css          - Grid layout and card components
+ * - modals.css        - Modal dialogs and overlays
+ * - solutions-modal.css - Solutions modal specific styles
+ * - map.css           - Map container and fullscreen styles
+ * - charts.css        - Chart styling and Plotly overrides
+ * - footer.css        - Footer and links styling
+ * - disclaimer.css    - Disclaimer button and tooltip
+ * - responsive.css    - Responsive breakpoints and mobile styles
+ * - modal-responsive.css - Modal responsive adjustments
+ * - utilities.css     - Utility classes and print styles
+ * 
+ * Benefits of this modular approach:
+ * - Easier maintenance and debugging
+ * - Better organization and readability
+ * - Reusable components
+ * - Faster development and updates
+ * - Clear separation of concerns
+ */
+
+/* Import all modular stylesheets */
+@import url('variables.css');
+@import url('base.css');
+@import url('landscape.css');
+@import url('header.css');
+@import url('controls.css');
+@import url('buttons.css');
+@import url('kpis.css');
+@import url('grid.css');
+@import url('modals.css');
+@import url('solutions-modal.css');
+@import url('map.css');
+@import url('charts.css');
+@import url('footer.css');
+@import url('disclaimer.css');
+@import url('responsive.css');
+@import url('modal-responsive.css');
+@import url('utilities.css');

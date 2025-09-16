@@ -1,0 +1,51 @@
+/* ================= GRID LAYOUT STYLES ================= */
+
+.grid {
+  display: grid;
+  gap: var(--gap);
+  grid-template-columns: repeat(12, 1fr);
+  padding: 0 clamp(16px, 4vw, 40px) clamp(24px, 6vw, 48px);
+  max-width: 1800px;
+  margin: 0 auto;
+}
+
+.card {
+  grid-column: span 6;
+  background: var(--panel);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  border: none;
+  overflow: hidden;
+}
+
+.card .head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 18px 22px;
+  border-bottom: var(--border);
+  background: linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.02));
+}
+
+.card .head .title {
+  font-weight: 800;
+  letter-spacing: .2px;
+}
+
+.card .body {
+  padding: 16px 18px;
+}
+
+.card.full {
+  grid-column: 1 / -1;
+}
+
+.legend-badge {
+  display: inline-block;
+  padding: 6px 10px;
+  border-radius: 999px;
+  background: var(--panel-strong);
+  font-size: 13px;
+  color: var(--muted);
+}
