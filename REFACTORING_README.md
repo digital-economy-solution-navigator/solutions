@@ -27,6 +27,12 @@ unga/
 ├── data/                         # Data files
 │   ├── data.json                 # Solutions data
 │   └── country_region_mapping.json # Region mappings
+├── data-processing/              # Data processing scripts
+│   ├── excel_to_json_refined.py  # Excel to JSON converter
+│   ├── generate_country_mapping.py # Country mapping generator
+│   ├── check_json_structure.py   # Data validation
+│   ├── fix_json_complete.py      # JSON repair utility
+│   └── Further analysis.xlsx     # Source Excel file
 ├── index.html                    # Main HTML file
 ├── styles.css                    # CSS styles
 └── app-original-backup.js        # Original monolithic file

@@ -69,24 +69,24 @@ DATA_SOURCES: {
 ## 🔄 Data Updates
 
 ### **Complete Workflow:**
-1. **Update Excel:** Edit `Further analysis.xlsx`
-2. **Convert to JSON:** `python excel_to_json_refined.py`
-3. **Generate mapping:** `python generate_country_mapping.py`
-4. **Validate data:** `python check_json_structure.py`
+1. **Update Excel:** Edit `data-processing/Further analysis.xlsx`
+2. **Convert to JSON:** `python data-processing/excel_to_json_refined.py`
+3. **Generate mapping:** `python data-processing/generate_country_mapping.py`
+4. **Validate data:** `python data-processing/check_json_structure.py`
 5. **Deploy:** Replace files and refresh dashboard
 
 ### **Scripts:**
 | Script | Purpose |
 |--------|---------|
-| `excel_to_json_refined.py` | Convert Excel to JSON |
-| `generate_country_mapping.py` | Generate country-region mapping |
-| `check_json_structure.py` | Validate data structure |
-| `fix_json_complete.py` | Fix corrupted JSON |
+| `data-processing/excel_to_json_refined.py` | Convert Excel to JSON |
+| `data-processing/generate_country_mapping.py` | Generate country-region mapping |
+| `data-processing/check_json_structure.py` | Validate data structure |
+| `data-processing/fix_json_complete.py` | Fix corrupted JSON |
 
 ### **Quick Fixes:**
-- **Corrupted data:** `python fix_json_complete.py`
-- **Mapping issues:** `python generate_country_mapping.py`
-- **Validation:** `python check_json_structure.py`
+- **Corrupted data:** `python data-processing/fix_json_complete.py`
+- **Mapping issues:** `python data-processing/generate_country_mapping.py`
+- **Validation:** `python data-processing/check_json_structure.py`
 
 ## 🆘 Support
 
