@@ -1,16 +1,20 @@
 /* ================= FOOTER STYLES ================= */
 
 footer {
-  padding: 20px clamp(16px, 4vw, 40px);
-  margin-top: 20px;
+  padding: 12px clamp(8px, 2vw, 16px);
+  margin-top: 16px;
   border-top: 1px solid var(--border);
-  background: linear-gradient(180deg, transparent, var(--panel));
-  backdrop-filter: blur(10px);
-  min-height: 80px;
+  background: linear-gradient(180deg, var(--panel) 0%, var(--card-bg) 100%);
+  backdrop-filter: blur(15px);
+  min-height: 50px;
   display: flex;
   align-items: center;
   justify-content: center;
-  position: relative;
+  position: sticky;
+  bottom: 0;
+  z-index: 10;
+  box-shadow: 0 -2px 12px rgba(0, 0, 0, 0.08);
+  transition: all 0.3s ease;
 }
 
 /* Footer decorative elements */
@@ -31,9 +35,11 @@ footer::before {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 12px;
+  gap: 4px;
   max-width: 1200px;
   width: 100%;
+  position: relative;
+  z-index: 1;
 }
 
 .footer-links {
@@ -41,41 +47,212 @@ footer::before {
   flex-wrap: wrap;
   align-items: center;
   justify-content: center;
-  gap: 16px;
-  font-size: 14px;
+  gap: 10px;
+  font-size: 12px;
+  padding: 2px 0;
 }
 
 .footer-label {
-  color: var(--muted);
-  font-weight: 500;
-  font-size: 13px;
+  color: var(--text);
+  font-weight: 600;
+  font-size: 11px;
   text-transform: uppercase;
   letter-spacing: 0.5px;
-  margin-right: 8px;
+  margin-right: 6px;
+  opacity: 0.9;
 }
 
 .footer-link {
   color: var(--brand);
   text-decoration: none;
-  font-weight: 500;
-  padding: 6px 12px;
-  border-radius: 8px;
-  background: rgba(0, 163, 224, 0.1);
-  border: 1px solid rgba(0, 163, 224, 0.2);
+  font-weight: 600;
+  padding: 4px 8px;
+  border-radius: 6px;
+  background: rgba(0, 163, 224, 0.15);
+  border: 1px solid rgba(0, 163, 224, 0.3);
   transition: all 0.3s ease;
   display: inline-flex;
   align-items: center;
-  gap: 6px;
-  font-size: 13px;
+  gap: 4px;
+  font-size: 11px;
+  box-shadow: 0 1px 3px rgba(0, 163, 224, 0.1);
 }
 
 .footer-link:hover {
-  background: rgba(0, 163, 224, 0.2);
+  background: rgba(0, 163, 224, 0.25);
   border-color: var(--brand);
-  transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(0, 163, 224, 0.2);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(0, 163, 224, 0.3);
+  color: var(--brand);
 }
 
 .footer-link:active {
   transform: translateY(0);
+}
+
+/* AI Support Section */
+.footer-ai-support {
+  margin-top: 2px;
+  padding-top: 4px;
+  border-top: 1px solid var(--border);
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
+.ai-support-content {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 8px;
+  background: rgba(0, 0, 0, 0.08);
+  border-radius: 6px;
+  border: 1px solid var(--border);
+  transition: all 0.3s ease;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.ai-support-content:hover {
+  background: rgba(0, 0, 0, 0.12);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+}
+
+.ai-support-label {
+  font-size: 10px;
+  color: var(--text);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  opacity: 0.9;
+}
+
+.ai-logo-link {
+  display: inline-flex;
+  align-items: center;
+  text-decoration: none;
+  transition: all 0.3s ease;
+}
+
+.ai-logo {
+  height: 16px;
+  width: auto;
+  filter: grayscale(0.1) brightness(1.2) contrast(1.1);
+  transition: all 0.3s ease;
+  opacity: 1;
+}
+
+.ai-logo-link:hover .ai-logo {
+  filter: grayscale(0) brightness(1.3) contrast(1.2);
+  transform: scale(1.1);
+  opacity: 1;
+}
+
+.ai-logo-link:hover {
+  transform: translateY(-1px);
+}
+
+/* Dark theme specific logo visibility */
+[data-theme="dark"] .ai-logo {
+  filter: grayscale(0) brightness(1.4) contrast(1.3);
+  opacity: 1;
+}
+
+[data-theme="dark"] .ai-logo-link:hover .ai-logo {
+  filter: grayscale(0) brightness(1.6) contrast(1.4);
+  transform: scale(1.1);
+}
+
+/* Enhanced responsive behavior */
+@media (max-width: 768px) {
+  footer {
+    padding: 8px clamp(6px, 1.5vw, 12px);
+    min-height: 40px;
+  }
+  
+  .footer-links {
+    gap: 8px;
+    padding: 1px 0;
+  }
+  
+  .footer-link {
+    padding: 3px 6px;
+    font-size: 10px;
+  }
+  
+  .ai-support-content {
+    padding: 2px 6px;
+    gap: 4px;
+  }
+  
+  .ai-support-label {
+    font-size: 9px;
+  }
+  
+  .ai-logo {
+    height: 14px;
+  }
+  
+  .ai-logo-link:hover .ai-logo {
+    transform: scale(1.05);
+  }
+  
+  /* Dark theme tablet adjustments */
+  [data-theme="dark"] .ai-logo {
+    filter: grayscale(0) brightness(1.5) contrast(1.4);
+  }
+}
+
+@media (max-width: 480px) {
+  footer {
+    padding: 6px clamp(4px, 1vw, 8px);
+    min-height: 35px;
+  }
+  
+  .footer-links {
+    gap: 6px;
+    padding: 1px 0;
+  }
+  
+  .footer-link {
+    padding: 2px 4px;
+    font-size: 9px;
+  }
+  
+  .ai-support-content {
+    padding: 2px 6px;
+    gap: 3px;
+  }
+  
+  .ai-support-label {
+    font-size: 8px;
+  }
+  
+  .ai-logo {
+    height: 12px;
+  }
+  
+  .ai-logo-link:hover .ai-logo {
+    transform: scale(1.05);
+  }
+  
+  /* Dark theme mobile adjustments */
+  [data-theme="dark"] .ai-logo {
+    filter: grayscale(0) brightness(1.6) contrast(1.5);
+  }
+}
+
+/* Ensure footer is always visible on very short screens */
+@media (max-height: 600px) {
+  footer {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 100;
+  }
+  
+  body {
+    padding-bottom: 50px; /* Add space for fixed footer */
+  }
 }

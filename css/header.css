@@ -37,13 +37,28 @@ body.landscape-banner-shown header {
 .branding {
   display: flex;
   align-items: center;
-  gap: 16px;
+  gap: 20px;
+  flex: 1;
+  min-width: 0; /* Allow text to shrink if needed */
 }
 
 .branding img {
-  height: 56px;
+  height: 60px;
   width: auto;
   filter: drop-shadow(0 6px 12px rgba(0,0,0,.35));
+  flex-shrink: 0; /* Prevent logo from shrinking */
+  transition: transform 0.3s ease;
+}
+
+.branding img:hover {
+  transform: scale(1.05);
+}
+
+.branding > div {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0; /* Allow text to shrink */
 }
 
 h1 {
@@ -52,12 +67,14 @@ h1 {
   letter-spacing: .3px;
   font-weight: 800;
   color: white !important;
+  line-height: 1.2;
 }
 
 .subtitle {
   opacity: .8;
   font-size: clamp(12px, 1.4vw, 14px);
   color: white !important;
+  line-height: 1.3;
 }
 
 /* Header actions container */
@@ -88,4 +105,42 @@ h1 {
 #toggleTheme:hover {
   transform: scale(1.1);
   background: var(--accent) !important;
+}
+
+/* Responsive header adjustments */
+@media (max-width: 768px) {
+  .header-inner {
+    padding: 16px clamp(12px, 3vw, 24px);
+    gap: 12px;
+  }
+  
+  .branding {
+    gap: 12px;
+  }
+  
+  .branding img {
+    height: 48px;
+  }
+  
+  .branding > div {
+    gap: 2px;
+  }
+  
+  h1 {
+    font-size: clamp(18px, 4vw, 24px);
+  }
+  
+  .subtitle {
+    font-size: clamp(11px, 2.5vw, 12px);
+  }
+}
+
+@media (max-width: 480px) {
+  .branding img {
+    height: 40px;
+  }
+  
+  .branding {
+    gap: 8px;
+  }
 }
