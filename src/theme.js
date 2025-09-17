@@ -52,6 +52,7 @@ const ThemeManager = {
     localStorage.setItem('unga-theme', theme);
     
     this._updateThemeButton();
+    this._updateAILogo();
     console.log(`Theme changed to ${theme}. Map will use ${theme} style on next creation.`);
   },
   
@@ -84,6 +85,19 @@ const ThemeManager = {
     if (toggleBtn) {
       toggleBtn.innerHTML = this.currentTheme === 'light' ? '🌙' : '☀️';
       toggleBtn.title = this.currentTheme === 'light' ? 'Switch to Dark Mode' : 'Switch to Light Mode';
+    }
+  },
+  
+  /**
+   * Update AI logo based on current theme
+   */
+  _updateAILogo() {
+    const aiLogo = document.querySelector('.ai-logo');
+    if (aiLogo) {
+      const logoPath = this.currentTheme === 'dark' 
+        ? 'assets/Claude_AI_logo_dark.png' 
+        : 'assets/Claude_AI_logo.png';
+      aiLogo.src = logoPath;
     }
   }
 };

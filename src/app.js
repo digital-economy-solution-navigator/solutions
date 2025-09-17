@@ -33,6 +33,11 @@ async function init() {
   // Initialize theme manager
   ThemeManager.init();
   
+  // Ensure AI logo is updated after DOM is ready
+  setTimeout(() => {
+    ThemeManager._updateAILogo();
+  }, 100);
+  
   // Set up event listeners with debounced updates
   ['fRegion', 'fCountry', 'fOrg', 'fMaturity', 'fSDG'].forEach(id => {
     utils.el(id)?.addEventListener('change', utils.debounce(() => { 
