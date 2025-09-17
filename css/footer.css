@@ -6,7 +6,7 @@ footer {
   border-top: 1px solid var(--border);
   background: linear-gradient(180deg, var(--panel) 0%, var(--card-bg) 100%);
   backdrop-filter: blur(15px);
-  min-height: 50px;
+  min-height: 60px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -44,12 +44,15 @@ footer::before {
 
 .footer-links {
   display: flex;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
   align-items: center;
   justify-content: center;
-  gap: 10px;
+  gap: 8px;
   font-size: 12px;
   padding: 2px 0;
+  overflow-x: auto;
+  scrollbar-width: thin;
+  scrollbar-color: var(--brand) transparent;
 }
 
 .footer-label {
@@ -60,6 +63,8 @@ footer::before {
   letter-spacing: 0.5px;
   margin-right: 6px;
   opacity: 0.9;
+  white-space: nowrap;
+  flex-shrink: 0;
 }
 
 .footer-link {
@@ -76,6 +81,8 @@ footer::before {
   gap: 4px;
   font-size: 11px;
   box-shadow: 0 1px 3px rgba(0, 163, 224, 0.1);
+  white-space: nowrap;
+  flex-shrink: 0;
 }
 
 .footer-link:hover {
@@ -156,17 +163,21 @@ footer::before {
 @media (max-width: 768px) {
   footer {
     padding: 8px clamp(6px, 1.5vw, 12px);
-    min-height: 40px;
+    min-height: 50px;
   }
   
   .footer-links {
-    gap: 8px;
+    gap: 6px;
     padding: 1px 0;
+    flex-wrap: nowrap;
+    overflow-x: auto;
   }
   
   .footer-link {
     padding: 3px 6px;
     font-size: 10px;
+    white-space: nowrap;
+    flex-shrink: 0;
   }
   
   .ai-support-content {
@@ -192,17 +203,21 @@ footer::before {
 @media (max-width: 480px) {
   footer {
     padding: 6px clamp(4px, 1vw, 8px);
-    min-height: 35px;
+    min-height: 45px;
   }
   
   .footer-links {
-    gap: 6px;
+    gap: 4px;
     padding: 1px 0;
+    flex-wrap: nowrap;
+    overflow-x: auto;
   }
   
   .footer-link {
     padding: 2px 4px;
     font-size: 9px;
+    white-space: nowrap;
+    flex-shrink: 0;
   }
   
   .ai-support-content {
