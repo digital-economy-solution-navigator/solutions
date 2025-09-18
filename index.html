@@ -46,6 +46,29 @@
         <button id="toggleKiosk" class="btn secondary" title="Show filter controls">
           Show Controls
         </button>
+        
+      </div>
+      
+      <!-- Mobile Menu Overlay -->
+      <div id="mobileMenu" class="mobile-menu-overlay">
+        <div class="mobile-menu-content">
+          <button id="mobileToggleTheme" class="btn secondary mobile-btn" title="Toggle Theme">
+            <span class="btn-icon">🌙</span>
+            <span class="btn-text">Toggle Theme</span>
+          </button>
+          <button id="mobileShowExplanation" class="btn secondary mobile-btn" title="How are solutions rated?">
+            <span class="btn-icon">👁️</span>
+            <span class="btn-text">How are solutions rated?</span>
+          </button>
+          <button id="mobileShowQRCode" class="btn secondary mobile-btn" title="Submit Your Solution">
+            <span class="btn-icon">📝</span>
+            <span class="btn-text">Submit Solutions</span>
+          </button>
+          <button id="mobileToggleKiosk" class="btn secondary mobile-btn" title="Show filter controls">
+            <span class="btn-icon">⚙️</span>
+            <span class="btn-text">Show Controls</span>
+          </button>
+        </div>
       </div>
     </div>
     
@@ -140,25 +163,32 @@
   <footer>
     <div class="footer-content">
       <div class="footer-links">
-        <span class="footer-label">Reports & Insights:</span>
-        <a href="https://unctad.org/publication/digital-economy-report-2024" target="_blank" rel="noopener noreferrer" class="footer-link">
-          📊 Digital Economy Report 2024
-        </a>
-        <a href="https://unctad.org/publication/technology-and-innovation-report-2025" target="_blank" rel="noopener noreferrer" class="footer-link">
-          🚀 Technology & Innovation Report 2025
-        </a>
-        <a href="https://www.unido.org/sites/default/files/unido-publications/2024-10/IID%20Policy%20Brief%2012_0.pdf" target="_blank" rel="noopener noreferrer" class="footer-link">
-          📋 Bridging the AI Divide in Manufacturing
-        </a>
-        <a href="https://www.unido.org/sites/default/files/unido-publications/2024-10/UNIDO%20-%20Guidelines%20for%20the%20establishment%20of%20a%20Smart%20Factory%20Lab_Automotive%20Sector_Final.pdf" target="_blank" rel="noopener noreferrer" class="footer-link">
-          🏭 Smart Factory Lab Guidelines
-        </a>
-        <a href="https://www.unido.org/sites/default/files/unido-publications/2024-08/AI_Ukraine_0.pdf" target="_blank" rel="noopener noreferrer" class="footer-link">
-          🇺🇦 AI Mapping in Ukraine
-        </a>
-        <a href="https://www.unido.org/sites/default/files/unido-publications/2023-11/Gender%2C%20Digital%20Transformation%20and%20Artificial%20Intelligence%20Report_0.pdf" target="_blank" rel="noopener noreferrer" class="footer-link">
-          👥 Gender & AI Report
-        </a>
+        <div class="footer-links-header">
+          <span class="footer-label">Reports & Insights:</span>
+          <button id="toggleFooterLinks" class="footer-toggle-btn" title="Toggle Reports & Insights">
+            <span class="toggle-icon">📋</span>
+          </button>
+        </div>
+        <div class="footer-links-content">
+          <a href="https://unctad.org/publication/digital-economy-report-2024" target="_blank" rel="noopener noreferrer" class="footer-link">
+            📊 Digital Economy Report 2024
+          </a>
+          <a href="https://unctad.org/publication/technology-and-innovation-report-2025" target="_blank" rel="noopener noreferrer" class="footer-link">
+            🚀 Technology & Innovation Report 2025
+          </a>
+          <a href="https://www.unido.org/sites/default/files/unido-publications/2024-10/IID%20Policy%20Brief%2012_0.pdf" target="_blank" rel="noopener noreferrer" class="footer-link">
+            📋 Bridging the AI Divide in Manufacturing
+          </a>
+          <a href="https://www.unido.org/sites/default/files/unido-publications/2024-10/UNIDO%20-%20Guidelines%20for%20the%20establishment%20of%20a%20Smart%20Factory%20Lab_Automotive%20Sector_Final.pdf" target="_blank" rel="noopener noreferrer" class="footer-link">
+            🏭 Smart Factory Lab Guidelines
+          </a>
+          <a href="https://www.unido.org/sites/default/files/unido-publications/2024-08/AI_Ukraine_0.pdf" target="_blank" rel="noopener noreferrer" class="footer-link">
+            🇺🇦 AI Mapping in Ukraine
+          </a>
+          <a href="https://www.unido.org/sites/default/files/unido-publications/2023-11/Gender%2C%20Digital%20Transformation%20and%20Artificial%20Intelligence%20Report_0.pdf" target="_blank" rel="noopener noreferrer" class="footer-link">
+            👥 Gender & AI Report
+          </a>
+        </div>
       </div>
       
       <div class="footer-ai-support">
@@ -169,6 +199,13 @@
           </a>
         </div>
       </div>
+      
+      <!-- Mobile Actions Menu - Footer Position -->
+      <button id="hamburgerMenu" class="footer-hamburger-menu" title="Actions Menu">
+        <span class="hamburger-line"></span>
+        <span class="hamburger-line"></span>
+        <span class="hamburger-line"></span>
+      </button>
     </div>
   </footer>
   

@@ -127,6 +127,139 @@ async function init() {
  * Application entry point
  * Initializes the application when DOM is ready
  */
+// Hamburger Menu Functionality
+function initHamburgerMenu() {
+  const hamburgerMenu = document.getElementById('hamburgerMenu');
+  const mobileMenu = document.getElementById('mobileMenu');
+  
+  if (!hamburgerMenu || !mobileMenu) return;
+  
+  // Toggle menu visibility
+  function toggleMenu() {
+    const isActive = hamburgerMenu.classList.contains('active');
+    
+    if (isActive) {
+      closeMenu();
+    } else {
+      openMenu();
+    }
+  }
+  
+  function openMenu() {
+    hamburgerMenu.classList.add('active');
+    mobileMenu.classList.add('active');
+    document.body.style.overflow = 'hidden'; // Prevent background scrolling
+  }
+  
+  function closeMenu() {
+    hamburgerMenu.classList.remove('active');
+    mobileMenu.classList.remove('active');
+    document.body.style.overflow = ''; // Restore scrolling
+  }
+  
+  // Event listeners
+  hamburgerMenu.addEventListener('click', toggleMenu);
+  
+  // Close menu when clicking outside
+  mobileMenu.addEventListener('click', (e) => {
+    if (e.target === mobileMenu) {
+      closeMenu();
+    }
+  });
+  
+  // Close menu on escape key
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && mobileMenu.classList.contains('active')) {
+      closeMenu();
+    }
+  });
+  
+  // Connect mobile buttons to desktop functionality
+  const mobileButtons = {
+    'mobileToggleTheme': 'toggleTheme',
+    'mobileShowExplanation': 'showExplanation', 
+    'mobileShowQRCode': 'showQRCode',
+    'mobileToggleKiosk': 'toggleKiosk'
+  };
+  
+  Object.entries(mobileButtons).forEach(([mobileId, desktopId]) => {
+    const mobileBtn = document.getElementById(mobileId);
+    const desktopBtn = document.getElementById(desktopId);
+    
+    if (mobileBtn && desktopBtn) {
+      mobileBtn.addEventListener('click', () => {
+        desktopBtn.click(); // Trigger the desktop button's functionality
+        closeMenu(); // Close the mobile menu
+      });
+    }
+  });
+  
+  // Update mobile theme button icon when theme changes
+  const updateMobileThemeButton = () => {
+    const mobileThemeBtn = document.getElementById('mobileToggleTheme');
+    if (mobileThemeBtn) {
+      const icon = mobileThemeBtn.querySelector('.btn-icon');
+      if (icon) {
+        icon.textContent = ThemeManager.currentTheme === 'light' ? '🌙' : '☀️';
+      }
+    }
+  };
+  
+  // Listen for theme changes
+  document.addEventListener('themeChanged', updateMobileThemeButton);
+  
+  // Initial theme button update
+  updateMobileThemeButton();
+}
+
+// Footer Links Toggle Functionality
+function initFooterLinksToggle() {
+  const toggleBtn = document.getElementById('toggleFooterLinks');
+  const linksContent = document.querySelector('.footer-links-content');
+  
+  if (!toggleBtn || !linksContent) return;
+  
+  let isExpanded = false;
+  
+  function toggleLinks() {
+    isExpanded = !isExpanded;
+    
+    if (isExpanded) {
+      linksContent.classList.add('expanded');
+      toggleBtn.classList.remove('collapsed');
+      toggleBtn.title = 'Hide Reports & Insights';
+    } else {
+      linksContent.classList.remove('expanded');
+      toggleBtn.classList.add('collapsed');
+      toggleBtn.title = 'Show Reports & Insights';
+    }
+  }
+  
+  // Set initial state (collapsed on mobile)
+  if (window.innerWidth <= 768) {
+    toggleBtn.classList.add('collapsed');
+    toggleBtn.title = 'Show Reports & Insights';
+  }
+  
+  toggleBtn.addEventListener('click', toggleLinks);
+  
+  // Handle window resize
+  window.addEventListener('resize', () => {
+    if (window.innerWidth > 768) {
+      // Desktop: always show links, hide toggle button
+      linksContent.classList.remove('expanded');
+      toggleBtn.classList.remove('collapsed');
+      isExpanded = false;
+    } else {
+      // Mobile: reset to collapsed state
+      if (!isExpanded) {
+        linksContent.classList.remove('expanded');
+        toggleBtn.classList.add('collapsed');
+      }
+    }
+  });
+}
+
 document.addEventListener('DOMContentLoaded', function() {
   try {
     init();
@@ -134,6 +267,12 @@ document.addEventListener('DOMContentLoaded', function() {
     initializeQRCodeModal();
     initializeDisclaimer();
     console.log('✅ UNGA Analytics Dashboard initialized successfully');
+  // Initialize hamburger menu functionality
+  initHamburgerMenu();
+  
+  // Initialize footer links toggle functionality
+  initFooterLinksToggle();
+  
   } catch (error) {
     console.error('❌ Failed to initialize application:', error);
     // Show user-friendly error message

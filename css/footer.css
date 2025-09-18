@@ -44,15 +44,33 @@ footer::before {
 
 .footer-links {
   display: flex;
-  flex-wrap: nowrap;
+  flex-direction: column;
   align-items: center;
-  justify-content: center;
-  gap: 8px;
-  font-size: 12px;
-  padding: 2px 0;
-  overflow-x: auto;
-  scrollbar-width: thin;
-  scrollbar-color: var(--brand) transparent;
+  gap: 4px;
+}
+
+/* Desktop: Show header and content in same row */
+@media (min-width: 769px) {
+  .footer-links {
+    flex-direction: row;
+    align-items: center;
+    gap: 8px;
+  }
+  
+  .footer-links-header {
+    margin: 0;
+  }
+  
+  .footer-links-content {
+    display: flex !important;
+    flex-wrap: nowrap;
+    align-items: center;
+    gap: 8px;
+    margin: 0;
+    padding: 0;
+    max-height: none;
+    opacity: 1;
+  }
 }
 
 .footer-label {
@@ -238,6 +256,174 @@ footer::before {
   }
   
   /* Dark theme mobile adjustments - now handled by different image files */
+}
+
+/* Footer Links Header with Toggle */
+.footer-links-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.footer-toggle-btn {
+  background: transparent;
+  border: 1px solid var(--brand);
+  border-radius: 4px;
+  padding: 2px 6px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: none; /* Hidden by default, shown on mobile */
+}
+
+.footer-toggle-btn:hover {
+  background: var(--brand);
+  transform: scale(1.1);
+}
+
+.toggle-icon {
+  font-size: 12px;
+  transition: transform 0.3s ease;
+}
+
+.footer-toggle-btn.collapsed .toggle-icon {
+  transform: rotate(180deg);
+}
+
+.footer-links-content {
+  display: flex;
+  flex-wrap: nowrap;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-size: 12px;
+  padding: 2px 0;
+  overflow-x: auto;
+  scrollbar-width: thin;
+  scrollbar-color: var(--brand) transparent;
+  transition: all 0.3s ease;
+}
+
+/* Responsive Footer Behavior - Collapsible Reports & Insights on Mobile */
+@media (max-width: 768px) {
+  .footer-toggle-btn {
+    display: inline-flex; /* Show toggle button on mobile */
+  }
+  
+  .footer-links-content {
+    max-height: 0;
+    overflow: hidden;
+    opacity: 0;
+    padding: 0;
+    margin-top: 0;
+  }
+  
+  .footer-links-content.expanded {
+    max-height: 200px; /* Adjust based on content */
+    opacity: 1;
+    padding: 8px 0;
+    margin-top: 4px;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+  }
+  
+  .footer-links-content.expanded .footer-link {
+    width: 100%;
+    justify-content: flex-start;
+    margin-bottom: 2px;
+  }
+}
+
+/* ================= FOOTER HAMBURGER MENU ================= */
+
+/* Footer Hamburger Menu Button - iPhone Style */
+.footer-hamburger-menu {
+  position: absolute;
+  top: 50%;
+  right: 16px;
+  transform: translateY(-50%);
+  display: none;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: 50px;
+  height: 50px;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(20px);
+  border: none;
+  border-radius: 16px;
+  cursor: pointer;
+  transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  z-index: 1001;
+  box-shadow: 
+    0 8px 32px rgba(0, 0, 0, 0.12),
+    0 4px 16px rgba(0, 0, 0, 0.08),
+    0 2px 8px rgba(0, 0, 0, 0.04);
+}
+
+[data-theme="dark"] .footer-hamburger-menu {
+  background: rgba(44, 44, 46, 0.95);
+  box-shadow: 
+    0 8px 32px rgba(0, 0, 0, 0.25),
+    0 4px 16px rgba(0, 0, 0, 0.15),
+    0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.footer-hamburger-menu:hover {
+  transform: translateY(-50%) scale(1.05);
+  box-shadow: 
+    0 12px 48px rgba(0, 0, 0, 0.18),
+    0 6px 24px rgba(0, 0, 0, 0.12),
+    0 3px 12px rgba(0, 0, 0, 0.06);
+}
+
+[data-theme="dark"] .footer-hamburger-menu:hover {
+  box-shadow: 
+    0 12px 48px rgba(0, 0, 0, 0.35),
+    0 6px 24px rgba(0, 0, 0, 0.25),
+    0 3px 12px rgba(0, 0, 0, 0.15);
+}
+
+.footer-hamburger-menu:active {
+  transform: translateY(-50%) scale(0.95);
+  transition: all 0.1s ease;
+}
+
+.footer-hamburger-menu .hamburger-line {
+  width: 20px;
+  height: 2.5px;
+  background: #1d4ed8;
+  margin: 2.5px 0;
+  transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  border-radius: 2px;
+  opacity: 1;
+}
+
+[data-theme="dark"] .footer-hamburger-menu .hamburger-line {
+  background: #60a5fa;
+}
+
+/* iPhone-style X animation when active */
+.footer-hamburger-menu.active .hamburger-line:nth-child(1) {
+  transform: rotate(45deg) translate(6px, 6px);
+  width: 20px;
+}
+
+.footer-hamburger-menu.active .hamburger-line:nth-child(2) {
+  opacity: 0;
+  transform: scale(0);
+}
+
+.footer-hamburger-menu.active .hamburger-line:nth-child(3) {
+  transform: rotate(-45deg) translate(6px, -6px);
+  width: 20px;
+}
+
+/* Show footer hamburger on mobile */
+@media (max-width: 768px) {
+  .footer-hamburger-menu {
+    display: flex;
+  }
 }
 
 /* Ensure footer is always visible on very short screens */

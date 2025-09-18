@@ -53,6 +53,12 @@ const ThemeManager = {
     
     this._updateThemeButton();
     this._updateAILogo();
+    
+    // Dispatch theme change event for other components
+    document.dispatchEvent(new CustomEvent('themeChanged', { 
+      detail: { theme: theme } 
+    }));
+    
     console.log(`Theme changed to ${theme}. Map will use ${theme} style on next creation.`);
   },
   
