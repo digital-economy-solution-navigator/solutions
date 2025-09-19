@@ -125,6 +125,16 @@ function setFilterFromSelect(id) {
   
   // Update the visual display
   updateFilterDisplay();
+  
+  // Sync mobile filters if function exists
+  if (typeof syncMobileFilters === 'function') {
+    syncMobileFilters();
+  }
+  
+  // Update mobile filter counts if function exists
+  if (typeof updateMobileFilterCounts === 'function') {
+    updateMobileFilterCounts();
+  }
 }
 
 /**
@@ -151,6 +161,11 @@ function updateCountryFilter(selectedRegions) {
   fillSelect('fCountry', countryOptions); 
   appState.filters.country.clear(); 
   clearSelect('fCountry');
+  
+  // Sync mobile filters after updating country options
+  if (typeof syncMobileFilters === 'function') {
+    syncMobileFilters();
+  }
 }
 
 /**
@@ -171,6 +186,11 @@ function updateRegionFilter(selectedCountries) {
   fillSelect('fRegion', Array.from(valid).sort()); 
   appState.filters.region.clear(); 
   clearSelect('fRegion');
+  
+  // Sync mobile filters after updating region options
+  if (typeof syncMobileFilters === 'function') {
+    syncMobileFilters();
+  }
 }
 
 /**

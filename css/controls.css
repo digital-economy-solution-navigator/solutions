@@ -84,6 +84,18 @@
   box-shadow: 0 0 0 2px rgba(0, 163, 224, 0.2);
 }
 
+/* Desktop vs Mobile filter layouts */
+.desktop-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px 18px;
+  align-items: end;
+}
+
+.mobile-filters {
+  display: none; /* Hidden on desktop */
+}
+
 /* Mobile close button for controls */
 .mobile-close-btn {
   display: none; /* Hidden on desktop */
@@ -93,8 +105,103 @@
   margin-right: 4px;
 }
 
+/* Collapsible filter sections for mobile */
+.filter-section {
+  margin-bottom: 8px;
+  border: var(--border);
+  border-radius: 12px;
+  overflow: hidden;
+  background: var(--panel);
+}
+
+.filter-toggle {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  background: var(--panel);
+  border: none;
+  color: var(--text);
+  font-size: 16px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-align: left;
+}
+
+.filter-toggle:hover {
+  background: var(--hover, #f8fafc);
+}
+
+.filter-toggle.active {
+  background: var(--brand);
+  color: white;
+}
+
+.filter-icon {
+  font-size: 18px;
+  margin-right: 8px;
+}
+
+.filter-title {
+  flex: 1;
+  text-align: left;
+}
+
+.filter-count {
+  background: var(--brand);
+  color: white;
+  border-radius: 12px;
+  padding: 2px 8px;
+  font-size: 12px;
+  font-weight: 600;
+  min-width: 20px;
+  text-align: center;
+  margin-right: 8px;
+}
+
+.filter-toggle.active .filter-count {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.filter-arrow {
+  font-size: 14px;
+  transition: transform 0.2s ease;
+}
+
+.filter-toggle.active .filter-arrow {
+  transform: rotate(180deg);
+}
+
+.filter-content {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.3s ease;
+  background: var(--background);
+}
+
+.filter-content.active {
+  max-height: 200px; /* Adjust based on content */
+}
+
+.filter-content label {
+  padding: 16px;
+  margin: 0;
+  border-top: var(--border);
+}
+
 /* Mobile-specific select styling */
 @media (max-width: 767px) {
+  /* Show mobile filters, hide desktop filters */
+  .desktop-filters {
+    display: none;
+  }
+  
+  .mobile-filters {
+    display: block;
+  }
+  
   .mobile-close-btn {
     display: flex;
     align-items: center;

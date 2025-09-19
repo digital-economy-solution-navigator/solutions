@@ -119,6 +119,11 @@ async function init() {
   // Update filter display
   updateFilterDisplay();
   
+  // Sync mobile filters after desktop filters are populated
+  if (typeof syncMobileFilters === 'function') {
+    syncMobileFilters();
+  }
+  
   // Update map projection button text
   appState.updateMapProjectionButton();
   
@@ -235,6 +240,9 @@ function initHamburgerMenu() {
     console.warn('Mobile close button not found');
   }
   
+  // Initialize mobile collapsible filters
+  initMobileFilters();
+  
   // Update mobile theme button icon when theme changes
   const updateMobileThemeButton = () => {
     const mobileThemeBtn = document.getElementById('mobileToggleTheme');
@@ -331,3 +339,91 @@ document.addEventListener('DOMContentLoaded', function() {
     document.body.appendChild(errorDiv);
   }
 });
+
+
+/**
+ * Initialize mobile collapsible filters
+ */
+function initMobileFilters() {
+  // Set up toggle buttons for collapsible sections
+  const toggleButtons = document.querySelectorAll('.filter-toggle');
+  toggleButtons.forEach(button => {
+    button.addEventListener('click', () => {
+      const targetId = button.getAttribute('data-target');
+      const content = document.getElementById(targetId);
+      
+      if (content) {
+        // Toggle the active state
+        button.classList.toggle('active');
+        content.classList.toggle('active');
+      }
+    });
+  });
+  
+  // Sync mobile filters with desktop filters
+  syncMobileFilters();
+}
+
+/**
+ * Sync mobile filter values with desktop filters
+ */
+function syncMobileFilters() {
+  const filterMappings = {
+    'fRegion': 'fRegionMobile',
+    'fCountry': 'fCountryMobile', 
+    'fOrg': 'fOrgMobile',
+    'fMaturity': 'fMaturityMobile',
+    'fSDG': 'fSDGMobile'
+  };
+  
+  // Copy values from desktop to mobile filters
+  Object.entries(filterMappings).forEach(([desktopId, mobileId]) => {
+    const desktopSelect = document.getElementById(desktopId);
+    const mobileSelect = document.getElementById(mobileId);
+    
+    if (desktopSelect && mobileSelect) {
+      // Copy options
+      mobileSelect.innerHTML = desktopSelect.innerHTML;
+      
+      // Copy selected values
+      const selectedValues = Array.from(desktopSelect.selectedOptions).map(opt => opt.value);
+      Array.from(mobileSelect.options).forEach(option => {
+        option.selected = selectedValues.includes(option.value);
+      });
+      
+      // Add change listener to sync back to desktop
+      mobileSelect.addEventListener('change', () => {
+        const selectedValues = Array.from(mobileSelect.selectedOptions).map(opt => opt.value);
+        Array.from(desktopSelect.options).forEach(option => {
+          option.selected = selectedValues.includes(option.value);
+        });
+        
+        // Trigger change event on desktop select
+        desktopSelect.dispatchEvent(new Event('change'));
+      });
+    }
+  });
+  
+  // Update filter counts
+  updateMobileFilterCounts();
+}
+
+/**
+ * Update mobile filter counts display
+ */
+function updateMobileFilterCounts() {
+  const countMappings = {
+    'region': 'region-count',
+    'country': 'country-count',
+    'org': 'org-count', 
+    'maturity': 'maturity-count',
+    'sdg': 'sdg-count'
+  };
+  
+  Object.entries(countMappings).forEach(([filterKey, countId]) => {
+    const countElement = document.getElementById(countId);
+    if (countElement && appState.filters[filterKey]) {
+      countElement.textContent = appState.filters[filterKey].size;
+    }
+  });
+}

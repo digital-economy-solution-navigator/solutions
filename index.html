@@ -49,26 +49,108 @@
     </div>
     
     <div class="controls" id="controls">
-      <label>
-        🌍 Region
-        <select id="fRegion" multiple></select>
-      </label>
-      <label>
-        🏳️ Country
-        <select id="fCountry" multiple></select>
-      </label>
-      <label>
-        🏢 Organization Type
-        <select id="fOrg" multiple></select>
-      </label>
-      <label>
-        📈 Maturity Stage
-        <select id="fMaturity" multiple></select>
-      </label>
-      <label>
-        🎯 SDG Focus
-        <select id="fSDG" multiple></select>
-      </label>
+      <!-- Desktop layout - all filters visible -->
+      <div class="desktop-filters">
+        <label>
+          🌍 Region
+          <select id="fRegion" multiple></select>
+        </label>
+        <label>
+          🏳️ Country
+          <select id="fCountry" multiple></select>
+        </label>
+        <label>
+          🏢 Organization Type
+          <select id="fOrg" multiple></select>
+        </label>
+        <label>
+          📈 Maturity Stage
+          <select id="fMaturity" multiple></select>
+        </label>
+        <label>
+          🎯 SDG Focus
+          <select id="fSDG" multiple></select>
+        </label>
+      </div>
+      
+      <!-- Mobile layout - collapsible sections -->
+      <div class="mobile-filters">
+        <div class="filter-section">
+          <button class="filter-toggle" data-target="region-filters">
+            <span class="filter-icon">🌍</span>
+            <span class="filter-title">Region</span>
+            <span class="filter-count" id="region-count">0</span>
+            <span class="filter-arrow">▼</span>
+          </button>
+          <div class="filter-content" id="region-filters">
+            <label>
+              🌍 Region
+              <select id="fRegionMobile" multiple></select>
+            </label>
+          </div>
+        </div>
+        
+        <div class="filter-section">
+          <button class="filter-toggle" data-target="country-filters">
+            <span class="filter-icon">🏳️</span>
+            <span class="filter-title">Country</span>
+            <span class="filter-count" id="country-count">0</span>
+            <span class="filter-arrow">▼</span>
+          </button>
+          <div class="filter-content" id="country-filters">
+            <label>
+              🏳️ Country
+              <select id="fCountryMobile" multiple></select>
+            </label>
+          </div>
+        </div>
+        
+        <div class="filter-section">
+          <button class="filter-toggle" data-target="org-filters">
+            <span class="filter-icon">🏢</span>
+            <span class="filter-title">Organization</span>
+            <span class="filter-count" id="org-count">0</span>
+            <span class="filter-arrow">▼</span>
+          </button>
+          <div class="filter-content" id="org-filters">
+            <label>
+              🏢 Organization Type
+              <select id="fOrgMobile" multiple></select>
+            </label>
+          </div>
+        </div>
+        
+        <div class="filter-section">
+          <button class="filter-toggle" data-target="maturity-filters">
+            <span class="filter-icon">📈</span>
+            <span class="filter-title">Maturity</span>
+            <span class="filter-count" id="maturity-count">0</span>
+            <span class="filter-arrow">▼</span>
+          </button>
+          <div class="filter-content" id="maturity-filters">
+            <label>
+              📈 Maturity Stage
+              <select id="fMaturityMobile" multiple></select>
+            </label>
+          </div>
+        </div>
+        
+        <div class="filter-section">
+          <button class="filter-toggle" data-target="sdg-filters">
+            <span class="filter-icon">🎯</span>
+            <span class="filter-title">SDG Focus</span>
+            <span class="filter-count" id="sdg-count">0</span>
+            <span class="filter-arrow">▼</span>
+          </button>
+          <div class="filter-content" id="sdg-filters">
+            <label>
+              🎯 SDG Focus
+              <select id="fSDGMobile" multiple></select>
+            </label>
+          </div>
+        </div>
+      </div>
+      
       <div style="display: flex; gap: 10px; align-items: end">
         <button id="clear" class="btn secondary">🗑️ Clear</button>
         <button id="mobileCloseControls" class="btn secondary mobile-close-btn" title="Close controls">
