@@ -5,7 +5,6 @@
  * 
  * - variables.css     - CSS variables and theme definitions
  * - base.css          - Base HTML element styles
- * - landscape.css     - Landscape mode suggestion banner
  * - header.css        - Header and branding styles
  * - controls.css      - Filter controls and form elements
  * - buttons.css       - Button styles and interactive elements
@@ -32,7 +31,6 @@
 /* Import all modular stylesheets */
 @import url('variables.css');
 @import url('base.css');
-@import url('landscape.css');
 @import url('header.css');
 @import url('controls.css');
 @import url('buttons.css');

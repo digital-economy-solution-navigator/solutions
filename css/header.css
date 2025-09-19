@@ -11,20 +11,6 @@ header {
   transition: all 0.3s ease;
 }
 
-/* Adjust header position when landscape banner is shown */
-body:has(.landscape-suggestion.show) header {
-  top: 48px; /* Height of the landscape suggestion banner */
-}
-
-/* Fallback for browsers that don't support :has() */
-.landscape-suggestion.show ~ header {
-  top: 48px;
-}
-
-/* Alternative approach using JavaScript class */
-body.landscape-banner-shown header {
-  top: 48px;
-}
 
 .header-inner {
   display: flex;
