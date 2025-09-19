@@ -10,7 +10,17 @@
 function fillSelect(id, values) { 
   const s = utils.el(id); 
   if (!s) return; 
-  s.innerHTML = values.map(v => `<option value="${v}">${v}</option>`).join(''); 
+  
+  // Special handling for country filter with flags
+  if (id === 'fCountry') {
+    s.innerHTML = values.map(v => {
+      // Extract clean country name by removing HTML flag code
+      const cleanCountry = v.replace(/<[^>]*>/g, '').trim();
+      return `<option value="${cleanCountry}">${v}</option>`;
+    }).join('');
+  } else {
+    s.innerHTML = values.map(v => `<option value="${v}">${v}</option>`).join('');
+  }
 }
 
 /**
@@ -82,7 +92,8 @@ function updateFilterDisplay() {
  */
 function setFilterFromSelect(id) {
   const s = utils.el(id); 
-  const selected = new Set([...s.selectedOptions].map(o => o.value));
+  const selectedValues = [...s.selectedOptions].map(o => o.value);
+  const selected = new Set(selectedValues);
   const key = id.replace('f', '').toLowerCase();
   
   if (key === 'region') { 
@@ -91,10 +102,10 @@ function setFilterFromSelect(id) {
   }
   if (key === 'country') {
     // Strip flag icons from country filter values for processing
-    const cleanSelected = selected.map(country => {
+    const cleanSelected = new Set(selectedValues.map(country => {
       // Remove flag HTML and extra spaces, keep only country name
       return country.replace(/<[^>]*>/g, '').trim();
-    });
+    }));
     appState.filters.country = cleanSelected; 
     updateRegionFilter(cleanSelected); 
   }
@@ -102,10 +113,10 @@ function setFilterFromSelect(id) {
   if (key === 'maturity') appState.filters.maturity = selected;
   if (key === 'sdg') {
     // Strip emoji icons from SDG filter values for processing
-    const cleanSelected = selected.map(sdg => {
+    const cleanSelected = new Set(selectedValues.map(sdg => {
       // Remove emoji and extra spaces, keep only "SDG X" format
       return sdg.replace(/^[^\w\s]*\s*/, '').trim();
-    });
+    }));
     appState.filters.sdg = cleanSelected;
   }
   
@@ -120,7 +131,10 @@ function setFilterFromSelect(id) {
 function updateCountryFilter(selectedRegions) {
   if (!appState.countryRegionMapping) return;
   if (selectedRegions.size === 0) { 
-    fillSelect('fCountry', utils.unique(appState.rawData.map(r => r._country))); 
+    // Create country options with flags for the filter dropdown
+    const countryValues = utils.unique(appState.rawData.map(r => r._country));
+    const countryOptions = countryValues.map(country => `${utils.getCountryFlag(country)}${country}`);
+    fillSelect('fCountry', countryOptions); 
     return; 
   }
   const valid = new Set();
@@ -129,7 +143,9 @@ function updateCountryFilter(selectedRegions) {
       if (appState.rawData.some(r => r._country === c)) valid.add(c); 
     });
   });
-  fillSelect('fCountry', Array.from(valid).sort()); 
+  // Create country options with flags for the filter dropdown
+  const countryOptions = Array.from(valid).sort().map(country => `${utils.getCountryFlag(country)}${country}`);
+  fillSelect('fCountry', countryOptions); 
   appState.filters.country.clear(); 
   clearSelect('fCountry');
 }
