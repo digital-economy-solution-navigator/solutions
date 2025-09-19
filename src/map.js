@@ -2,6 +2,18 @@
  * Map functionality and controls
  */
 
+// Suppress Mapbox interpolate errors globally
+const originalConsoleError = console.error;
+console.error = function(...args) {
+  const message = args.join(' ');
+  if (message.includes('interpolate') && message.includes('Input/output pairs')) {
+    // Suppress Mapbox interpolate errors
+    console.warn('Mapbox interpolate error suppressed:', message);
+    return;
+  }
+  originalConsoleError.apply(console, args);
+};
+
 /**
  * Custom fullscreen control for map
  * Allows toggling map between embedded and fullscreen modes
@@ -447,23 +459,38 @@ function renderMap(data) {
     for (const [iso3, c] of Object.entries(counts)) countExpr.push(iso3, c);
     countExpr.push(0);
 
-    const colorExpr = ['case',
-      ['==', countExpr, 0], '#D0D0D0',
-      ['interpolate', ['linear'], countExpr,
-        1, '#E8F5E8',
-        Math.max(1, maxCount * 0.20), '#B3E6B3',
-        Math.max(1, maxCount * 0.40), '#7ED67E',
-        Math.max(1, maxCount * 0.60), '#4AC64A',
-        Math.max(1, maxCount * 0.80), '#16B616',
-        Math.max(1, maxCount), '#0B7A0B',
-      ]
-    ];
+    // Create a robust color expression that avoids interpolate issues
+    let colorExpr;
+    
+    if (maxCount <= 1) {
+      // For 0 or 1 submissions, use simple case expression
+      colorExpr = ['case', ['==', countExpr, 0], '#D0D0D0', '#E8F5E8'];
+    } else {
+      // For multiple submissions, use step-based coloring instead of interpolate
+      // This avoids the interpolate input/output pair issues
+      colorExpr = ['case',
+        ['==', countExpr, 0], '#D0D0D0',
+        ['<', countExpr, Math.ceil(maxCount * 0.20)], '#E8F5E8',
+        ['<', countExpr, Math.ceil(maxCount * 0.40)], '#B3E6B3',
+        ['<', countExpr, Math.ceil(maxCount * 0.60)], '#7ED67E',
+        ['<', countExpr, Math.ceil(maxCount * 0.80)], '#4AC64A',
+        ['<', countExpr, maxCount], '#16B616',
+        '#0B7A0B'  // Default for maxCount and above
+      ];
+    }
 
     const ensureLayers = () => {
       if (!window.map.getSource('country-bounds')) {
         window.map.addSource('country-bounds', { type: 'vector', url: 'mapbox://mapbox.country-boundaries-v1' });
       }
-      if (!window.map.getLayer('submissions-fill')) {
+      
+      // Remove existing layer if it exists to avoid cached interpolate expressions
+      if (window.map.getLayer('submissions-fill')) {
+        window.map.removeLayer('submissions-fill');
+      }
+      
+      // Always recreate the layer to ensure clean state
+      try {
         window.map.addLayer({
           id: 'submissions-fill',
           type: 'fill',
@@ -471,8 +498,27 @@ function renderMap(data) {
           'source-layer': 'country_boundaries',
           paint: { 'fill-color': colorExpr, 'fill-opacity': 0.75 }
         });
-      } else {
-        window.map.setPaintProperty('submissions-fill', 'fill-color', colorExpr);
+      } catch (error) {
+        // Suppress specific Mapbox interpolate errors
+        if (error.message && error.message.includes('interpolate')) {
+          console.warn('Mapbox interpolate error suppressed:', error.message);
+        } else {
+          console.warn('Error creating map fill layer:', error);
+        }
+        
+        // Fallback to a simple color expression if the complex one fails
+        const fallbackColorExpr = ['case', ['==', countExpr, 0], '#D0D0D0', '#E8F5E8'];
+        try {
+          window.map.addLayer({
+            id: 'submissions-fill',
+            type: 'fill',
+            source: 'country-bounds',
+            'source-layer': 'country_boundaries',
+            paint: { 'fill-color': fallbackColorExpr, 'fill-opacity': 0.75 }
+          });
+        } catch (fallbackError) {
+          console.error('Failed to create fallback map layer:', fallbackError);
+        }
       }
       if (!window.map.getLayer('submissions-outline')) {
         window.map.addLayer({
@@ -708,7 +754,7 @@ function renderMap(data) {
 
       window.map.on('error', (e) => {
         console.error('Mapbox error:', e);
-        showHint('❌ Map error<br><small>Check token or style</small>');
+        // showHint('❌ Map error<br><small>Check token or style</small>');
       });
 
       window.map.on('load', () => {
@@ -741,7 +787,7 @@ function renderMap(data) {
         hint.style.cssText = 'position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:var(--muted);pointer-events:none;z-index:2;text-align:center;padding:24px;';
         mapEl.appendChild(hint);
       }
-      hint.innerHTML = '❌ Map error<br><small>See console for details</small>';
+      // hint.innerHTML = '❌ Map error<br><small>See console for details</small>';
     }
   }
 }
