@@ -5,6 +5,15 @@
   font-family: inherit;
 }
 
+/* General legend spacing improvements */
+#orgPie .plotly .legend .legendtext {
+  margin-left: 6px !important;
+}
+
+#orgPie .plotly .legend .traces .legendtoggle {
+  margin-right: 6px !important;
+}
+
 /* Dark theme pie chart text styling */
 #orgPie .plotly .pie .text {
   font-size: 14px !important;
@@ -59,13 +68,49 @@
   
   /* Improve legend positioning for mobile pie chart */
   #orgPie .plotly .legend {
-    font-size: 11px !important;
-    max-width: 120px !important;
+    font-size: 10px !important;
+    max-width: 140px !important;
+    line-height: 1.2 !important;
   }
   
-  /* Ensure pie chart has enough space for legend */
+  /* Reduce spacing between legend symbols and text */
+  #orgPie .plotly .legend .legendtext {
+    margin-left: 4px !important;
+  }
+  
+  #orgPie .plotly .legend .traces .legendtoggle {
+    margin-right: 4px !important;
+  }
+  
+  /* Allow legend text to wrap */
+  #orgPie .plotly .legend .legendtext {
+    white-space: normal !important;
+    word-wrap: break-word !important;
+    max-width: 120px !important;
+    line-height: 1.1 !important;
+    margin-left: 4px !important;
+  }
+  
+  /* Tighten legend item spacing */
+  #orgPie .plotly .legend .traces {
+    margin-bottom: 2px !important;
+  }
+  
+  #orgPie .plotly .legend .traces .legendtoggle {
+    margin-right: 4px !important;
+    width: 12px !important;
+    height: 12px !important;
+  }
+  
+  /* Make pie chart larger on mobile */
   #orgPie {
-    min-height: 400px !important;
+    min-height: 450px !important;
+    height: 450px !important;
+  }
+  
+  /* Improve pie chart container for mobile */
+  .card .body {
+    padding: 8px 12px !important;
   }
 }
 
@@ -82,5 +127,30 @@
   
   #sdgStack .plotly .text {
     font-size: 9px !important;
+  }
+  
+  /* Further optimize legend for very small screens */
+  #orgPie .plotly .legend {
+    font-size: 9px !important;
+    max-width: 100px !important;
+  }
+  
+  #orgPie .plotly .legend .legendtext {
+    max-width: 90px !important;
+    line-height: 1.0 !important;
+    margin-left: 3px !important;
+  }
+  
+  /* Even tighter spacing for very small screens */
+  #orgPie .plotly .legend .traces .legendtoggle {
+    margin-right: 3px !important;
+    width: 10px !important;
+    height: 10px !important;
+  }
+  
+  /* Adjust pie chart size for very small screens */
+  #orgPie {
+    min-height: 400px !important;
+    height: 400px !important;
   }
 }

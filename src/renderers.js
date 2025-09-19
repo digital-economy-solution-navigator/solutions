@@ -108,9 +108,22 @@ function renderOrgPie(data) {
   // Detect if we're on mobile
   const isMobile = window.innerWidth <= 767;
   
+  // Create wrapped labels for mobile to handle long text
+  const wrappedLabels = isMobile ? labels.map(label => {
+    // Wrap long labels for better mobile display
+    if (label.length > 20) {
+      const words = label.split(' ');
+      if (words.length > 2) {
+        const mid = Math.ceil(words.length / 2);
+        return words.slice(0, mid).join(' ') + '<br>' + words.slice(mid).join(' ');
+      }
+    }
+    return label;
+  }) : labels;
+  
   const trace = {
     type: 'pie',
-    labels: labels, // Always use full labels for the data
+    labels: wrappedLabels, // Use wrapped labels for mobile
     values: values,
     textinfo: isMobile ? 'percent' : 'label+percent',
     textposition: isMobile ? 'inside' : 'outside',
@@ -134,20 +147,24 @@ function renderOrgPie(data) {
   
   const layout = {
     ...commonLayout,
-    margin: isMobile ? { t: 20, r: 10, b: 20, l: 10 } : { t: 20, r: 20, b: 20, l: 20 },
+    margin: isMobile ? { t: 10, r: 5, b: 10, l: 5 } : { t: 20, r: 20, b: 20, l: 20 },
     showlegend: isMobile,
     legend: isMobile ? {
       orientation: 'v',
-      x: 1.02,
+      x: 1.05,
       y: 0.5,
       xanchor: 'left',
       font: {
-        size: 12,
+        size: 10,
         color: ThemeManager.currentTheme === 'dark' ? '#FFFFFF' : '#0F172A'
-      }
+      },
+      // Allow legend to wrap text
+      itemwidth: 120,
+      itemclick: false,
+      itemdoubleclick: false
     } : undefined,
     font: {
-      size: isMobile ? 12 : 15,
+      size: isMobile ? 10 : 15,
       color: ThemeManager.currentTheme === 'dark' ? '#FFFFFF' : '#0F172A',
       family: 'inherit'
     },
