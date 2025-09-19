@@ -212,6 +212,29 @@ function initHamburgerMenu() {
     }
   });
   
+  // Handle mobile close controls button separately
+  const mobileCloseBtn = document.getElementById('mobileCloseControls');
+  if (mobileCloseBtn) {
+    console.log('Mobile close button found and event listener attached');
+    mobileCloseBtn.addEventListener('click', () => {
+      console.log('Mobile close button clicked');
+      // Call toggleKioskMode directly since it should be in global scope
+      if (typeof toggleKioskMode === 'function') {
+        toggleKioskMode(); // Hide the controls
+      } else {
+        console.error('toggleKioskMode function not found');
+        // Fallback: manually toggle the controls
+        const controls = document.getElementById('controls');
+        if (controls) {
+          controls.classList.toggle('show');
+        }
+      }
+      closeMenu(); // Close the mobile menu if open
+    });
+  } else {
+    console.warn('Mobile close button not found');
+  }
+  
   // Update mobile theme button icon when theme changes
   const updateMobileThemeButton = () => {
     const mobileThemeBtn = document.getElementById('mobileToggleTheme');

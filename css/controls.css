@@ -84,8 +84,37 @@
   box-shadow: 0 0 0 2px rgba(0, 163, 224, 0.2);
 }
 
+/* Mobile close button for controls */
+.mobile-close-btn {
+  display: none; /* Hidden on desktop */
+}
+
+.mobile-close-btn .btn-icon {
+  margin-right: 4px;
+}
+
 /* Mobile-specific select styling */
 @media (max-width: 767px) {
+  .mobile-close-btn {
+    display: flex;
+    align-items: center;
+    /* Use the same styling as other buttons */
+    background: var(--secondary);
+    color: var(--text);
+    border: var(--border);
+    border-radius: 12px;
+    padding: 10px 16px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    min-width: auto;
+  }
+  
+  .mobile-close-btn:hover {
+    background: var(--secondary-hover, #f1f5f9);
+    border-color: var(--brand);
+  }
+  
   .controls select {
     font-size: 16px; /* Prevents zoom on iOS */
     padding: 12px 40px 12px 12px;
