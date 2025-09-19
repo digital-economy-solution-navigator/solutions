@@ -108,26 +108,21 @@ function renderOrgPie(data) {
   // Detect if we're on mobile
   const isMobile = window.innerWidth <= 767;
   
-  // Truncate labels for mobile if they're too long
-  const displayLabels = isMobile ? labels.map(label => {
-    if (label.length > 12) {
-      return label.substring(0, 10) + '...';
-    }
-    return label;
-  }) : labels;
-  
   const trace = {
     type: 'pie',
-    labels: displayLabels,
+    labels: labels, // Always use full labels for the data
     values: values,
     textinfo: isMobile ? 'percent' : 'label+percent',
     textposition: isMobile ? 'inside' : 'outside',
     textfont: {
-      size: isMobile ? 12 : 15,
+      size: isMobile ? 12 : 12,
       color: ThemeManager.currentTheme === 'dark' ? '#FFFFFF' : '#0F172A',
       family: 'inherit'
     },
     hovertemplate: '<b>%{label}</b><br>Count: %{value}<br>Percentage: %{percent}<extra></extra>',
+    // Ensure small slices are always visible
+    insidetextorientation: 'horizontal',
+    texttemplate: isMobile ? '%{percent}' : '%{label}<br>%{percent}',
     marker: {
       colors: CONFIG.CHART_COLORS,
       line: {
@@ -155,7 +150,13 @@ function renderOrgPie(data) {
       size: isMobile ? 12 : 15,
       color: ThemeManager.currentTheme === 'dark' ? '#FFFFFF' : '#0F172A',
       family: 'inherit'
-    }
+    },
+    // Ensure small slices are visible
+    piecolorway: CONFIG.CHART_COLORS,
+    // Add more space for external labels
+    ...(isMobile ? {} : {
+      margin: { t: 20, r: 40, b: 20, l: 40 }
+    })
   };
   
   Plotly.newPlot('orgPie', [trace], layout, { displayModeBar: false, responsive: true });
