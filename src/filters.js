@@ -89,9 +89,14 @@ function setFilterFromSelect(id) {
     appState.filters.region = selected; 
     updateCountryFilter(selected); 
   }
-  if (key === 'country') { 
-    appState.filters.country = selected; 
-    updateRegionFilter(selected); 
+  if (key === 'country') {
+    // Strip flag icons from country filter values for processing
+    const cleanSelected = selected.map(country => {
+      // Remove flag HTML and extra spaces, keep only country name
+      return country.replace(/<[^>]*>/g, '').trim();
+    });
+    appState.filters.country = cleanSelected; 
+    updateRegionFilter(cleanSelected); 
   }
   if (key === 'org') appState.filters.org = selected;
   if (key === 'maturity') appState.filters.maturity = selected;

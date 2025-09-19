@@ -73,7 +73,12 @@ async function init() {
   
   // Populate filter selects
   fillSelect('fRegion', utils.unique(appState.rawData.map(r => r._region)));
-  fillSelect('fCountry', utils.unique(appState.rawData.map(r => r._country)));
+  
+  // Create country options with flags for the filter dropdown
+  const countryValues = utils.unique(appState.rawData.map(r => r._country));
+  const countryOptions = countryValues.map(country => `${utils.getCountryFlag(country)}${country}`);
+  fillSelect('fCountry', countryOptions);
+  
   fillSelect('fOrg', utils.unique(appState.rawData.map(r => r._org)));
   
   // Sort maturity values according to CONFIG order

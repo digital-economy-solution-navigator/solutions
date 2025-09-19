@@ -126,7 +126,7 @@ class AppState {
     modal.innerHTML = `
       <div class="modal-content">
         <div class="modal-header">
-          <h3>${countryName}: ${submissions.length} solution${submissions.length !== 1 ? 's' : ''}</h3>
+          <h3>${utils.getCountryFlag(countryName)}${countryName}: ${submissions.length} solution${submissions.length !== 1 ? 's' : ''}</h3>
           <!-- Hidden feature: Modal stats (preserved for future use) -->
           <!-- <div class="modal-stats">
             <span class="stat">${submissions.length} solution${submissions.length !== 1 ? 's' : ''}</span>

@@ -624,7 +624,9 @@ function renderMap(data) {
           new mapboxgl.Popup()
             .setLngLat(coordinates)
             .setHTML(`
-              <div style="font-weight:700">${props.country}</div>
+              <div style="font-weight:700; display:flex; align-items:center; margin-bottom:8px;">
+                ${utils.getCountryFlag(props.country)}${props.country}
+              </div>
               <div style="color:var(--muted)">Organization: ${props.org}</div>
               <div style="color:var(--muted)">Maturity: ${props.maturity}</div>
               <div style="color:var(--muted)">Score: ${props.score}</div>
