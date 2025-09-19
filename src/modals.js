@@ -104,7 +104,28 @@ function initializeDisclaimer() {
   // Show disclaimer on button click
   disclaimerBtn.addEventListener('click', function(e) {
     e.stopPropagation();
-    disclaimerTooltip.classList.toggle('show');
+    
+    if (disclaimerTooltip.classList.contains('show')) {
+      disclaimerTooltip.classList.remove('show');
+    } else {
+      // Position the tooltip above the button
+      const btnRect = disclaimerBtn.getBoundingClientRect();
+      const tooltipWidth = 400; // Fixed width from CSS
+      const tooltipHeight = 100; // Approximate height
+      const margin = 8;
+      
+      // Calculate position to center above the button
+      const left = btnRect.left + (btnRect.width / 2) - (tooltipWidth / 2);
+      const top = btnRect.top - tooltipHeight - margin;
+      
+      // Ensure tooltip doesn't go off screen
+      const finalLeft = Math.max(10, Math.min(left, window.innerWidth - tooltipWidth - 10));
+      const finalTop = Math.max(10, top);
+      
+      disclaimerTooltip.style.left = finalLeft + 'px';
+      disclaimerTooltip.style.top = finalTop + 'px';
+      disclaimerTooltip.classList.add('show');
+    }
   });
 
   // Hide disclaimer when clicking outside

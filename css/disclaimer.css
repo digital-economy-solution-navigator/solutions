@@ -35,10 +35,12 @@
 }
 
 .disclaimer-tooltip {
-  position: absolute;
-  top: 100%;
-  right: 0;
-  margin-top: 8px;
+  position: fixed;
+  bottom: auto;
+  top: auto;
+  right: auto;
+  left: auto;
+  margin-bottom: 8px;
   background: #1a1a2e;
   color: white;
   padding: 12px 16px;
@@ -50,9 +52,9 @@
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
   opacity: 0;
   visibility: hidden;
-  transform: translateY(-10px);
+  transform: translateY(10px);
   transition: all 0.2s ease;
-  z-index: 1000;
+  z-index: 10002;
 }
 
 .disclaimer-tooltip.show {
@@ -63,13 +65,14 @@
 
 .disclaimer-arrow {
   position: absolute;
-  top: -6px;
-  right: 20px;
+  bottom: -6px;
+  left: 50%;
+  transform: translateX(-50%);
   width: 0;
   height: 0;
   border-left: 6px solid transparent;
   border-right: 6px solid transparent;
-  border-bottom: 6px solid #1a1a2e;
+  border-top: 6px solid #1a1a2e;
 }
 
 .disclaimer-content {
@@ -84,5 +87,5 @@
 }
 
 [data-theme="light"] .disclaimer-arrow {
-  border-bottom-color: #2d3748;
+  border-top-color: #2d3748;
 }
