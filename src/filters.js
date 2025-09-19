@@ -41,7 +41,10 @@ function updateFilterUI(resetCountries = true) {
   ['fRegion', 'fCountry', 'fOrg', 'fMaturity', 'fSDG'].forEach(id => clearSelect(id));
   if (resetCountries) {
     fillSelect('fRegion', utils.unique(appState.rawData.map(r => r._region)));
-    fillSelect('fCountry', utils.unique(appState.rawData.map(r => r._country)));
+    // Create country options with flags for the filter dropdown
+    const countryValues = utils.unique(appState.rawData.map(r => r._country));
+    const countryOptions = countryValues.map(country => `${utils.getCountryFlag(country)}${country}`);
+    fillSelect('fCountry', countryOptions);
   }
   updateFilterDisplay();
 }

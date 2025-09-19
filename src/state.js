@@ -47,7 +47,7 @@ class AppState {
       maturity: new Set(),
       sdg: new Set()
     };
-    updateFilterUI(false);
+    updateFilterUI(true); // Reset country/region options to show all available options
     updateFilterDisplay();
   }
   
