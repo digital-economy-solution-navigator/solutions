@@ -59,7 +59,7 @@ function renderSdgStack(data) {
     textfont: { size: 14, color: 'white' },
     hovertemplate: labels.map((sdg, i) => {
       const fullLabel = utils.formatSdgWithLabel(sdg);
-      return `<b>${fullLabel}</b><br>Solutions: ${values[i]}<extra></extra>`;
+      return `<span style="color: #ffffff;"><b>${fullLabel}</b><br>Solutions: ${values[i]}</span><extra></extra>`;
     })
   };
   Plotly.newPlot('sdgStack', [trace], { ...commonLayout, margin: { t: 10, l: 10, r: 10, b: 10 } }, { displayModeBar: false, responsive: true });
