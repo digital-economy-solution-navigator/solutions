@@ -105,7 +105,7 @@ function renderOrgPie(data) {
   const total = values.reduce((sum, val) => sum + val, 0);
   const percentages = values.map(val => ((val / total) * 100).toFixed(1));
   
-  // Detect if we're on mobile
+  // Detect if we're on mobile for responsive adjustments
   const isMobile = window.innerWidth <= 767;
   
   // Create wrapped labels for mobile to handle long text
@@ -123,19 +123,24 @@ function renderOrgPie(data) {
   
   const trace = {
     type: 'pie',
-    labels: wrappedLabels, // Use wrapped labels for mobile
+    labels: wrappedLabels,
     values: values,
-    textinfo: isMobile ? 'percent' : 'label+percent',
-    textposition: isMobile ? 'inside' : 'outside',
+    // Consistent text display across mobile and desktop
+    textinfo: 'label+percent',
+    textposition: 'outside',
     textfont: {
-      size: isMobile ? 12 : 12,
+      size: isMobile ? 11 : 12,
       color: ThemeManager.currentTheme === 'dark' ? '#FFFFFF' : '#0F172A',
       family: 'inherit'
     },
     hovertemplate: '<b>%{label}</b><br>Count: %{value}<br>Percentage: %{percent}<extra></extra>',
     // Ensure small slices are always visible
     insidetextorientation: 'horizontal',
-    texttemplate: isMobile ? '%{percent}' : '%{label}<br>%{percent}',
+    texttemplate: '%{label}<br>%{percent}',
+    // Make pie smaller on mobile by creating a donut chart
+    ...(isMobile ? {
+      hole: 0.3  // Create a donut chart with 30% hole on mobile
+    } : {}),
     marker: {
       colors: CONFIG.CHART_COLORS,
       line: {
@@ -147,33 +152,23 @@ function renderOrgPie(data) {
   
   const layout = {
     ...commonLayout,
-    margin: isMobile ? { t: 10, r: 5, b: 10, l: 5 } : { t: 20, r: 20, b: 20, l: 20 },
-    showlegend: isMobile,
-    legend: isMobile ? {
-      orientation: 'v',
-      x: 1.05,
-      y: 0.5,
-      xanchor: 'left',
-      font: {
-        size: 10,
-        color: ThemeManager.currentTheme === 'dark' ? '#FFFFFF' : '#0F172A'
-      },
-      // Allow legend to wrap text
-      itemwidth: 120,
-      itemclick: false,
-      itemdoubleclick: false
-    } : undefined,
+    // Consistent margins with responsive adjustments - more space for mobile labels
+    margin: isMobile ? { t: 30, r: 50, b: 30, l: 50 } : { t: 20, r: 20, b: 20, l: 20 },
+    // No legend for cleaner display
+    showlegend: false,
     font: {
-      size: isMobile ? 10 : 15,
+      size: isMobile ? 11 : 12,
       color: ThemeManager.currentTheme === 'dark' ? '#FFFFFF' : '#0F172A',
       family: 'inherit'
     },
     // Ensure small slices are visible
     piecolorway: CONFIG.CHART_COLORS,
-    // Add more space for external labels
-    ...(isMobile ? {} : {
-      margin: { t: 20, r: 40, b: 20, l: 40 }
-    })
+    // Add more space around the pie chart on mobile
+    ...(isMobile ? {
+      autosize: true,
+      width: undefined,
+      height: undefined
+    } : {})
   };
   
   Plotly.newPlot('orgPie', [trace], layout, { displayModeBar: false, responsive: true });
