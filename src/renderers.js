@@ -44,12 +44,23 @@ function renderSdgStack(data) {
   const labels = sorted.map(([k]) => k);
   const parents = labels.map(() => '');
   const values = sorted.map(([, v]) => v);
+  
+  // Use official UN SDG colors and create labels with emoji icons
+  const colors = labels.map(sdg => CONFIG.SDG_COLORS[sdg] || '#CCCCCC');
+  const labelsWithIcons = labels.map(sdg => utils.formatSdgWithIcon(sdg));
+  
   const trace = { 
     type: 'treemap', 
-    labels, 
+    labels: labelsWithIcons, 
     parents, 
     values, 
-    marker: { colors: CONFIG.CHART_COLORS } 
+    marker: { colors: colors },
+    textinfo: 'label+value',
+    textfont: { size: 14, color: 'white' },
+    hovertemplate: labels.map((sdg, i) => {
+      const fullLabel = utils.formatSdgWithLabel(sdg);
+      return `<b>${fullLabel}</b><br>Solutions: ${values[i]}<extra></extra>`;
+    })
   };
   Plotly.newPlot('sdgStack', [trace], { ...commonLayout, margin: { t: 10, l: 10, r: 10, b: 10 } }, { displayModeBar: false, responsive: true });
 }

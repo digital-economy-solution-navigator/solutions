@@ -87,13 +87,17 @@ async function init() {
   });
   fillSelect('fMaturity', maturityValues);
   
-  // Sort SDGs numerically (SDG 1, SDG 2, ..., SDG 17)
+  // Sort SDGs numerically (SDG 1, SDG 2, ..., SDG 17) with emoji icons
   const sdgValues = utils.unique(appState.rawData.flatMap(r => r._sdgs)).sort((a, b) => {
     const aNum = parseInt(a.replace(/SDG\s*(\d+)/i, '$1'));
     const bNum = parseInt(b.replace(/SDG\s*(\d+)/i, '$1'));
     return aNum - bNum;
   });
-  fillSelect('fSDG', sdgValues);
+  
+  // Create SDG options with emoji icons for the filter dropdown
+  const sdgOptions = sdgValues.map(sdg => utils.formatSdgWithIcon(sdg));
+  
+  fillSelect('fSDG', sdgOptions);
 
   // Initial render
   renderAll();

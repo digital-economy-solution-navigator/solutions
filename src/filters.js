@@ -95,7 +95,14 @@ function setFilterFromSelect(id) {
   }
   if (key === 'org') appState.filters.org = selected;
   if (key === 'maturity') appState.filters.maturity = selected;
-  if (key === 'sdg') appState.filters.sdg = selected;
+  if (key === 'sdg') {
+    // Strip emoji icons from SDG filter values for processing
+    const cleanSelected = selected.map(sdg => {
+      // Remove emoji and extra spaces, keep only "SDG X" format
+      return sdg.replace(/^[^\w\s]*\s*/, '').trim();
+    });
+    appState.filters.sdg = cleanSelected;
+  }
   
   // Update the visual display
   updateFilterDisplay();

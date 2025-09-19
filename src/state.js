@@ -166,7 +166,7 @@ class AppState {
                   </div>
                   <div class="detail-row">
                     <span class="label">🎯 SDGs:</span>
-                    <span class="value">${submission._sdgs.join(', ')}</span>
+                    <span class="value">${submission._sdgs.map(sdg => utils.formatSdgWithIcon(sdg)).join(', ')}</span>
                   </div>
                   ${submission._theme ? `
                     <div class="detail-row">

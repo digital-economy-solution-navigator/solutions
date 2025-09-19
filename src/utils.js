@@ -4,6 +4,35 @@
 
 const utils = {
   /**
+   * Get SDG information including emoji, label, and color
+   * @param {string} sdg - SDG identifier (e.g., "SDG 1")
+   * @returns {Object} SDG information object
+   */
+  getSdgInfo(sdg) {
+    return CONFIG.SDG_INFO[sdg] || { emoji: '❓', label: sdg, color: '#CCCCCC' };
+  },
+
+  /**
+   * Format SDG with emoji icon
+   * @param {string} sdg - SDG identifier (e.g., "SDG 1")
+   * @returns {string} Formatted SDG with emoji
+   */
+  formatSdgWithIcon(sdg) {
+    const info = this.getSdgInfo(sdg);
+    return `${info.emoji} ${sdg}`;
+  },
+
+  /**
+   * Format SDG with emoji and full label
+   * @param {string} sdg - SDG identifier (e.g., "SDG 1")
+   * @returns {string} Formatted SDG with emoji and label
+   */
+  formatSdgWithLabel(sdg) {
+    const info = this.getSdgInfo(sdg);
+    return `${info.emoji} ${sdg}: ${info.label}`;
+  },
+
+  /**
    * Converts value to array if not already an array
    * @param {*} v - Value to convert
    * @returns {Array} Array representation of the value
