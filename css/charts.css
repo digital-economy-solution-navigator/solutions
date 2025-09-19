@@ -34,3 +34,53 @@
   text-shadow: 1px 1px 2px rgba(255, 255, 255, 0.8) !important;
   stroke: rgba(0, 0, 0, 0.1) !important;
 }
+
+/* Mobile chart improvements */
+@media (max-width: 767px) {
+  /* Improve chart text readability on mobile */
+  #orgPie .plotly .pie .text {
+    font-size: 12px !important;
+  }
+  
+  #orgPie .plotly .pie .text .textline {
+    font-size: 12px !important;
+  }
+  
+  /* Improve treemap text readability on mobile */
+  #sdgStack .plotly .text {
+    font-size: 11px !important;
+  }
+  
+  /* Ensure chart containers have proper spacing */
+  #sdgStack,
+  #orgPie {
+    margin: 0 auto;
+  }
+  
+  /* Improve legend positioning for mobile pie chart */
+  #orgPie .plotly .legend {
+    font-size: 11px !important;
+    max-width: 120px !important;
+  }
+  
+  /* Ensure pie chart has enough space for legend */
+  #orgPie {
+    min-height: 400px !important;
+  }
+}
+
+/* Small mobile chart improvements */
+@media (max-width: 479px) {
+  /* Further reduce text size for very small screens */
+  #orgPie .plotly .pie .text {
+    font-size: 10px !important;
+  }
+  
+  #orgPie .plotly .pie .text .textline {
+    font-size: 10px !important;
+  }
+  
+  #sdgStack .plotly .text {
+    font-size: 9px !important;
+  }
+}

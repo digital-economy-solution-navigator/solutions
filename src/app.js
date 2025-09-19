@@ -53,6 +53,15 @@ async function init() {
   });
   utils.el('toggleKiosk')?.addEventListener('click', toggleKioskMode);
   utils.el('toggleTheme')?.addEventListener('click', () => { ThemeManager.toggle(); });
+  
+  // Add window resize listener to re-render charts for responsive behavior
+  let resizeTimeout;
+  window.addEventListener('resize', () => {
+    clearTimeout(resizeTimeout);
+    resizeTimeout = setTimeout(() => {
+      renderAll(); // Re-render all charts to adapt to new screen size
+    }, 250); // Debounce resize events
+  });
 
   // Load mapping data (optional)
   try { 

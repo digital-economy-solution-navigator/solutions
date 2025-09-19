@@ -105,14 +105,25 @@ function renderOrgPie(data) {
   const total = values.reduce((sum, val) => sum + val, 0);
   const percentages = values.map(val => ((val / total) * 100).toFixed(1));
   
+  // Detect if we're on mobile
+  const isMobile = window.innerWidth <= 767;
+  
+  // Truncate labels for mobile if they're too long
+  const displayLabels = isMobile ? labels.map(label => {
+    if (label.length > 12) {
+      return label.substring(0, 10) + '...';
+    }
+    return label;
+  }) : labels;
+  
   const trace = {
     type: 'pie',
-    labels: labels,
+    labels: displayLabels,
     values: values,
-    textinfo: 'label+percent',
-    textposition: 'outside',
+    textinfo: isMobile ? 'percent' : 'label+percent',
+    textposition: isMobile ? 'inside' : 'outside',
     textfont: {
-      size: 15,
+      size: isMobile ? 12 : 15,
       color: ThemeManager.currentTheme === 'dark' ? '#FFFFFF' : '#0F172A',
       family: 'inherit'
     },
@@ -128,10 +139,20 @@ function renderOrgPie(data) {
   
   const layout = {
     ...commonLayout,
-    margin: { t: 20, r: 20, b: 20, l: 20 },
-    showlegend: false,
+    margin: isMobile ? { t: 20, r: 10, b: 20, l: 10 } : { t: 20, r: 20, b: 20, l: 20 },
+    showlegend: isMobile,
+    legend: isMobile ? {
+      orientation: 'v',
+      x: 1.02,
+      y: 0.5,
+      xanchor: 'left',
+      font: {
+        size: 12,
+        color: ThemeManager.currentTheme === 'dark' ? '#FFFFFF' : '#0F172A'
+      }
+    } : undefined,
     font: {
-      size: 15,
+      size: isMobile ? 12 : 15,
       color: ThemeManager.currentTheme === 'dark' ? '#FFFFFF' : '#0F172A',
       family: 'inherit'
     }
