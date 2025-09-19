@@ -1,5 +1,47 @@
 /* ================= RESPONSIVE DESIGN ================= */
 
+/* Prevent horizontal scrolling on mobile devices */
+@media (max-width: 767px) {
+  html, body {
+    overflow-x: hidden !important;
+    max-width: 100vw !important;
+  }
+  
+  /* Ensure all containers respect viewport width */
+  .grid, .card, header, section {
+    max-width: 100% !important;
+    overflow-x: hidden !important;
+  }
+  
+  /* Prevent any element from causing horizontal scroll */
+  * {
+    max-width: 100% !important;
+  }
+  
+  /* Specific fixes for common overflow culprits */
+  .card .body, .card .head {
+    overflow-x: hidden !important;
+  }
+  
+  /* Ensure charts don't overflow */
+  #map, #sdgStack, #orgPie {
+    max-width: 100% !important;
+    overflow: hidden !important;
+  }
+  
+  /* Mobile menu positioning and visibility - Footer area */
+  .mobile-menu-inline {
+    position: fixed !important;
+    bottom: 80px !important;
+    right: 16px !important;
+    z-index: 10000 !important;
+  }
+  
+  .footer-hamburger-menu {
+    z-index: 10001 !important;
+  }
+}
+
 /* Large screens and ultra-wide displays (1400px+) */
 @media (min-width: 1400px) {
   .grid {
@@ -97,6 +139,17 @@
 
 /* Mobile landscape and small tablets (640px - 767px) */
 @media (max-width: 767px) and (min-width: 640px) {
+  /* Mobile menu positioning for landscape - Footer area */
+  .mobile-menu-inline {
+    position: fixed !important;
+    bottom: 80px !important;
+    right: 16px !important;
+    z-index: 10000 !important;
+  }
+  
+  .footer-hamburger-menu {
+    z-index: 10001 !important;
+  }
   .kpis {
     grid-template-columns: repeat(2, 1fr);
     gap: 16px;

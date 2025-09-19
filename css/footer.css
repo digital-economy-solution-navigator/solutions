@@ -63,13 +63,14 @@ footer::before {
   
   .footer-links-content {
     display: flex !important;
-    flex-wrap: nowrap;
+    flex-wrap: wrap;
     align-items: center;
+    max-height: none !important;
+    opacity: 1 !important;
+    padding: 0 !important;
     gap: 8px;
     margin: 0;
-    padding: 0;
-    max-height: none;
-    opacity: 1;
+    overflow: visible;
   }
 }
 
@@ -275,6 +276,13 @@ footer::before {
   display: none; /* Hidden by default, shown on mobile */
 }
 
+/* Ensure toggle button is hidden on desktop screens */
+@media (min-width: 769px) {
+  .footer-toggle-btn {
+    display: none !important;
+  }
+}
+
 .footer-toggle-btn:hover {
   background: var(--brand);
   transform: scale(1.1);
@@ -297,9 +305,6 @@ footer::before {
   gap: 8px;
   font-size: 12px;
   padding: 2px 0;
-  overflow-x: auto;
-  scrollbar-width: thin;
-  scrollbar-color: var(--brand) transparent;
   transition: all 0.3s ease;
 }
 
@@ -325,6 +330,9 @@ footer::before {
     flex-direction: column;
     align-items: flex-start;
     gap: 4px;
+    overflow-x: auto; /* Only add horizontal scroll on mobile when expanded */
+    scrollbar-width: thin;
+    scrollbar-color: var(--brand) transparent;
   }
   
   .footer-links-content.expanded .footer-link {
@@ -354,7 +362,7 @@ footer::before {
   border-radius: 16px;
   cursor: pointer;
   transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-  z-index: 1001;
+  z-index: 10001;
   box-shadow: 
     0 8px 32px rgba(0, 0, 0, 0.12),
     0 4px 16px rgba(0, 0, 0, 0.08),

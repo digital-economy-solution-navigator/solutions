@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
   <title>Digital Economy Solution Navigator</title>
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌍</text></svg>">
   
@@ -46,27 +46,6 @@
         
       </div>
       
-      <!-- Mobile Menu Overlay -->
-      <div id="mobileMenu" class="mobile-menu-overlay">
-        <div class="mobile-menu-content">
-          <button id="mobileToggleTheme" class="btn secondary mobile-btn" title="Toggle Theme">
-            <span class="btn-icon">🌙</span>
-            <span class="btn-text">Toggle Theme</span>
-          </button>
-          <button id="mobileShowExplanation" class="btn secondary mobile-btn" title="How are solutions rated?">
-            <span class="btn-icon">👁️</span>
-            <span class="btn-text">How are solutions rated?</span>
-          </button>
-          <button id="mobileShowQRCode" class="btn secondary mobile-btn" title="Submit Your Solution">
-            <span class="btn-icon">📝</span>
-            <span class="btn-text">Submit Solutions</span>
-          </button>
-          <button id="mobileToggleKiosk" class="btn secondary mobile-btn" title="Show filter controls">
-            <span class="btn-icon">⚙️</span>
-            <span class="btn-text">Show Controls</span>
-          </button>
-        </div>
-      </div>
     </div>
     
     <div class="controls" id="controls">
@@ -195,6 +174,26 @@
             <img src="assets/Claude_AI_logo.png" alt="Claude AI" class="ai-logo" />
           </a>
         </div>
+      </div>
+      
+      <!-- Mobile Menu - Inline Buttons (Hidden by default) -->
+      <div id="mobileMenu" class="mobile-menu-inline">
+        <button id="mobileToggleTheme" class="btn secondary mobile-btn" title="Toggle Theme">
+          <span class="btn-icon">🌙</span>
+          <span class="btn-text">Theme</span>
+        </button>
+        <button id="mobileShowExplanation" class="btn secondary mobile-btn" title="How are solutions rated?">
+          <span class="btn-icon">👁️</span>
+          <span class="btn-text">Rating</span>
+        </button>
+        <button id="mobileShowQRCode" class="btn secondary mobile-btn" title="Submit Your Solution">
+          <span class="btn-icon">📝</span>
+          <span class="btn-text">Submit</span>
+        </button>
+        <button id="mobileToggleKiosk" class="btn secondary mobile-btn" title="Show filter controls">
+          <span class="btn-icon">⚙️</span>
+          <span class="btn-text">Controls</span>
+        </button>
       </div>
       
       <!-- Mobile Actions Menu - Footer Position -->
