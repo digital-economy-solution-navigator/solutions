@@ -139,7 +139,7 @@ h1 {
   gap: 6px;
   position: absolute;
   bottom: calc(100% + 8px);
-  right: 0;
+  left: 0;
   background: var(--panel);
   border: 1px solid var(--border);
   border-radius: 12px;

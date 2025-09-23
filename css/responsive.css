@@ -33,7 +33,7 @@
   .mobile-menu-inline {
     position: fixed !important;
     bottom: 80px !important;
-    right: 16px !important;
+    left: 16px !important;
     z-index: 10000 !important;
   }
   
@@ -143,7 +143,7 @@
   .mobile-menu-inline {
     position: fixed !important;
     bottom: 80px !important;
-    right: 16px !important;
+    left: 16px !important;
     z-index: 10000 !important;
   }
   

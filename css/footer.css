@@ -348,7 +348,7 @@ footer::before {
 .footer-hamburger-menu {
   position: absolute;
   top: 50%;
-  right: 16px;
+  left: 16px;
   transform: translateY(-50%);
   display: none;
   flex-direction: column;
