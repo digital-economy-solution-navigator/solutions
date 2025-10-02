@@ -312,7 +312,7 @@ function initFooterLinksToggle() {
 document.addEventListener('DOMContentLoaded', function() {
   try {
     init();
-    initializeInfoAccordion();
+    initializeAboutToggle();
     initializeModal();
     initializeQRCodeModal();
     initializeDisclaimer();

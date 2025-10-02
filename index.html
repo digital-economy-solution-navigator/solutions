@@ -223,34 +223,37 @@
     <!-- Information Section -->
     <div class="card full">
       <div class="head">
-        <div class="title">About</div>
+        <button class="about-toggle" id="aboutToggle">
+          <div class="title">About</div>
+          <span class="about-icon">▼</span>
+        </button>
       </div>
-      <div class="body">
-        <div class="info-accordion">
+      <div class="body" id="aboutContent">
+        <div class="about-blocks">
           <!-- What It Is Section -->
-          <div class="info-accordion-item">
-            <button class="info-accordion-header" data-target="what-it-is">
-              <span class="info-accordion-title">🎯 What It Is</span>
-              <span class="info-accordion-icon">▼</span>
-            </button>
-            <div class="info-accordion-content" id="what-it-is">
+          <div class="about-block">
+            <div class="about-block-header">
+              <span class="about-block-icon">🎯</span>
+              <h3 class="about-block-title">What It Is</h3>
+            </div>
+            <div class="about-block-content">
               <p>A comprehensive web-based dashboard that visualizes and explores innovative digital economy solutions from around the world. It's a prototype tool designed to help users discover, filter, and analyze digital solutions that address global challenges.</p>
             </div>
           </div>
 
           <!-- What It Does Section -->
-          <div class="info-accordion-item">
-            <button class="info-accordion-header" data-target="what-it-does">
-              <span class="info-accordion-title">🛠️ What It Does</span>
-              <span class="info-accordion-icon">▼</span>
-            </button>
-            <div class="info-accordion-content" id="what-it-does">
+          <div class="about-block">
+            <div class="about-block-header">
+              <span class="about-block-icon">🛠️</span>
+              <h3 class="about-block-title">What It Does</h3>
+            </div>
+            <div class="about-block-content">
               <p>The tool provides:</p>
               <ul>
                 <li><strong>Interactive Map Visualization:</strong> Shows solutions by country of origin with geographic distribution</li>
                 <li><strong>Multi-dimensional Filtering:</strong> Filter by region, country, organization type, maturity stage, and SDG focus</li>
                 <li><strong>Data Analytics:</strong>
-                  <ul style="margin-top: 8px; margin-left: 20px;">
+                  <ul>
                     <li>SDG (Sustainable Development Goals) impact visualization</li>
                     <li>Organization type distribution charts</li>
                     <li>Solution scoring and rating system (1-5 stars)</li>
@@ -264,12 +267,12 @@
           </div>
 
           <!-- Why It Matters Section -->
-          <div class="info-accordion-item">
-            <button class="info-accordion-header" data-target="why-it-matters">
-              <span class="info-accordion-title">🌍 Why It Matters</span>
-              <span class="info-accordion-icon">▼</span>
-            </button>
-            <div class="info-accordion-content" id="why-it-matters">
+          <div class="about-block">
+            <div class="about-block-header">
+              <span class="about-block-icon">🌍</span>
+              <h3 class="about-block-title">Why It Matters</h3>
+            </div>
+            <div class="about-block-content">
               <p>This tool addresses several critical needs:</p>
               <ul>
                 <li><strong>Solution Visibility:</strong> Makes innovative digital solutions discoverable and accessible globally</li>

@@ -3,29 +3,24 @@
  */
 
 /**
- * Initializes information accordion functionality
- * Sets up event listeners for expand/collapse actions
+ * Initializes about section toggle functionality
+ * Sets up event listener for expand/collapse action
  */
-function initializeInfoAccordion() {
-  const accordionHeaders = document.querySelectorAll('.info-accordion-header');
+function initializeAboutToggle() {
+  const aboutToggle = document.getElementById('aboutToggle');
+  const aboutContent = document.getElementById('aboutContent');
   
-  accordionHeaders.forEach(header => {
-    header.addEventListener('click', function() {
-      const targetId = this.getAttribute('data-target');
-      const content = document.getElementById(targetId);
-      const accordionItem = this.closest('.info-accordion-item');
-      
-      // Toggle active class
-      accordionItem.classList.toggle('active');
-      
-      // Close other accordion items (optional - remove if you want multiple open)
-      accordionHeaders.forEach(otherHeader => {
-        if (otherHeader !== this) {
-          const otherItem = otherHeader.closest('.info-accordion-item');
-          otherItem.classList.remove('active');
-        }
-      });
-    });
+  if (!aboutToggle || !aboutContent) {
+    console.warn('About toggle elements not found');
+    return;
+  }
+  
+  aboutToggle.addEventListener('click', function() {
+    // Toggle active class on button
+    aboutToggle.classList.toggle('active');
+    
+    // Toggle expanded class on content
+    aboutContent.classList.toggle('expanded');
   });
 }
 
