@@ -3,6 +3,33 @@
  */
 
 /**
+ * Initializes information accordion functionality
+ * Sets up event listeners for expand/collapse actions
+ */
+function initializeInfoAccordion() {
+  const accordionHeaders = document.querySelectorAll('.info-accordion-header');
+  
+  accordionHeaders.forEach(header => {
+    header.addEventListener('click', function() {
+      const targetId = this.getAttribute('data-target');
+      const content = document.getElementById(targetId);
+      const accordionItem = this.closest('.info-accordion-item');
+      
+      // Toggle active class
+      accordionItem.classList.toggle('active');
+      
+      // Close other accordion items (optional - remove if you want multiple open)
+      accordionHeaders.forEach(otherHeader => {
+        if (otherHeader !== this) {
+          const otherItem = otherHeader.closest('.info-accordion-item');
+          otherItem.classList.remove('active');
+        }
+      });
+    });
+  });
+}
+
+/**
  * Initializes modal functionality for explanation dialog
  * Sets up event listeners for show/hide/close actions
  */
