@@ -175,6 +175,117 @@ class AppState {
                     </div>
                   ` : ''}
                 </div>
+                
+                <!-- Expandable Details Section -->
+                <div class="solution-expandable" id="expandable-${index}">
+                  ${submission['Summary'] ? `
+                    <div class="expandable-section">
+                      <h4>🤖 AI Summary</h4>
+                      <div class="ai-summary-disclaimer">
+                        <small>⚠️ This AI-generated summary is for informational purposes only. Please verify accuracy with the original source.</small>
+                      </div>
+                      <div class="text-content" data-full-text="${submission['Summary'].replace(/"/g, '&quot;')}">
+                        ${utils.truncateText(submission['Summary'], 200)}
+                      </div>
+                      ${submission['Summary'].length > 200 ? `
+                        <button class="read-more-btn" onclick="utils.toggleReadMore('expandable-${index}', 'summary')">Read More</button>
+                      ` : ''}
+                    </div>
+                  ` : ''}
+                  
+                  ${submission['Problem Statement'] ? `
+                    <div class="expandable-section">
+                      <h4>🔍 Problem Statement</h4>
+                      <div class="text-content" data-full-text="${submission['Problem Statement'].replace(/"/g, '&quot;')}">
+                        ${utils.truncateText(submission['Problem Statement'], 200)}
+                      </div>
+                      ${submission['Problem Statement'].length > 200 ? `
+                        <button class="read-more-btn" onclick="utils.toggleReadMore('expandable-${index}', 'problem')">Read More</button>
+                      ` : ''}
+                    </div>
+                  ` : ''}
+                  
+                  ${submission['Solution Overview'] ? `
+                    <div class="expandable-section">
+                      <h4>💡 Solution Overview</h4>
+                      <div class="text-content" data-full-text="${submission['Solution Overview'].replace(/"/g, '&quot;')}">
+                        ${utils.truncateText(submission['Solution Overview'], 200)}
+                      </div>
+                      ${submission['Solution Overview'].length > 200 ? `
+                        <button class="read-more-btn" onclick="utils.toggleReadMore('expandable-${index}', 'solution')">Read More</button>
+                      ` : ''}
+                    </div>
+                  ` : ''}
+                  
+                  ${submission['Implementation location(s)'] ? `
+                    <div class="expandable-section">
+                      <h4>📍 Implementation Location(s)</h4>
+                      <div class="text-content">${submission['Implementation location(s)']}</div>
+                    </div>
+                  ` : ''}
+                  
+                  ${submission['Desired impact'] ? `
+                    <div class="expandable-section">
+                      <h4>🎯 Desired Impact</h4>
+                      <div class="text-content" data-full-text="${submission['Desired impact'].replace(/"/g, '&quot;')}">
+                        ${utils.truncateText(submission['Desired impact'], 200)}
+                      </div>
+                      ${submission['Desired impact'].length > 200 ? `
+                        <button class="read-more-btn" onclick="utils.toggleReadMore('expandable-${index}', 'impact')">Read More</button>
+                      ` : ''}
+                    </div>
+                  ` : ''}
+                  
+                  ${submission['Key technologies'] ? `
+                    <div class="expandable-section">
+                      <h4>⚙️ Key Technologies</h4>
+                      <div class="text-content" data-full-text="${submission['Key technologies'].replace(/"/g, '&quot;')}">
+                        ${utils.truncateText(submission['Key technologies'], 200)}
+                      </div>
+                      ${submission['Key technologies'].length > 200 ? `
+                        <button class="read-more-btn" onclick="utils.toggleReadMore('expandable-${index}', 'technologies')">Read More</button>
+                      ` : ''}
+                    </div>
+                  ` : ''}
+                  
+                  ${submission['Duration to pilot in a new geography'] ? `
+                    <div class="expandable-section">
+                      <h4>⏱️ Duration to Pilot in New Geography</h4>
+                      <div class="text-content">${submission['Duration to pilot in a new geography']}</div>
+                    </div>
+                  ` : ''}
+                  
+                  ${submission['Unique Characteristics'] ? `
+                    <div class="expandable-section">
+                      <h4>✨ Unique Characteristics</h4>
+                      <div class="text-content" data-full-text="${submission['Unique Characteristics'].replace(/"/g, '&quot;')}">
+                        ${utils.truncateText(submission['Unique Characteristics'], 200)}
+                      </div>
+                      ${submission['Unique Characteristics'].length > 200 ? `
+                        <button class="read-more-btn" onclick="utils.toggleReadMore('expandable-${index}', 'unique')">Read More</button>
+                      ` : ''}
+                    </div>
+                  ` : ''}
+                  
+                  ${submission['Testimonials and Endorsements'] ? `
+                    <div class="expandable-section">
+                      <h4>🏆 Testimonials and Endorsements</h4>
+                      <div class="text-content" data-full-text="${submission['Testimonials and Endorsements'].replace(/"/g, '&quot;')}">
+                        ${utils.truncateText(submission['Testimonials and Endorsements'], 200)}
+                      </div>
+                      ${submission['Testimonials and Endorsements'].length > 200 ? `
+                        <button class="read-more-btn" onclick="utils.toggleReadMore('expandable-${index}', 'testimonials')">Read More</button>
+                      ` : ''}
+                    </div>
+                  ` : ''}
+                </div>
+                
+                <div class="solution-actions">
+                  <button class="toggle-details-btn" onclick="utils.toggleSolutionDetails('expandable-${index}')">
+                    <span class="toggle-text">Show Details</span>
+                    <span class="toggle-icon">▼</span>
+                  </button>
+                </div>
               </div>
             `).join('')}
           </div>

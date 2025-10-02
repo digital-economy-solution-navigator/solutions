@@ -193,7 +193,98 @@ const utils = {
    * @param {string} id - Element ID
    * @returns {HTMLElement|null} DOM element
    */
-  el: id => document.getElementById(id)
+  el: id => document.getElementById(id),
+
+  /**
+   * Truncate text to specified length with ellipsis
+   * @param {string} text - Text to truncate
+   * @param {number} maxLength - Maximum length
+   * @returns {string} Truncated text
+   */
+  truncateText(text, maxLength = 200) {
+    if (!text || text.length <= maxLength) {
+      return text || '';
+    }
+    return text.substring(0, maxLength) + '...';
+  },
+
+  /**
+   * Toggle solution details visibility
+   * @param {string} expandableId - ID of the expandable container
+   */
+  toggleSolutionDetails(expandableId) {
+    const expandable = document.getElementById(expandableId);
+    const toggleBtn = expandable?.parentElement?.querySelector('.toggle-details-btn');
+    
+    if (!expandable || !toggleBtn) return;
+    
+    const isExpanded = expandable.classList.contains('expanded');
+    const toggleText = toggleBtn.querySelector('.toggle-text');
+    const toggleIcon = toggleBtn.querySelector('.toggle-icon');
+    
+    if (isExpanded) {
+      expandable.classList.remove('expanded');
+      toggleText.textContent = 'Show Details';
+      toggleIcon.textContent = '▼';
+    } else {
+      expandable.classList.add('expanded');
+      toggleText.textContent = 'Hide Details';
+      toggleIcon.textContent = '▲';
+    }
+  },
+
+  /**
+   * Toggle read more/less for specific text content
+   * @param {string} expandableId - ID of the expandable container
+   * @param {string} sectionType - Type of section (problem, solution, impact, etc.)
+   */
+  toggleReadMore(expandableId, sectionType) {
+    const expandable = document.getElementById(expandableId);
+    if (!expandable) return;
+    
+    const section = expandable.querySelector(`[data-section="${sectionType}"]`) || 
+                   expandable.querySelector(`.expandable-section:nth-child(${this.getSectionIndex(sectionType)})`);
+    
+    if (!section) return;
+    
+    const textContent = section.querySelector('.text-content');
+    const readMoreBtn = section.querySelector('.read-more-btn');
+    
+    if (!textContent || !readMoreBtn) return;
+    
+    const fullText = textContent.getAttribute('data-full-text');
+    const isExpanded = textContent.classList.contains('expanded');
+    
+    if (isExpanded) {
+      textContent.innerHTML = this.truncateText(fullText, 200);
+      textContent.classList.remove('expanded');
+      readMoreBtn.textContent = 'Read More';
+    } else {
+      textContent.innerHTML = fullText;
+      textContent.classList.add('expanded');
+      readMoreBtn.textContent = 'Read Less';
+    }
+  },
+
+  /**
+   * Get section index based on section type
+   * @param {string} sectionType - Type of section
+   * @returns {number} Section index
+   */
+  getSectionIndex(sectionType) {
+    const sectionMap = {
+      'summary': 1,
+      'problem': 2,
+      'solution': 3,
+      'implementation': 4,
+      'impact': 5,
+      'technologies': 6,
+      'duration': 7,
+      'unique': 8,
+      'testimonials': 9
+    };
+    return sectionMap[sectionType] || 1;
+  }
 };
 
 /**
