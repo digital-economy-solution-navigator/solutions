@@ -50,8 +50,8 @@
   }
   
   .kpis {
-    max-width: 1800px;
-    padding: clamp(20px, 5vw, 60px);
+    max-width: 2000px;
+    padding: 0 clamp(20px, 5vw, 60px) clamp(30px, 7vw, 60px);
   }
   
   .kpi .value {
@@ -74,6 +74,7 @@
   }
   
   .kpis {
+    max-width: 1600px;
     grid-template-columns: repeat(4, 1fr);
     gap: 24px;
   }

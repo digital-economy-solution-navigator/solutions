@@ -48,6 +48,20 @@
   margin: 0 auto;
 }
 
+/* About section responsive adjustments to match grid */
+@media (min-width: 1400px) {
+  .about-section {
+    max-width: 2000px;
+    padding: 0 clamp(20px, 5vw, 60px) clamp(30px, 7vw, 60px);
+  }
+}
+
+@media (max-width: 1399px) and (min-width: 1024px) {
+  .about-section {
+    max-width: 1600px;
+  }
+}
+
 .about-section .card {
   background: var(--panel);
   border-radius: var(--radius);
