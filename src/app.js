@@ -32,6 +32,9 @@
 async function init() {
   // Initialize theme manager
   ThemeManager.init();
+
+  // Award wall reads its own file; it does not depend on the scoring data
+  if (typeof renderAwardWall === 'function') renderAwardWall();
   
   // Ensure AI logo is updated after DOM is ready
   setTimeout(() => {

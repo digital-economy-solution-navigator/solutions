@@ -1,0 +1,115 @@
+/* ================= AWARD WALL ================= */
+/* Uses the existing .card / .card.full chrome from grid.css and the
+   existing theme variables. No new palette is introduced. */
+
+#awardWall[hidden] { display: none; }
+
+#awardWall .body { padding: 20px 22px 24px; }
+
+.award-status {
+  font-size: 13px;
+  line-height: 1.6;
+  color: var(--muted);
+  background: var(--panel-strong);
+  border-radius: 12px;
+  padding: 12px 16px;
+}
+
+.award-group { margin-top: 22px; }
+
+.award-group-head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.award-group-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--brand);
+  flex: none;
+}
+
+.award-group-head h3 {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 800;
+  letter-spacing: .2px;
+  color: var(--text);
+}
+
+.award-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.award-card {
+  display: flex;
+  flex-direction: column;
+  min-height: 152px;
+  padding: 16px 18px;
+  background: var(--panel-strong);
+  border: var(--border);
+  border-radius: 14px;
+}
+
+.award-badge {
+  align-self: flex-start;
+  margin-bottom: 12px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: var(--brand);
+  color: #fff;
+  font-size: 12px;
+  letter-spacing: .3px;
+}
+
+.award-org {
+  margin: 0 0 3px;
+  font-size: 15px;
+  font-weight: 800;
+  color: var(--text);
+}
+
+.award-title {
+  margin: 0 0 4px;
+  font-size: 14px;
+  color: var(--text);
+}
+
+.award-place {
+  margin: 0 0 12px;
+  font-size: 13px;
+  color: var(--muted);
+}
+
+.award-citation {
+  margin: auto 0 0;
+  padding: 8px 0 8px 12px;
+  border-left: 3px solid var(--brand);
+  font-size: 13px;
+  line-height: 1.55;
+  color: var(--muted);
+}
+
+.award-pending { font-weight: 400; font-style: italic; }
+.award-card-empty .award-citation { font-style: italic; }
+
+.award-methodology {
+  margin: 22px 0 0;
+  padding-top: 16px;
+  border-top: var(--border);
+  font-size: 13px;
+  line-height: 1.6;
+  color: var(--muted);
+}
+
+.award-methodology strong { color: var(--text); }
+
+@media (max-width: 720px) {
+  .award-grid { grid-template-columns: 1fr; }
+  #awardWall .body { padding: 16px; }
+}

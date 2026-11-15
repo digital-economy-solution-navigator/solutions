@@ -1,0 +1,112 @@
+{
+  "published": true,
+  "call": "2025 Global Call for Solutions for an Inclusive Digital Economy",
+  "methodology": "The 2025 Global Call recognised one Emerging Solution Winner and one Implemented Solution Winner in each of five thematic areas. Card descriptions are taken from the evaluation summary of each submission.",
+  "groups": [
+    {
+      "name": "Enabling Policies & Regulatory Innovation",
+      "slots": [
+        {
+          "class": "Emerging solution",
+          "organisation": "PIChE CAMANAVA",
+          "title": "HydroGuard: Water Compliance AI consultant",
+          "country": "Philippines",
+          "region": "East Asia and Pacific",
+          "citation": "HydroGuard is an AI-powered, no-code platform that simplifies water regulation compliance by providing real-time, citation-backed guidance, making regulatory adherence easier and more accessible for SMEs and local governments."
+        },
+        {
+          "class": "Implemented solution",
+          "organisation": "SuperHuman Race Foundation",
+          "title": "Dynamic Emission Factors for an Integrated Net-zero Ecosystem (DEFINE)",
+          "country": "India",
+          "region": "South Asia",
+          "citation": "DEFINE is a platform aimed at providing precise, plant-level emission factors to drive decarbonization in hard-to-abate sectors."
+        }
+      ]
+    },
+    {
+      "name": "Inclusive Digital Innovation Skills & Entrepreneurial Talent Development",
+      "slots": [
+        {
+          "class": "Emerging solution",
+          "organisation": "Center for Senior Citizens",
+          "title": "eLEVATE Lanka: Digital Empowerment for Inclusive Growth of Women, Youth, and MSMEs",
+          "country": "Sri Lanka",
+          "region": "South Asia",
+          "citation": "eLEVATE Lanka aims to bridge digital and economic divides in Sri Lanka through inclusive digital skills training and MSME support, with a focus on marginalized communities."
+        },
+        {
+          "class": "Implemented solution",
+          "organisation": "Wootlab Innovations",
+          "title": "LevelUp Series",
+          "country": "Nigeria",
+          "region": "Sub-Saharan Africa",
+          "citation": "The LevelUp Series empowers youth in Nigeria, particularly from underserved communities, with digital skills, fostering employability, entrepreneurship, and inclusivity."
+        }
+      ]
+    },
+    {
+      "name": "Innovation Acceleration & Knowledge Sharing",
+      "slots": [
+        {
+          "class": "Emerging solution",
+          "organisation": "Communiqué Media & Insights Company",
+          "title": "Communiqué OS",
+          "country": "Nigeria",
+          "region": "Sub-Saharan Africa",
+          "citation": "Communiqué OS is an AI-powered intelligence platform designed to make Africa's creative economy visible, valuable, and investable by aggregating real-time data on deals, people, and opportunities."
+        },
+        {
+          "class": "Implemented solution",
+          "organisation": "Farmonaut",
+          "title": "Farmonaut: Accelerating Local Innovation Through Satellite & Blockchain Intelligence",
+          "country": "United States",
+          "region": "North America",
+          "citation": "Farmonaut is an advanced satellite-powered digital platform providing real-time water and crop monitoring, AI-powered insights, and actionable reports for farmers, agribusinesses, and local institutions, promoting data-driven decision-making and improved resource management."
+        }
+      ]
+    },
+    {
+      "name": "MSME Empowerment & Local Digital Innovation",
+      "slots": [
+        {
+          "class": "Emerging solution",
+          "organisation": "FundingPro",
+          "title": "FundingPro: AI Platform for Inclusive Access to Grant Funding",
+          "country": "Uzbekistan",
+          "region": "",
+          "citation": "FundingPro is an AI-driven platform designed to democratize access to grant funding, especially for NGOs, MSMEs, and public entities in underserved regions."
+        },
+        {
+          "class": "Implemented solution",
+          "organisation": "eNGO Misr | NEQABTY",
+          "title": "Neqabty: AI-Powered Digital Platform for Labor Unions",
+          "country": "Egypt",
+          "region": "Middle East and North Africa",
+          "citation": "Neqabty is an AI-powered digital platform transforming labor unions into inclusive digital hubs for over 1.3 million underserved workers."
+        }
+      ]
+    },
+    {
+      "name": "Stable and Resilient Digital Supply Chains",
+      "slots": [
+        {
+          "class": "Emerging solution",
+          "organisation": "Selah Studio",
+          "title": "AgriPulsr AI — Farm Brain for Climate-Resilient Smallholders",
+          "country": "Philippines",
+          "region": "East Asia and Pacific",
+          "citation": "AgriPulsr AI offers an innovative AI-driven platform to assist smallholder farmers by providing disease detection, weather forecasting, market matching, and finance readiness."
+        },
+        {
+          "class": "Implemented solution",
+          "organisation": "Anhui Conch Cement Co., Ltd.",
+          "title": "First large model in the Building Materials Industry: Conch Yungong Large Model",
+          "country": "China",
+          "region": "East Asia and Pacific",
+          "citation": "The Conch Yungong Large Model, developed by Anhui Conch Cement in partnership with Huawei, is the first large AI model in the global building materials industry."
+        }
+      ]
+    }
+  ]
+}

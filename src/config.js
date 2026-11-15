@@ -68,7 +68,8 @@ const CONFIG = {
   // Data source configuration - UPDATE THESE PATHS FOR NEW DATASETS
   DATA_SOURCES: {
     MAIN_DATA: 'data/data.json',                    // Primary solutions data
-    COUNTRY_MAPPING: 'data/country_region_mapping.json'  // Optional country-region mappings
+    COUNTRY_MAPPING: 'data/country_region_mapping.json', // Optional country-region mappings
+    AWARDS_DATA: 'data/awards_2025.json'           // Confirmed 2025 awardees, loaded separately
   },
   
   // Data loading configuration
