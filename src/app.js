@@ -319,6 +319,7 @@ document.addEventListener('DOMContentLoaded', function() {
     initializeModal();
     initializeQRCodeModal();
     initializeDisclaimer();
+    initializeFullDisclaimer();
     console.log('✅ UNGA Analytics Dashboard initialized successfully');
   // Initialize hamburger menu functionality
   initHamburgerMenu();

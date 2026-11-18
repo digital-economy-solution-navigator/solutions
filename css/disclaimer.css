@@ -89,3 +89,269 @@
 [data-theme="light"] .disclaimer-arrow {
   border-top-color: #2d3748;
 }
+
+/* ================= INFORMATION NOTICE & FULL DISCLAIMER ================= */
+/* Uses the existing theme variables only. No new palette is introduced. */
+
+/* Compact homepage notice: visible without adding a page-height obstacle. */
+.info-notice {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  margin: 16px clamp(16px, 4vw, 40px) 0;
+  padding: 12px 16px;
+  background: var(--panel);
+  border: var(--border);
+  border-left: 4px solid var(--brand);
+  border-radius: 10px;
+  color: var(--text);
+  font-size: 14px;
+  line-height: 1.55;
+}
+
+.info-notice-icon {
+  flex: none;
+  font-size: 16px;
+  line-height: 1.4;
+}
+
+.info-notice-text {
+  flex: 1;
+  min-width: 0;
+  margin: 0;
+  user-select: text;
+  -webkit-user-select: text;
+}
+
+.info-notice-text strong {
+  font-weight: 700;
+}
+
+/* Shared link/button treatment for every "Read the full disclaimer" entry. */
+.disclaimer-link {
+  color: var(--brand);
+  font-weight: 700;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  cursor: pointer;
+  background: none;
+  border: 0;
+  padding: 0;
+  font-family: inherit;
+  font-size: inherit;
+  user-select: text;
+  -webkit-user-select: text;
+}
+
+[data-theme="light"] .disclaimer-link {
+  color: #0369a1; /* darker UN blue keeps 4.5:1 contrast on white */
+}
+
+.disclaimer-link:hover {
+  color: var(--accent);
+  text-decoration-thickness: 2px;
+}
+
+.disclaimer-link:focus-visible,
+.close-btn:focus-visible {
+  outline: 3px solid var(--brand);
+  outline-offset: 3px;
+  border-radius: 3px;
+}
+
+.disclaimer-tooltip .map-disclaimer-link {
+  display: inline-block;
+  margin-top: 8px;
+  color: #9fdcff;
+}
+
+.disclaimer-tooltip .map-disclaimer-link:hover {
+  color: #ffffff;
+}
+
+/* Footer entry point */
+.footer-legal {
+  width: 100%;
+  margin-top: 3px;
+  padding-top: 3px;
+  border-top: 1px solid var(--border);
+  text-align: center;
+}
+
+.footer-disclaimer-link {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: .1px;
+}
+
+/* Full disclaimer dialog */
+.disclaimer-modal-content {
+  max-width: 760px;
+}
+
+.disclaimer-modal-content .modal-header {
+  align-items: flex-start;
+  gap: 16px;
+}
+
+.disclaimer-modal-content .modal-header h2 {
+  font-size: clamp(1.05rem, 2.6vw, 1.4rem);
+  line-height: 1.35;
+  font-weight: 700;
+}
+
+.disclaimer-modal-content .close-btn {
+  flex: none;
+}
+
+.disclaimer-prose p {
+  color: var(--text);
+  line-height: 1.65;
+  font-size: 15px;
+  margin: 0 0 16px 0;
+  user-select: text;
+  -webkit-user-select: text;
+}
+
+.disclaimer-prose p:last-child {
+  margin-bottom: 0;
+}
+
+.disclaimer-prose .disclaimer-supplement {
+  margin-top: 20px;
+  padding-top: 16px;
+  border-top: 1px solid var(--border);
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.disclaimer-prose .disclaimer-supplement strong {
+  color: var(--text);
+}
+
+/* Rating explanation: neutral assessment note at the top and bottom */
+.assessment-note p {
+  font-style: normal;
+}
+
+.assessment-note p:last-child {
+  margin-top: 8px;
+}
+
+.rating-explanation .note p + p {
+  margin-top: 8px;
+}
+
+/* Solution detail modal: always-visible source notice */
+.solution-modal-notice {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 6px 10px;
+  margin: 0 0 14px 0;
+  padding: 10px 14px;
+  background: var(--panel);
+  border: var(--border);
+  border-left: 4px solid var(--brand);
+  border-radius: 8px;
+  color: var(--text);
+  font-size: 13px;
+  line-height: 1.5;
+  user-select: text;
+  -webkit-user-select: text;
+}
+
+/* Per-field source label. The applicant's own wording is left untouched. */
+.applicant-source-note {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin: 0 0 16px 0;
+  padding: 10px 12px;
+  background: var(--panel);
+  border: var(--border);
+  border-radius: 8px;
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.5;
+  user-select: text;
+  -webkit-user-select: text;
+}
+
+.source-tag {
+  display: inline-block;
+  padding: 2px 8px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: var(--panel-strong);
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: .2px;
+  white-space: nowrap;
+  user-select: none;
+}
+
+.solutions-modal .expandable-section h4 {
+  flex-wrap: wrap;
+}
+
+/* Award wall: recognition boundary, appended by awards.js */
+.award-scope-note {
+  margin: 18px 0 0;
+  padding-top: 14px;
+  border-top: var(--border);
+  font-size: 13px;
+  line-height: 1.6;
+  color: var(--muted);
+  user-select: text;
+  -webkit-user-select: text;
+}
+
+/* Mobile: readable, no horizontal overflow, link wraps naturally */
+@media (max-width: 767px) {
+  .info-notice {
+    margin: 12px 12px 0;
+    padding: 10px 12px;
+    font-size: 13px;
+    gap: 8px;
+  }
+
+  .disclaimer-prose p {
+    font-size: 14px;
+  }
+
+  .disclaimer-modal-content {
+    width: 94%;
+  }
+
+  .solution-modal-notice {
+    font-size: 12px;
+  }
+
+  .footer-disclaimer-link {
+    font-size: 10px;
+  }
+}
+
+@media (max-width: 479px) {
+  .info-notice {
+    font-size: 12.5px;
+  }
+
+  .disclaimer-modal-content .modal-header {
+    padding: 16px;
+  }
+
+  .disclaimer-modal-content .modal-body {
+    padding: 16px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .modal-content {
+    animation: none;
+  }
+}
+

@@ -215,7 +215,7 @@
 }
 
 .ai-summary-disclaimer small {
-  color: #856404;
+  color: var(--text);
   font-size: 12px;
   font-weight: 500;
   line-height: 1.4;

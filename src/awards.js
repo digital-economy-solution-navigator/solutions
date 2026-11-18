@@ -93,6 +93,10 @@ async function renderAwardWall() {
     ? `<p class="award-methodology"><strong>About the awards.</strong> ${awardEscape(payload.methodology)}</p>`
     : '';
 
-  body.innerHTML = `${status}${groupHtml}${methodology}`;
+  // Recognition is tied to the submitted solution, not to the wider body of
+  // work of the organisation. The historical awards themselves are unchanged.
+  const scope = '<p class="award-scope-note">Recognition shown above relates to the submitted solution within the scope of the 2025 Global Call. It is not an endorsement of an organization’s wider activities. <a href="#disclaimer" class="disclaimer-link" data-open-disclaimer>Read the full disclaimer.</a></p>';
+
+  body.innerHTML = `${status}${groupHtml}${methodology}${scope}`;
   root.hidden = false;
 }

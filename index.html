@@ -161,6 +161,15 @@
     </div>
   </header>
 
+  <!-- Information notice: prominent, compact, does not obstruct browsing -->
+  <aside class="info-notice" role="note" aria-label="Information notice">
+    <span class="info-notice-icon" aria-hidden="true">ℹ️</span>
+    <p class="info-notice-text">
+      <strong>Information notice:</strong> Solution information is applicant-provided and should not be treated as independently verified. Listing, ratings and awards do not constitute certification, comprehensive due-diligence clearance or endorsement of an organization’s wider activities.
+      <a href="#disclaimer" class="disclaimer-link" data-open-disclaimer>Read the full disclaimer.</a>
+    </p>
+  </aside>
+
   <!-- About Section -->
   <section class="about-section">
     <div class="card full">
@@ -179,7 +188,7 @@
               <h3 class="about-block-title">What It Is</h3>
             </div>
             <div class="about-block-content">
-              <p>A comprehensive web-based dashboard that visualizes and explores innovative digital economy solutions from around the world. It's a tool designed to help users discover, filter, and analyze digital solutions that address global challenges.</p>
+              <p>A web-based dashboard that visualizes and explores digital economy solutions submitted to the 2025 Global Call for Solutions. It is designed to help users discover, filter and explore the information applicants provided.</p>
             </div>
           </div>
 
@@ -196,14 +205,14 @@
                 <li><strong>Multi-dimensional Filtering:</strong> Filter by region, country, organization type, maturity stage, and SDG focus</li>
                 <li><strong>Data Analytics:</strong>
                   <ul>
-                    <li>SDG (Sustainable Development Goals) impact visualization</li>
+                    <li>SDG (Sustainable Development Goals) focus as reported by applicants</li>
                     <li>Organization type distribution charts</li>
                     <li>Solution scoring and rating system (1-5 stars)</li>
                   </ul>
                 </li>
                 <li><strong>Solution Discovery:</strong> Browse and explore solutions with detailed information</li>
                 <li><strong>Mobile-Responsive Design:</strong> Works across all device sizes</li>
-                <li><strong>AI-Powered Chatbot:</strong> Helps users navigate and understand the solutions better</li>
+                <li><strong>AI-Powered Chatbot:</strong> Provides navigation support. Its responses are informational and do not constitute UN certification, endorsement or due-diligence clearance of any solution, score, rating or award</li>
               </ul>
             </div>
           </div>
@@ -215,13 +224,13 @@
               <h3 class="about-block-title">Why It Matters</h3>
             </div>
             <div class="about-block-content">
-              <p>This tool addresses several critical needs:</p>
+              <p>This tool addresses several needs:</p>
               <ul>
-                <li><strong>Solution Visibility:</strong> Makes innovative digital solutions discoverable and accessible globally</li>
-                <li><strong>Impact Assessment:</strong> Uses a comprehensive 6-criteria rating system to evaluate solution quality and potential</li>
+                <li><strong>Solution Visibility:</strong> Makes submitted digital solutions discoverable and accessible globally</li>
+                <li><strong>Rating Overview:</strong> Presents the six-criteria assessment of the information submitted for each solution, not an independent verification of reported impact</li>
                 <li><strong>Knowledge Sharing:</strong> Facilitates learning and collaboration across regions and organizations</li>
-                <li><strong>SDG Alignment:</strong> Helps track progress toward Sustainable Development Goals</li>
-                <li><strong>Decision Support:</strong> Enables policymakers, researchers, and organizations to find relevant solutions for their contexts</li>
+                <li><strong>SDG Focus:</strong> Shows the SDGs applicants associated with their solutions</li>
+                <li><strong>Initial Discovery:</strong> Helps policymakers, researchers and organizations identify solutions they may wish to assess further</li>
               </ul>
             </div>
           </div>
@@ -250,6 +259,7 @@
             <div class="disclaimer-arrow"></div>
             <div class="disclaimer-content">
               *The boundaries and names shown and the designations used on this map do not imply official endorsement or acceptance by the United Nations.
+              <a href="#disclaimer" class="disclaimer-link map-disclaimer-link" data-open-disclaimer>Read the full information, assessment and recognition disclaimer.</a>
             </div>
           </div>
         </div>
@@ -340,7 +350,11 @@
           </a>
         </div>
       </div>
-      
+
+      <div class="footer-legal">
+        <a href="#disclaimer" class="disclaimer-link footer-disclaimer-link" data-open-disclaimer>Disclaimer — Information, assessment and recognition</a>
+      </div>
+
       <!-- Mobile Menu - Inline Buttons (Hidden by default) -->
       <div id="mobileMenu" class="mobile-menu-inline">
         <button id="mobileToggleTheme" class="btn secondary mobile-btn" title="Toggle Theme">
@@ -425,44 +439,49 @@
       </div>
       <div class="modal-body">
         <div class="rating-explanation">
+          <div class="note assessment-note">
+            <p>Scores and ratings summarize assessments of the information submitted to the Call. They should not be interpreted as independent verification of reported results, certification of solution quality or safety, or clearance following comprehensive due diligence.</p>
+            <p><a href="#disclaimer" class="disclaimer-link" data-open-disclaimer>Read the full disclaimer.</a></p>
+          </div>
+
           <h3>⭐ Star Rating System</h3>
-          <p>Each solution receives a star rating from 1 to 5 stars based on a comprehensive evaluation framework. Here's how the rating system works:</p>
-          
+          <p>Star ratings summarize the assessment of the information submitted to the Call. The bands and point ranges used in 2025 are shown below.</p>
+
           <div class="rating-scale">
             <div class="rating-item">
               <span class="stars">⭐⭐⭐⭐⭐</span>
               <span class="score-range">90-100 points</span>
-              <span class="description">Exceptional solutions that demonstrate outstanding innovation, impact, and feasibility</span>
+              <span class="description">Highest band in the assessment of the submitted information</span>
             </div>
             <div class="rating-item">
               <span class="stars">⭐⭐⭐⭐☆</span>
               <span class="score-range">80-89 points</span>
-              <span class="description">Excellent solutions with strong potential and clear implementation pathways</span>
+              <span class="description">Second band in the assessment of the submitted information</span>
             </div>
             <div class="rating-item">
               <span class="stars">⭐⭐⭐☆☆</span>
               <span class="score-range">70-79 points</span>
-              <span class="description">Good solutions with solid foundations and promising approaches</span>
+              <span class="description">Middle band in the assessment of the submitted information</span>
             </div>
             <div class="rating-item">
               <span class="stars">⭐⭐☆☆☆</span>
               <span class="score-range">50-69 points</span>
-              <span class="description">Adequate solutions with room for improvement in key areas</span>
+              <span class="description">Lower band in the assessment of the submitted information</span>
             </div>
             <div class="rating-item">
               <span class="stars">⭐☆☆☆☆</span>
               <span class="score-range">1-49 points</span>
-              <span class="description">Basic solutions that require significant development</span>
+              <span class="description">Lowest scored band in the assessment of the submitted information</span>
             </div>
             <div class="rating-item">
               <span class="stars">☆☆☆☆☆</span>
               <span class="score-range">0 points</span>
-              <span class="description">Incomplete or non-compliant solutions</span>
+              <span class="description">No score recorded</span>
             </div>
           </div>
 
-          <h3>🎯 Evaluation Criteria</h3>
-          <p>The rating system evaluates solutions across six key dimensions with specific point allocations:</p>
+          <h3>🎯 Assessment Criteria</h3>
+          <p>The six dimensions and point allocations used in the 2025 assessment are listed below. They describe the information submitted, not verified outcomes.</p>
           
           <div class="criteria-grid">
             <div class="criteria-item">
@@ -498,27 +517,40 @@
           </div>
 
           <h3>🔍 Scoring Process</h3>
-          <p>Each solution undergoes a rigorous evaluation process:</p>
-          <ul>
-            <li><strong>Initial Review:</strong> Technical compliance and completeness check</li>
-            <li><strong>Expert Panel:</strong> Multi-disciplinary experts evaluate each criterion</li>
-            <li><strong>Peer Review:</strong> Cross-validation by additional reviewers</li>
-            <li><strong>Consensus Building:</strong> Discussion and alignment on final scores</li>
-            <li><strong>Quality Assurance:</strong> Final review to ensure consistency and fairness</li>
-          </ul>
+          <p>The six criteria and point allocations above describe the assessment of the information submitted to the 2025 Global Call. Scores and ratings summarize that assessment; they are not an independent verification of reported results. <a href="#disclaimer" class="disclaimer-link" data-open-disclaimer>Read the full disclaimer.</a></p>
 
           <h3>📊 Understanding the Dashboard</h3>
           <p>In this dashboard, you can:</p>
           <ul>
-            <li><strong>Filter by Rating:</strong> Use the maturity stage filter to view solutions by star rating</li>
-            <li><strong>Compare Performance:</strong> See how different countries, regions, or organization types perform</li>
-            <li><strong>Identify Patterns:</strong> Discover trends in high-performing solutions</li>
-            <li><strong>Track Progress:</strong> Monitor the distribution of ratings across all solutions</li>
+            <li><strong>Filter the field:</strong> Use the region, country, organization type, maturity stage and SDG filters to narrow the solutions shown</li>
+            <li><strong>Explore the field:</strong> See how solutions are distributed across countries, regions and organization types</li>
+            <li><strong>Identify patterns:</strong> See which thematic areas and maturity stages are represented</li>
+            <li><strong>Read the ratings:</strong> See how the assessment bands are distributed across the solutions</li>
           </ul>
 
           <div class="note">
-            <p><strong>Note:</strong> This rating system is designed to be fair, transparent, and comprehensive. All solutions are evaluated by qualified experts using standardized criteria to ensure consistency and objectivity.</p>
+            <p>Ratings describe the assessment of submitted information, not verified performance. The full disclaimer sets out the scope of the information, the assessment and any recognition.</p>
+            <p><a href="#disclaimer" class="disclaimer-link" data-open-disclaimer>Read the full disclaimer.</a></p>
           </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Full Disclaimer Modal: information, assessment and recognition -->
+  <div id="fullDisclaimerModal" class="modal" role="dialog" aria-modal="true"
+       aria-labelledby="fullDisclaimerTitle" aria-describedby="fullDisclaimerBody">
+    <div class="modal-content disclaimer-modal-content">
+      <div class="modal-header">
+        <h2 id="fullDisclaimerTitle">Disclaimer — Information, assessment and recognition</h2>
+        <button id="closeFullDisclaimer" class="close-btn" aria-label="Close disclaimer">&times;</button>
+      </div>
+      <div class="modal-body" id="fullDisclaimerBody">
+        <div class="disclaimer-prose">
+          <p>This platform presents information supplied by applicants to the 2025 Global Call for Solutions, for knowledge-sharing and informational purposes. Descriptions and claims concerning performance, implementation, sustainability and impact reflect information provided by applicants and should not be understood as independently verified by UNIDO or the participating organizations.</p>
+          <p>Inclusion on this platform, any displayed score or rating, and recognition through an award do not constitute certification of a solution’s safety, effectiveness or sustainability, confirmation that comprehensive due diligence has been completed, or endorsement of an organization’s wider activities. Any recognition relates to the submitted solution within the scope of the Call.</p>
+          <p>Information may not reflect subsequent developments. Users should independently assess the information and undertake appropriate technical, legal, environmental and social due diligence before relying on, procuring, investing in or deploying a solution. External links are provided for reference and do not imply endorsement of their content.</p>
+          <p class="disclaimer-supplement"><strong>Platform assistant.</strong> The AI assistant on this platform provides navigation support only. Its responses do not constitute certification, endorsement or due-diligence clearance of any solution, score, rating or award.</p>
         </div>
       </div>
     </div>

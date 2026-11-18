@@ -144,6 +144,10 @@ class AppState {
               🗑️ Clear Selection
             </button>
           </div> -->
+          <div class="solution-modal-notice" role="note">
+            <span>Solution information is applicant-provided and is not independently verified.</span>
+            <a href="#disclaimer" class="disclaimer-link" data-open-disclaimer>Read the full disclaimer.</a>
+          </div>
           <div class="solutions-list">
             ${submissions.map((submission, index) => `
               <div class="solution-card">
@@ -178,11 +182,12 @@ class AppState {
                 
                 <!-- Expandable Details Section -->
                 <div class="solution-expandable" id="expandable-${index}">
+                  <p class="applicant-source-note"><span class="source-tag">Applicant-reported</span> Except for the AI-generated summary, the details below reproduce the applicant's submission and are not independently verified.</p>
                   ${submission['Summary'] ? `
                     <div class="expandable-section">
                       <h4>🤖 AI Summary</h4>
                       <div class="ai-summary-disclaimer">
-                        <small>⚠️ This AI-generated summary is for informational purposes only. Please verify accuracy with the original source.</small>
+                        <small>⚠️ AI-generated from the applicant's submission, for informational purposes only. It is not an independent verification of the reported claims.</small>
                       </div>
                       <div class="text-content" data-full-text="${submission['Summary'].replace(/"/g, '&quot;')}">
                         ${utils.truncateText(submission['Summary'], 200)}
@@ -207,7 +212,7 @@ class AppState {
                   
                   ${submission['Solution Overview'] ? `
                     <div class="expandable-section">
-                      <h4>💡 Solution Overview</h4>
+                      <h4>💡 Solution Overview <span class="source-tag">Applicant-reported</span></h4>
                       <div class="text-content" data-full-text="${submission['Solution Overview'].replace(/"/g, '&quot;')}">
                         ${utils.truncateText(submission['Solution Overview'], 200)}
                       </div>
@@ -226,7 +231,7 @@ class AppState {
                   
                   ${submission['Desired impact'] ? `
                     <div class="expandable-section">
-                      <h4>🎯 Desired Impact</h4>
+                      <h4>🎯 Desired Impact <span class="source-tag">Applicant-reported</span></h4>
                       <div class="text-content" data-full-text="${submission['Desired impact'].replace(/"/g, '&quot;')}">
                         ${utils.truncateText(submission['Desired impact'], 200)}
                       </div>
@@ -269,7 +274,7 @@ class AppState {
                   
                   ${submission['Testimonials and Endorsements'] ? `
                     <div class="expandable-section">
-                      <h4>🏆 Testimonials and Endorsements</h4>
+                      <h4>🏆 Testimonials and Endorsements <span class="source-tag">Applicant-reported</span></h4>
                       <div class="text-content" data-full-text="${submission['Testimonials and Endorsements'].replace(/"/g, '&quot;')}">
                         ${utils.truncateText(submission['Testimonials and Endorsements'], 200)}
                       </div>
