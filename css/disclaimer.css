@@ -217,18 +217,6 @@
   margin-bottom: 0;
 }
 
-.disclaimer-prose .disclaimer-supplement {
-  margin-top: 20px;
-  padding-top: 16px;
-  border-top: 1px solid var(--border);
-  color: var(--muted);
-  font-size: 13px;
-}
-
-.disclaimer-prose .disclaimer-supplement strong {
-  color: var(--text);
-}
-
 /* Rating explanation: neutral assessment note at the top and bottom */
 .assessment-note p {
   font-style: normal;
