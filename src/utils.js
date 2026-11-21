@@ -4,6 +4,35 @@
 
 const utils = {
   /**
+   * Escapes applicant-supplied text before it is interpolated into HTML.
+   * @param {*} value - Any value that will be placed in an HTML template
+   * @returns {string} Escaped text
+   */
+  escapeHtml(value) {
+    if (value === null || value === undefined) return '';
+    return String(value)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#39;');
+  },
+
+  /**
+   * Applicant-supplied organisation name, safe for HTML interpolation.
+   * Blank or redacted values return an empty string so the caller can omit
+   * the row rather than paint a placeholder on the public dashboard.
+   * @param {*} value - Raw "Name of your organization" field
+   * @returns {string} Escaped organisation name, or ''
+   */
+  orgName(value) {
+    const text = String(value ?? '')
+      .replace(/\[(?:email|name) removed\]/gi, '')
+      .trim();
+    return text ? this.escapeHtml(text) : '';
+  },
+
+  /**
    * Get SDG information including emoji, label, and color
    * @param {string} sdg - SDG identifier (e.g., "SDG 1")
    * @returns {Object} SDG information object

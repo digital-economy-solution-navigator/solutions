@@ -160,9 +160,15 @@ class AppState {
                   </div>
                 </div>
                 <div class="solution-details">
+                  ${utils.orgName(submission['Name of your organization']) ? `
+                    <div class="detail-row">
+                      <span class="label">🏢 Organization:</span>
+                      <span class="value org-name">${utils.orgName(submission['Name of your organization'])}</span>
+                    </div>
+                  ` : ''}
                   <div class="detail-row">
-                    <span class="label">🏢 Organization:</span>
-                    <span class="value">${submission._org}</span>
+                    <span class="label">🏷️ Organization Type:</span>
+                    <span class="value">${utils.escapeHtml(submission._org)}</span>
                   </div>
                   <div class="detail-row">
                     <span class="label">📈 Maturity:</span>

@@ -57,7 +57,7 @@ function updateFilterDisplay() {
   const filterConfigs = [
     { id: 'fRegion', key: 'region', label: 'Region' },
     { id: 'fCountry', key: 'country', label: 'Country' },
-    { id: 'fOrg', key: 'org', label: 'Organization' },
+    { id: 'fOrg', key: 'org', label: 'Organization Type' },
     { id: 'fMaturity', key: 'maturity', label: 'Maturity' },
     { id: 'fSDG', key: 'sdg', label: 'SDG' }
   ];

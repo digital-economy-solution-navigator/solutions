@@ -160,13 +160,19 @@
   font-weight: 500;
   color: var(--muted);
   font-size: 14px;
-  min-width: 100px;
+  min-width: 152px;
 }
 
 .detail-row .value {
   color: var(--text);
   font-size: 14px;
   flex: 1;
+}
+
+/* Applicant-supplied organisation names can exceed 120 characters. */
+.detail-row .value.org-name {
+  overflow-wrap: anywhere;
+  word-break: break-word;
 }
 
 /* Expandable Details Section */

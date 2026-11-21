@@ -543,6 +543,7 @@ function renderMap(data) {
                 iso3: d._iso3,
                 score: d._score,
                 org: d._org,
+                orgName: d['Name of your organization'] || '',
                 maturity: d._maturity,
                 id: Math.random()
               },
@@ -673,8 +674,11 @@ function renderMap(data) {
               <div style="font-weight:700; display:flex; align-items:center; margin-bottom:8px;">
                 ${utils.getCountryFlag(props.country)}${props.country}
               </div>
-              <div style="color:var(--muted)">Organization: ${props.org}</div>
-              <div style="color:var(--muted)">Maturity: ${props.maturity}</div>
+              ${utils.orgName(props.orgName) ? `
+                <div style="color:var(--muted); max-width:280px; overflow-wrap:anywhere; word-break:break-word;">Organization: <span style="color:var(--text)">${utils.orgName(props.orgName)}</span></div>
+              ` : ''}
+              <div style="color:var(--muted)">Organization Type: ${utils.escapeHtml(props.org)}</div>
+              <div style="color:var(--muted)">Maturity: ${utils.escapeHtml(props.maturity)}</div>
               <div style="color:var(--muted)">Score: ${props.score}</div>
               <div style="margin-top:8px; padding-top:8px; border-top:1px solid var(--border);">
                 <button onclick="appState.selectCountry('${props.country}')" 
