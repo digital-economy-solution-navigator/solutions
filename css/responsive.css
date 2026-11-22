@@ -67,6 +67,15 @@
   }
 }
 
+/* Narrow desktop: keep the full call title on one line (1400px - 1499px) */
+@media (min-width: 1400px) and (max-width: 1499px) {
+  .header-inner {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+  }
+}
+
 /* Desktop and large tablets (1024px - 1399px) */
 @media (max-width: 1399px) and (min-width: 1024px) {
   .grid {
@@ -81,6 +90,12 @@
   
   .card {
     grid-column: span 6;
+  }
+
+  .header-inner {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
   }
 }
 
@@ -108,6 +123,9 @@
   
   .header-inner {
     padding: 20px clamp(16px, 4vw, 32px);
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
   }
   
   h1 {

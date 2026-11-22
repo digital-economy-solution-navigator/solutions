@@ -11,12 +11,14 @@
 const YEAR_DATASETS = {
   '2025': {
     label: '2025 Global Call',
+    title: 'Digital Economy Solution Navigator',
     data: 'data/data.json',
     awards: 'data/awards_2025.json',
     logo: 'assets/logo.png'
   },
   '2026': {
-    label: '2026 Global Call',
+    label: '2026 Global Call for Sustainable Industrial AI-Powered Solutions',
+    title: 'AI & Digital Solution Navigator',
     data: 'data/data_2026.json',
     awards: null,
     logo: 'assets/logo_2026.png'
@@ -56,13 +58,16 @@ const YearSwitch = {
 
     const cfg = YEAR_DATASETS[YearSwitch.current];
 
+    const title = document.getElementById('callTitle');
+    if (title) title.textContent = cfg.title;
+
     const subtitle = document.getElementById('callSubtitle');
     if (subtitle) subtitle.textContent = cfg.label;
 
     const logo = document.getElementById('headerLogo');
     if (logo && cfg.logo) {
       logo.src = cfg.logo;
-      logo.alt = cfg.label + ' logo';
+      logo.alt = cfg.title + ' logo';
     }
 
     // The Claude AI mark acknowledged 2025 support only and is not shown for 2026.
