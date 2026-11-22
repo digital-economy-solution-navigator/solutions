@@ -87,6 +87,10 @@ async function renderAwardsForYear(awardsPath) {
   if (!root) return;
   if (!awardsPath) {
     root.hidden = true;
+    const body = document.getElementById('awardWallBody');
+    const count = document.getElementById('awardWallCount');
+    if (body) body.innerHTML = '';
+    if (count) count.textContent = '';
     return;
   }
   CONFIG.DATA_SOURCES.AWARDS_DATA = awardsPath;

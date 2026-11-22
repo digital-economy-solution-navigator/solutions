@@ -4,8 +4,8 @@
  * Both calls stay available. The public dataset for each year is a separate
  * JSON file; switching years reloads the data through the same normaliser and
  * renderer. Award data is independent and is only shown for a year that has a
- * confirmed award file. Internal evaluation fields and personal data never
- * enter these paths.
+ * confirmed award file; other years see a neutral announcement placeholder.
+ * Internal evaluation fields and personal data never enter these paths.
  */
 
 const YEAR_DATASETS = {
@@ -73,6 +73,16 @@ const YearSwitch = {
     // The Claude AI mark acknowledged 2025 support only and is not shown for 2026.
     const aiSupport = document.getElementById('footerAISupport');
     if (aiSupport) aiSupport.hidden = YearSwitch.current !== '2025';
+
+    // Show a neutral award placeholder until a call has confirmed awardees.
+    const awardWall = document.getElementById('awardWall');
+    const awardPlaceholder = document.getElementById('awardPlaceholder');
+    if (awardPlaceholder) {
+      awardPlaceholder.hidden = Boolean(cfg.awards);
+    }
+    if (awardWall && !cfg.awards) {
+      awardWall.hidden = true;
+    }
 
     const note = document.getElementById('awardYearLabel');
     if (note) note.textContent = YearSwitch.current;

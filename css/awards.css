@@ -3,8 +3,10 @@
    existing theme variables. No new palette is introduced. */
 
 #awardWall[hidden] { display: none; }
+#awardPlaceholder[hidden] { display: none; }
 
-#awardWall .body { padding: 20px 22px 24px; }
+#awardWall .body,
+#awardPlaceholder .body { padding: 20px 22px 24px; }
 
 .award-status {
   font-size: 13px;
