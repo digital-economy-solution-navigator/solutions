@@ -25,49 +25,6 @@ function initializeAboutToggle() {
 }
 
 /**
- * Initializes modal functionality for explanation dialog
- * Sets up event listeners for show/hide/close actions
- */
-function initializeModal() {
-  const modal = utils.el('explanationModal');
-  const showBtn = utils.el('showExplanation');
-  const closeBtn = utils.el('closeExplanation');
-
-  if (!modal || !showBtn || !closeBtn) {
-    console.warn('Modal elements not found');
-    return;
-  }
-
-  // Show modal
-  showBtn.addEventListener('click', function() {
-    modal.style.display = 'block';
-    document.body.style.overflow = 'hidden'; // Prevent background scrolling
-  });
-
-  // Close modal
-  closeBtn.addEventListener('click', function() {
-    modal.style.display = 'none';
-    document.body.style.overflow = 'auto'; // Restore scrolling
-  });
-
-  // Close modal when clicking outside
-  window.addEventListener('click', function(event) {
-    if (event.target === modal) {
-      modal.style.display = 'none';
-      document.body.style.overflow = 'auto';
-    }
-  });
-
-  // Close modal with Escape key
-  document.addEventListener('keydown', function(event) {
-    if (event.key === 'Escape' && modal.style.display === 'block') {
-      modal.style.display = 'none';
-      document.body.style.overflow = 'auto';
-    }
-  });
-}
-
-/**
  * Initializes QR code modal functionality
  * Sets up event listeners for show/hide/close actions
  */
@@ -175,7 +132,7 @@ function initializeDisclaimer() {
 let fullDisclaimerOpener = null;
 
 function anyOtherModalOpen() {
-  return ['explanationModal', 'qrCodeModal'].some(function (id) {
+  return ['qrCodeModal'].some(function (id) {
     const other = utils.el(id);
     return other && other.style.display === 'block';
   });
@@ -287,7 +244,6 @@ function initializeFullDisclaimer() {
 // Export for use in other modules
 if (typeof module !== 'undefined' && module.exports) {
   module.exports = {
-    initializeModal,
     initializeQRCodeModal,
     initializeDisclaimer,
     initializeFullDisclaimer

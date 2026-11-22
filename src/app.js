@@ -203,7 +203,6 @@ function initHamburgerMenu() {
   // Connect mobile buttons to desktop functionality
   const mobileButtons = {
     'mobileToggleTheme': 'toggleTheme',
-    'mobileShowExplanation': 'showExplanation', 
     'mobileShowQRCode': 'showQRCode',
     'mobileToggleKiosk': 'toggleKiosk'
   };
@@ -316,7 +315,6 @@ document.addEventListener('DOMContentLoaded', function() {
   try {
     init();
     initializeAboutToggle();
-    initializeModal();
     initializeQRCodeModal();
     initializeDisclaimer();
     initializeFullDisclaimer();

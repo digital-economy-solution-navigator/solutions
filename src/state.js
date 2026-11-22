@@ -155,9 +155,6 @@ class AppState {
                   <div class="solution-title">
                     ${submission['Title'] || 'Untitled Solution'}
                   </div>
-                  <div class="solution-score" title="Solution Score: ${utils.formatNumber(submission._score)}">
-                    ${getScoreDisplay(submission._score)}
-                  </div>
                 </div>
                 <div class="solution-details">
                   ${utils.orgName(submission['Name of your organization']) ? `

@@ -541,7 +541,6 @@ function renderMap(data) {
               properties: {
                 country: d._country,
                 iso3: d._iso3,
-                score: d._score,
                 org: d._org,
                 orgName: d['Name of your organization'] || '',
                 maturity: d._maturity,
@@ -679,7 +678,6 @@ function renderMap(data) {
               ` : ''}
               <div style="color:var(--muted)">Organization Type: ${utils.escapeHtml(props.org)}</div>
               <div style="color:var(--muted)">Maturity: ${utils.escapeHtml(props.maturity)}</div>
-              <div style="color:var(--muted)">Score: ${props.score}</div>
               <div style="margin-top:8px; padding-top:8px; border-top:1px solid var(--border);">
                 <button onclick="appState.selectCountry('${props.country}')" 
                         style="background:var(--brand); color:white; border:none; padding:4px 8px; border-radius:4px; font-size:12px; cursor:pointer;">
