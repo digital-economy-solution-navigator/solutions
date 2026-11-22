@@ -12,12 +12,14 @@ const YEAR_DATASETS = {
   '2025': {
     label: '2025 Global Call',
     data: 'data/data.json',
-    awards: 'data/awards_2025.json'
+    awards: 'data/awards_2025.json',
+    logo: 'assets/logo.png'
   },
   '2026': {
     label: '2026 Global Call',
     data: 'data/data_2026.json',
-    awards: null
+    awards: null,
+    logo: 'assets/logo_2026.png'
   }
 };
 
@@ -52,8 +54,20 @@ const YearSwitch = {
       el.textContent = YearSwitch.current;
     });
 
+    const cfg = YEAR_DATASETS[YearSwitch.current];
+
     const subtitle = document.getElementById('callSubtitle');
-    if (subtitle) subtitle.textContent = YEAR_DATASETS[YearSwitch.current].label;
+    if (subtitle) subtitle.textContent = cfg.label;
+
+    const logo = document.getElementById('headerLogo');
+    if (logo && cfg.logo) {
+      logo.src = cfg.logo;
+      logo.alt = cfg.label + ' logo';
+    }
+
+    // The Claude AI mark acknowledged 2025 support only and is not shown for 2026.
+    const aiSupport = document.getElementById('footerAISupport');
+    if (aiSupport) aiSupport.hidden = YearSwitch.current !== '2025';
 
     const note = document.getElementById('awardYearLabel');
     if (note) note.textContent = YearSwitch.current;

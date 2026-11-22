@@ -126,6 +126,10 @@ footer::before {
   justify-content: center;
 }
 
+.footer-ai-support[hidden] {
+  display: none;
+}
+
 .ai-support-content {
   display: flex;
   align-items: center;
