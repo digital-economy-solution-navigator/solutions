@@ -407,6 +407,34 @@ const getCountryCoordinates = (countryName) => {
 };
 
 /**
+ * Build the point layer for the currently selected call year.
+ * @param {Array} data - filtered rows for the active year
+ */
+function buildSubmissionGeoJson(data) {
+  return {
+    type: 'FeatureCollection',
+    features: data.map(d => {
+      const coords = getCountryCoordinates(d._country);
+      return {
+        type: 'Feature',
+        properties: {
+          country: d._country,
+          iso3: d._iso3,
+          org: d._org,
+          orgName: publicText(d['Name of your organization']) || '',
+          maturity: d._maturity,
+          id: Math.random()
+        },
+        geometry: {
+          type: 'Point',
+          coordinates: coords
+        }
+      };
+    }).filter(f => f.geometry.coordinates[0] !== 0 || f.geometry.coordinates[1] !== 0)
+  };
+}
+
+/**
  * Renders the interactive world map with solution data
  * @param {Array} data - Filtered data array
  */
@@ -530,29 +558,15 @@ function renderMap(data) {
         });
       }
 
-      // Add clustered markers
-      if (!window.map.getSource('submissions')) {
-        const geoJsonData = {
-          type: 'FeatureCollection',
-          features: data.map(d => {
-            const coords = getCountryCoordinates(d._country);
-            return {
-              type: 'Feature',
-              properties: {
-                country: d._country,
-                iso3: d._iso3,
-                org: d._org,
-                orgName: d['Name of your organization'] || '',
-                maturity: d._maturity,
-                id: Math.random()
-              },
-              geometry: {
-                type: 'Point',
-                coordinates: coords
-              }
-            };
-          }).filter(f => f.geometry.coordinates[0] !== 0 || f.geometry.coordinates[1] !== 0)
-        };
+      // Add clustered markers. The source is created once and refreshed on
+      // every render so switching call years cannot leave stale points.
+      const existingSubmissionSource = window.map.getSource('submissions');
+      if (existingSubmissionSource) {
+        existingSubmissionSource.setData(buildSubmissionGeoJson(data));
+      }
+
+      if (!existingSubmissionSource) {
+        const geoJsonData = buildSubmissionGeoJson(data);
 
         window.map.addSource('submissions', {
           type: 'geojson',

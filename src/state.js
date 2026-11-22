@@ -157,10 +157,10 @@ class AppState {
                   </div>
                 </div>
                 <div class="solution-details">
-                  ${utils.orgName(submission['Name of your organization']) ? `
+                  ${utils.orgName(publicText(submission['Name of your organization'])) ? `
                     <div class="detail-row">
                       <span class="label">🏢 Organization:</span>
-                      <span class="value org-name">${utils.orgName(submission['Name of your organization'])}</span>
+                      <span class="value org-name">${utils.orgName(publicText(submission['Name of your organization']))}</span>
                     </div>
                   ` : ''}
                   <div class="detail-row">

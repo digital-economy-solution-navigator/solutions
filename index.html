@@ -26,11 +26,15 @@
         <img src="assets/logo.png" alt="Logo" />
         <div>
           <h1>Digital Economy Solution Navigator</h1>
-          <div class="subtitle">Prototype</div>
+          <div class="subtitle" id="callSubtitle">2026 Global Call</div>
         </div>
       </div>
       
       <div class="actions">
+        <div class="year-switch" role="group" aria-label="Call year">
+          <button type="button" class="year-btn" data-year-toggle="2025" aria-pressed="false">2025</button>
+          <button type="button" class="year-btn" data-year-toggle="2026" aria-pressed="true">2026</button>
+        </div>
         <button id="toggleTheme" class="btn secondary" title="Toggle Theme">
           🌙
         </button>
@@ -185,7 +189,7 @@
               <h3 class="about-block-title">What It Is</h3>
             </div>
             <div class="about-block-content">
-              <p>A web-based dashboard that visualizes and explores digital economy solutions submitted to the 2025 Global Call for Solutions. It is designed to help users discover, filter and explore the information applicants provided.</p>
+              <p>A web-based dashboard that visualizes and explores digital economy solutions submitted to the <span data-year-label>2026</span> Global Call for Solutions. It is designed to help users discover, filter and explore the information applicants provided.</p>
             </div>
           </div>
 
@@ -351,6 +355,10 @@
 
       <!-- Mobile Menu - Inline Buttons (Hidden by default) -->
       <div id="mobileMenu" class="mobile-menu-inline">
+        <div class="year-switch mobile-year-switch" role="group" aria-label="Call year">
+          <button type="button" class="year-btn" data-year-toggle="2025" aria-pressed="false">2025</button>
+          <button type="button" class="year-btn" data-year-toggle="2026" aria-pressed="true">2026</button>
+        </div>
         <button id="mobileToggleTheme" class="btn secondary mobile-btn" title="Toggle Theme">
           <span class="btn-icon">🌙</span>
           <span class="btn-text">Theme</span>
@@ -431,7 +439,7 @@
       </div>
       <div class="modal-body" id="fullDisclaimerBody">
         <div class="disclaimer-prose">
-          <p>This platform presents information supplied by applicants to the 2025 Global Call for Solutions, for knowledge-sharing and informational purposes. Descriptions and claims concerning performance, implementation, sustainability and impact reflect information provided by applicants and should not be understood as independently verified by UNIDO or the participating organizations.</p>
+          <p>This platform presents information supplied by applicants to a UNIDO Global Call for Solutions, for knowledge-sharing and informational purposes. Descriptions and claims concerning performance, implementation, sustainability and impact reflect information provided by applicants and should not be understood as independently verified by UNIDO or the participating organizations.</p>
           <p>Inclusion on this platform and recognition through an award do not constitute certification of a solution’s safety, effectiveness or sustainability, confirmation that comprehensive due diligence has been completed, or endorsement of an organization’s wider activities. Any recognition relates to the submitted solution within the scope of the Call.</p>
           <p>Information may not reflect subsequent developments. Users should independently assess the information and undertake appropriate technical, legal, environmental and social due diligence before relying on, procuring, investing in or deploying a solution. External links are provided for reference and do not imply endorsement of their content.</p>
         </div>
@@ -441,6 +449,7 @@
 
   <!-- Scripts -->
   <script src="src/iso3-map.js"></script>
+  <script src="src/year.js"></script>
   
   <!-- Modular JavaScript files -->
   <script src="src/config.js"></script>

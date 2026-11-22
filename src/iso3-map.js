@@ -1,4 +1,8 @@
 window.COUNTRY_TO_ISO3 = {
+  "Côte d'Ivoire": "CIV",
+  "Côte d’Ivoire": "CIV",
+  "Jersey": "JEY",
+  "Türkiye": "TUR",
   "Afghanistan": "AFG",
   "Albania": "ALB",
   "Algeria": "DZA",

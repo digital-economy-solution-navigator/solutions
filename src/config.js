@@ -65,7 +65,8 @@ const CONFIG = {
   CSV_FILENAME: 'global_solutions_export.csv',
   MAPBOX_TOKEN: 'pk.eyJ1Ijoiemlsb25nLXRlY2giLCJhIjoiY21mMmhvZWp0MXZtdjJpcXlzOWswZGM1ZiJ9.tk_JMGIpKj5KS4bSBEukqw',
   
-  // Data source configuration - UPDATE THESE PATHS FOR NEW DATASETS
+  // Legacy default paths. The dashboard loads per-year files from YEAR_DATASETS
+  // in src/year.js; MAIN_DATA remains for tooling that expects one default.
   DATA_SOURCES: {
     MAIN_DATA: 'data/data.json',                    // Primary solutions data
     COUNTRY_MAPPING: 'data/country_region_mapping.json', // Optional country-region mappings

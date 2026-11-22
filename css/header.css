@@ -202,3 +202,54 @@ h1 {
     display: none; /* Hide desktop actions on mobile */
   }
 }
+
+/* Call-year switch (2025 / 2026) */
+.year-switch {
+  display: inline-flex;
+  align-items: center;
+  border: 1px solid var(--brand);
+  border-radius: 8px;
+  overflow: hidden;
+  line-height: 1;
+}
+
+.year-btn {
+  background: transparent;
+  color: var(--muted);
+  border: 0;
+  padding: 8px 11px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background .15s ease, color .15s ease;
+}
+
+.year-btn:hover {
+  background: var(--hover);
+  color: var(--text);
+}
+
+.year-btn.active {
+  background: var(--brand);
+  color: #fff;
+}
+
+.mobile-year-switch {
+  display: flex;
+  width: 100%;
+  justify-content: center;
+}
+
+.mobile-year-switch .year-btn {
+  flex: 1;
+}
+
+/* Header sits on the blue gradient; give inactive year more contrast */
+.header-inner .year-btn {
+  color: rgba(255, 255, 255, .78);
+}
+
+.header-inner .year-btn:hover {
+  background: rgba(255, 255, 255, .14);
+  color: #fff;
+}

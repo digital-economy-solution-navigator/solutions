@@ -1,6 +1,6 @@
 {
   "metadata": {
-    "total_countries": 97,
+    "total_countries": 113,
     "total_regions": 7,
     "source": "data.json",
     "description": "Country to region mapping generated from Global Call for Solutions data"
@@ -102,7 +102,23 @@
     "Czech Republic": "Europe and Central Asia",
     "Mongolia": "East Asia and Pacific",
     "Gabon": "Sub-Saharan Africa",
-    "Cambodia": "East Asia and Pacific"
+    "Cambodia": "East Asia and Pacific",
+    "Jersey": "Europe and Central Asia",
+    "Saudi Arabia": "Middle East and North Africa",
+    "Cyprus": "Europe and Central Asia",
+    "Türkiye": "Europe and Central Asia",
+    "Slovakia": "Europe and Central Asia",
+    "Romania": "Europe and Central Asia",
+    "Monaco": "Europe and Central Asia",
+    "Portugal": "Europe and Central Asia",
+    "Hungary": "Europe and Central Asia",
+    "Tonga": "East Asia and Pacific",
+    "Sweden": "Europe and Central Asia",
+    "Mexico": "Latin America and the Caribbean",
+    "Croatia": "Europe and Central Asia",
+    "Angola": "Sub-Saharan Africa",
+    "Poland": "Europe and Central Asia",
+    "Turkey": "Europe and Central Asia"
   },
   "region_to_countries": {
     "Middle East and North Africa": [

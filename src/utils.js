@@ -314,10 +314,22 @@ function getScoreDisplay(score) {
   return '☆☆☆☆☆';
 }
 
+/**
+ * Last line of defence for public text. Redaction markers must never reach
+ * the page even if an internal dataset is accidentally loaded.
+ * @param {*} value - string, number or array of strings
+ * @returns {string} Display-safe text
+ */
+function publicText(value) {
+  if (value === null || value === undefined) return '';
+  if (Array.isArray(value)) return value.map(publicText).filter(Boolean).join(', ');
+  return String(value).replace(/\[(?:email|name) removed\]/gi, '').trim();
+}
+
 // Legacy alias for backward compatibility
 const el = utils.el;
 
 // Export for use in other modules
 if (typeof module !== 'undefined' && module.exports) {
-  module.exports = { utils, getScoreDisplay, el };
+  module.exports = { utils, publicText, getScoreDisplay, el };
 }

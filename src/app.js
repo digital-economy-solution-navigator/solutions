@@ -22,6 +22,85 @@
  */
 
 // ============================================================================
+// CALL-YEAR DATA LOADING
+// ============================================================================
+
+/**
+ * Load one call year's public dataset and re-render the whole dashboard.
+ * Filters are reset: IDs and country lists mean different things in each call.
+ * @param {string} year - '2025' or '2026'
+ */
+async function loadDataset(year) {
+  const cfg = YEAR_DATASETS[year];
+  if (!cfg) throw new Error('Unknown call year: ' + year);
+
+  const raw = await utils.loadDataWithRetry(cfg.data);
+  if (!Array.isArray(raw) || raw.length === 0) throw new Error('Empty or invalid data for ' + year);
+  console.log('✅ Loaded ' + raw.length + ' solutions from ' + cfg.data);
+
+  appState.rawData = raw.map(DataProcessor.normalizeRow);
+  appState.clearFilters();
+
+  fillSelect('fRegion', utils.unique(appState.rawData.map(r => r._region)));
+
+  const countryValues = utils.unique(appState.rawData.map(r => r._country));
+  fillSelect('fCountry', countryValues.map(country => `${utils.getCountryFlag(country)}${country}`));
+
+  fillSelect('fOrg', utils.unique(appState.rawData.map(r => r._org)));
+
+  const maturityValues = utils.unique(appState.rawData.map(r => r._maturity)).sort((a, b) => {
+    const ai = CONFIG.MATURITY_ORDER.indexOf(a);
+    const bi = CONFIG.MATURITY_ORDER.indexOf(b);
+    if (ai === -1 && bi === -1) return a.localeCompare(b);
+    if (ai === -1) return 1;
+    if (bi === -1) return -1;
+    return ai - bi;
+  });
+  fillSelect('fMaturity', maturityValues);
+
+  const sdgValues = utils.unique(appState.rawData.flatMap(r => r._sdgs)).sort((a, b) => {
+    const aNum = parseInt(a.replace(/SDG\s*(\d+)/i, '$1'));
+    const bNum = parseInt(b.replace(/SDG\s*(\d+)/i, '$1'));
+    return aNum - bNum;
+  });
+  fillSelect('fSDG', sdgValues.map(sdg => utils.formatSdgWithIcon(sdg)));
+
+  renderAll();
+  updateFilterDisplay();
+  if (typeof syncMobileFilters === 'function') syncMobileFilters();
+
+  await renderAwardsForYear(cfg.awards);
+
+  YearSwitch.current = year;
+  YearSwitch.paint();
+  const url = new URL(location.href);
+  url.searchParams.set('year', year);
+  history.replaceState(null, '', url);
+}
+
+/**
+ * The award wall is only shown for a call with a confirmed award file.
+ * @param {string|null} awardsPath
+ */
+async function renderAwardsForYear(awardsPath) {
+  const root = document.getElementById('awardWall');
+  if (!root) return;
+  if (!awardsPath) {
+    root.hidden = true;
+    return;
+  }
+  CONFIG.DATA_SOURCES.AWARDS_DATA = awardsPath;
+  if (typeof renderAwardWall === 'function') await renderAwardWall();
+}
+
+/** Public entry point used by the header and mobile year buttons. */
+window.switchDashboardYear = async function (year) {
+  if (!YEAR_DATASETS[year] || year === YearSwitch.current) return;
+  if (typeof appState.hideSubmissionsModal === 'function') appState.hideSubmissionsModal();
+  await loadDataset(year);
+};
+
+// ============================================================================
 // INITIALIZATION
 // ============================================================================
 
@@ -33,9 +112,6 @@ async function init() {
   // Initialize theme manager
   ThemeManager.init();
 
-  // Award wall reads its own file; it does not depend on the scoring data
-  if (typeof renderAwardWall === 'function') renderAwardWall();
-  
   // Ensure AI logo is updated after DOM is ready
   setTimeout(() => {
     ThemeManager._updateAILogo();
@@ -75,58 +151,10 @@ async function init() {
     console.log('ℹ️ Dashboard will work without country-region filter interdependencies');
   }
 
-  // Load main data
-  console.log(`🔄 Loading main data from ${CONFIG.DATA_SOURCES.MAIN_DATA}...`);
-  const raw = await utils.loadDataWithRetry(CONFIG.DATA_SOURCES.MAIN_DATA);
-  if (!Array.isArray(raw) || raw.length === 0) throw new Error('Empty or invalid data');
-  console.log(`✅ Loaded ${raw.length} solutions from ${CONFIG.DATA_SOURCES.MAIN_DATA}`);
+  // Load the selected call year. Both datasets use the same rendering path.
+  YearSwitch.init();
+  await loadDataset(YearSwitch.current);
 
-  appState.rawData = raw.map(DataProcessor.normalizeRow);
-  
-  // Populate filter selects
-  fillSelect('fRegion', utils.unique(appState.rawData.map(r => r._region)));
-  
-  // Create country options with flags for the filter dropdown
-  const countryValues = utils.unique(appState.rawData.map(r => r._country));
-  const countryOptions = countryValues.map(country => `${utils.getCountryFlag(country)}${country}`);
-  fillSelect('fCountry', countryOptions);
-  
-  fillSelect('fOrg', utils.unique(appState.rawData.map(r => r._org)));
-  
-  // Sort maturity values according to CONFIG order
-  const maturityValues = utils.unique(appState.rawData.map(r => r._maturity)).sort((a, b) => {
-    const ai = CONFIG.MATURITY_ORDER.indexOf(a);
-    const bi = CONFIG.MATURITY_ORDER.indexOf(b);
-    if (ai === -1 && bi === -1) return a.localeCompare(b);
-    if (ai === -1) return 1;
-    if (bi === -1) return -1;
-    return ai - bi;
-  });
-  fillSelect('fMaturity', maturityValues);
-  
-  // Sort SDGs numerically (SDG 1, SDG 2, ..., SDG 17) with emoji icons
-  const sdgValues = utils.unique(appState.rawData.flatMap(r => r._sdgs)).sort((a, b) => {
-    const aNum = parseInt(a.replace(/SDG\s*(\d+)/i, '$1'));
-    const bNum = parseInt(b.replace(/SDG\s*(\d+)/i, '$1'));
-    return aNum - bNum;
-  });
-  
-  // Create SDG options with emoji icons for the filter dropdown
-  const sdgOptions = sdgValues.map(sdg => utils.formatSdgWithIcon(sdg));
-  
-  fillSelect('fSDG', sdgOptions);
-
-  // Initial render
-  renderAll();
-  
-  // Update filter display
-  updateFilterDisplay();
-  
-  // Sync mobile filters after desktop filters are populated
-  if (typeof syncMobileFilters === 'function') {
-    syncMobileFilters();
-  }
-  
   // Update map projection button text
   appState.updateMapProjectionButton();
   
