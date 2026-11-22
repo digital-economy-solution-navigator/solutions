@@ -270,49 +270,30 @@ const utils = {
   toggleReadMore(expandableId, sectionType) {
     const expandable = document.getElementById(expandableId);
     if (!expandable) return;
-    
-    const section = expandable.querySelector(`[data-section="${sectionType}"]`) || 
-                   expandable.querySelector(`.expandable-section:nth-child(${this.getSectionIndex(sectionType)})`);
-    
+
+    const section = expandable.querySelector(`[data-section="${sectionType}"]`);
+
     if (!section) return;
-    
+
     const textContent = section.querySelector('.text-content');
     const readMoreBtn = section.querySelector('.read-more-btn');
-    
+
     if (!textContent || !readMoreBtn) return;
-    
+
     const fullText = textContent.getAttribute('data-full-text');
     const isExpanded = textContent.classList.contains('expanded');
-    
+
+    // Applicant text is rendered as plain text (textContent, not innerHTML)
+    // so it can never be interpreted as markup.
     if (isExpanded) {
-      textContent.innerHTML = this.truncateText(fullText, 200);
+      textContent.textContent = this.truncateText(fullText, 200);
       textContent.classList.remove('expanded');
       readMoreBtn.textContent = 'Read More';
     } else {
-      textContent.innerHTML = fullText;
+      textContent.textContent = fullText || '';
       textContent.classList.add('expanded');
       readMoreBtn.textContent = 'Read Less';
     }
-  },
-
-  /**
-   * Get section index based on section type
-   * @param {string} sectionType - Type of section
-   * @returns {number} Section index
-   */
-  getSectionIndex(sectionType) {
-    const sectionMap = {
-      'summary': 1,
-      'problem': 2,
-      'solution': 3,
-      'implementation': 4,
-      'impact': 5,
-      'technologies': 6,
-      'duration': 7,
-      'unique': 8,
-      'testimonials': 9
-    };
-    return sectionMap[sectionType] || 1;
   }
 };
 

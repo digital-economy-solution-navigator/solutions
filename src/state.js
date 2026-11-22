@@ -187,13 +187,13 @@ class AppState {
                 <div class="solution-expandable" id="expandable-${index}">
                   <p class="applicant-source-note"><span class="source-tag">Applicant-reported</span> Except for the AI-generated summary, the details below reproduce the applicant's submission and are not independently verified.</p>
                   ${submission['Summary'] ? `
-                    <div class="expandable-section">
+                    <div class="expandable-section" data-section="summary">
                       <h4>🤖 AI Summary</h4>
                       <div class="ai-summary-disclaimer">
                         <small>⚠️ AI-generated from the applicant's submission, for informational purposes only. It is not an independent verification of the reported claims.</small>
                       </div>
                       <div class="text-content" data-full-text="${submission['Summary'].replace(/"/g, '&quot;')}">
-                        ${utils.truncateText(submission['Summary'], 200)}
+                        ${utils.escapeHtml(utils.truncateText(submission['Summary'], 200))}
                       </div>
                       ${submission['Summary'].length > 200 ? `
                         <button class="read-more-btn" onclick="utils.toggleReadMore('expandable-${index}', 'summary')">Read More</button>
@@ -202,10 +202,10 @@ class AppState {
                   ` : ''}
                   
                   ${submission['Problem Statement'] ? `
-                    <div class="expandable-section">
+                    <div class="expandable-section" data-section="problem">
                       <h4>🔍 Problem Statement</h4>
                       <div class="text-content" data-full-text="${submission['Problem Statement'].replace(/"/g, '&quot;')}">
-                        ${utils.truncateText(submission['Problem Statement'], 200)}
+                        ${utils.escapeHtml(utils.truncateText(submission['Problem Statement'], 200))}
                       </div>
                       ${submission['Problem Statement'].length > 200 ? `
                         <button class="read-more-btn" onclick="utils.toggleReadMore('expandable-${index}', 'problem')">Read More</button>
@@ -214,10 +214,10 @@ class AppState {
                   ` : ''}
                   
                   ${submission['Solution Overview'] ? `
-                    <div class="expandable-section">
+                    <div class="expandable-section" data-section="solution">
                       <h4>💡 Solution Overview <span class="source-tag">Applicant-reported</span></h4>
                       <div class="text-content" data-full-text="${submission['Solution Overview'].replace(/"/g, '&quot;')}">
-                        ${utils.truncateText(submission['Solution Overview'], 200)}
+                        ${utils.escapeHtml(utils.truncateText(submission['Solution Overview'], 200))}
                       </div>
                       ${submission['Solution Overview'].length > 200 ? `
                         <button class="read-more-btn" onclick="utils.toggleReadMore('expandable-${index}', 'solution')">Read More</button>
@@ -228,15 +228,15 @@ class AppState {
                   ${submission['Implementation location(s)'] ? `
                     <div class="expandable-section">
                       <h4>📍 Implementation Location(s)</h4>
-                      <div class="text-content">${submission['Implementation location(s)']}</div>
+                      <div class="text-content">${utils.escapeHtml(submission['Implementation location(s)'])}</div>
                     </div>
                   ` : ''}
                   
                   ${submission['Desired impact'] ? `
-                    <div class="expandable-section">
+                    <div class="expandable-section" data-section="impact">
                       <h4>🎯 Desired Impact <span class="source-tag">Applicant-reported</span></h4>
                       <div class="text-content" data-full-text="${submission['Desired impact'].replace(/"/g, '&quot;')}">
-                        ${utils.truncateText(submission['Desired impact'], 200)}
+                        ${utils.escapeHtml(utils.truncateText(submission['Desired impact'], 200))}
                       </div>
                       ${submission['Desired impact'].length > 200 ? `
                         <button class="read-more-btn" onclick="utils.toggleReadMore('expandable-${index}', 'impact')">Read More</button>
@@ -245,10 +245,10 @@ class AppState {
                   ` : ''}
                   
                   ${submission['Key technologies'] ? `
-                    <div class="expandable-section">
+                    <div class="expandable-section" data-section="technologies">
                       <h4>⚙️ Key Technologies</h4>
                       <div class="text-content" data-full-text="${submission['Key technologies'].replace(/"/g, '&quot;')}">
-                        ${utils.truncateText(submission['Key technologies'], 200)}
+                        ${utils.escapeHtml(utils.truncateText(submission['Key technologies'], 200))}
                       </div>
                       ${submission['Key technologies'].length > 200 ? `
                         <button class="read-more-btn" onclick="utils.toggleReadMore('expandable-${index}', 'technologies')">Read More</button>
@@ -259,15 +259,15 @@ class AppState {
                   ${submission['Duration to pilot in a new geography'] ? `
                     <div class="expandable-section">
                       <h4>⏱️ Duration to Pilot in New Geography</h4>
-                      <div class="text-content">${submission['Duration to pilot in a new geography']}</div>
+                      <div class="text-content">${utils.escapeHtml(submission['Duration to pilot in a new geography'])}</div>
                     </div>
                   ` : ''}
                   
                   ${submission['Unique Characteristics'] ? `
-                    <div class="expandable-section">
+                    <div class="expandable-section" data-section="unique">
                       <h4>✨ Unique Characteristics</h4>
                       <div class="text-content" data-full-text="${submission['Unique Characteristics'].replace(/"/g, '&quot;')}">
-                        ${utils.truncateText(submission['Unique Characteristics'], 200)}
+                        ${utils.escapeHtml(utils.truncateText(submission['Unique Characteristics'], 200))}
                       </div>
                       ${submission['Unique Characteristics'].length > 200 ? `
                         <button class="read-more-btn" onclick="utils.toggleReadMore('expandable-${index}', 'unique')">Read More</button>
@@ -276,10 +276,10 @@ class AppState {
                   ` : ''}
                   
                   ${submission['Testimonials and Endorsements'] ? `
-                    <div class="expandable-section">
+                    <div class="expandable-section" data-section="testimonials">
                       <h4>🏆 Testimonials and Endorsements <span class="source-tag">Applicant-reported</span></h4>
                       <div class="text-content" data-full-text="${submission['Testimonials and Endorsements'].replace(/"/g, '&quot;')}">
-                        ${utils.truncateText(submission['Testimonials and Endorsements'], 200)}
+                        ${utils.escapeHtml(utils.truncateText(submission['Testimonials and Endorsements'], 200))}
                       </div>
                       ${submission['Testimonials and Endorsements'].length > 200 ? `
                         <button class="read-more-btn" onclick="utils.toggleReadMore('expandable-${index}', 'testimonials')">Read More</button>
