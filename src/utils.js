@@ -252,13 +252,24 @@ const utils = {
     const toggleIcon = toggleBtn.querySelector('.toggle-icon');
     
     if (isExpanded) {
+      // Pin the current height briefly so the collapse animates from the real
+      // content height, including any sections the user has read in full.
+      expandable.style.maxHeight = expandable.scrollHeight + 'px';
+      void expandable.offsetHeight;
       expandable.classList.remove('expanded');
+      expandable.style.maxHeight = '0px';
       toggleText.textContent = 'Show Details';
       toggleIcon.textContent = '▼';
     } else {
       expandable.classList.add('expanded');
+      expandable.style.maxHeight = expandable.scrollHeight + 'px';
       toggleText.textContent = 'Hide Details';
       toggleIcon.textContent = '▲';
+      // Once the transition finishes, let the block grow freely. A fixed cap
+      // would clip cards whose applicant text is long.
+      window.setTimeout(() => {
+        if (expandable.classList.contains('expanded')) expandable.style.maxHeight = 'none';
+      }, 320);
     }
   },
 

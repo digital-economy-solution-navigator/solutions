@@ -226,9 +226,14 @@ class AppState {
                   ` : ''}
                   
                   ${submission['Implementation location(s)'] ? `
-                    <div class="expandable-section">
+                    <div class="expandable-section" data-section="location">
                       <h4>📍 Implementation Location(s)</h4>
-                      <div class="text-content">${utils.escapeHtml(submission['Implementation location(s)'])}</div>
+                      <div class="text-content" data-full-text="${submission['Implementation location(s)'].replace(/"/g, '&quot;')}">
+                        ${utils.escapeHtml(utils.truncateText(submission['Implementation location(s)'], 200))}
+                      </div>
+                      ${submission['Implementation location(s)'].length > 200 ? `
+                        <button class="read-more-btn" onclick="utils.toggleReadMore('expandable-${index}', 'location')">Read More</button>
+                      ` : ''}
                     </div>
                   ` : ''}
                   
@@ -257,9 +262,14 @@ class AppState {
                   ` : ''}
                   
                   ${submission['Duration to pilot in a new geography'] ? `
-                    <div class="expandable-section">
+                    <div class="expandable-section" data-section="duration">
                       <h4>⏱️ Duration to Pilot in New Geography</h4>
-                      <div class="text-content">${utils.escapeHtml(submission['Duration to pilot in a new geography'])}</div>
+                      <div class="text-content" data-full-text="${submission['Duration to pilot in a new geography'].replace(/"/g, '&quot;')}">
+                        ${utils.escapeHtml(utils.truncateText(submission['Duration to pilot in a new geography'], 200))}
+                      </div>
+                      ${submission['Duration to pilot in a new geography'].length > 200 ? `
+                        <button class="read-more-btn" onclick="utils.toggleReadMore('expandable-${index}', 'duration')">Read More</button>
+                      ` : ''}
                     </div>
                   ` : ''}
                   

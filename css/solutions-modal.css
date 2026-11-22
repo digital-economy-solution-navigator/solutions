@@ -185,8 +185,10 @@
   padding-top: 16px;
 }
 
+/* Fallback only; toggleSolutionDetails sets an inline height that can grow
+   with the text, so long applicant answers are never clipped. */
 .solution-expandable.expanded {
-  max-height: 2000px;
+  max-height: 12000px;
 }
 
 .expandable-section {
