@@ -41,6 +41,10 @@
         <button id="showQRCode" class="btn secondary" title="Submit Your Solution">
           Submit Solutions
         </button>
+        <!-- Temporary website QR access -->
+        <button id="showWebsiteQR" class="btn secondary" title="Open website QR code">
+          Website QR
+        </button>
         <button id="toggleKiosk" class="btn secondary" title="Show filter controls">
           Show Controls
         </button>
@@ -381,6 +385,11 @@
           <span class="btn-icon">📝</span>
           <span class="btn-text">Submit</span>
         </button>
+        <!-- Temporary website QR access -->
+        <button id="mobileShowWebsiteQR" class="btn secondary mobile-btn" title="Open website QR code">
+          <span class="btn-icon">🔗</span>
+          <span class="btn-text">Site QR</span>
+        </button>
         <button id="mobileToggleKiosk" class="btn secondary mobile-btn" title="Show filter controls">
           <span class="btn-icon">⚙️</span>
           <span class="btn-text">Controls</span>
@@ -436,6 +445,31 @@
                 <span>Community Driven</span>
               </div>
             </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Temporary website QR modal -->
+  <div id="websiteQRModal" class="modal" role="dialog" aria-modal="true"
+       aria-labelledby="websiteQRTitle">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 id="websiteQRTitle">🔗 Website QR Code</h2>
+        <button id="closeWebsiteQR" class="close-btn">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div class="qr-code-container">
+          <div class="qr-code-wrapper">
+            <img src="assets/website_qr.png" alt="QR code to the 2026 dashboard" class="qr-code-image" />
+          </div>
+          <div class="qr-code-info">
+            <h3>Open the 2026 dashboard</h3>
+            <p>Scan this QR code with your mobile device to open the dashboard.
+              <a href="https://digital-economy-solution-navigator.github.io/solutions/?year=2026"
+                 target="_blank" rel="noopener noreferrer" class="desktop-link">If you're using a desktop, click here.</a>
+            </p>
           </div>
         </div>
       </div>

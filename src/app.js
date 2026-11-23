@@ -236,6 +236,7 @@ function initHamburgerMenu() {
   const mobileButtons = {
     'mobileToggleTheme': 'toggleTheme',
     'mobileShowQRCode': 'showQRCode',
+    'mobileShowWebsiteQR': 'showWebsiteQR',
     'mobileToggleKiosk': 'toggleKiosk'
   };
   

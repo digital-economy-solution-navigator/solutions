@@ -25,45 +25,45 @@ function initializeAboutToggle() {
 }
 
 /**
- * Initializes QR code modal functionality
- * Sets up event listeners for show/hide/close actions
+ * Initializes QR code modal functionality.
+ * Both the submission QR and the temporary website QR use the same behaviour.
  */
 function initializeQRCodeModal() {
-  const modal = utils.el('qrCodeModal');
-  const showBtn = utils.el('showQRCode');
-  const closeBtn = utils.el('closeQRCode');
+  const configs = [
+    { modal: 'qrCodeModal', show: 'showQRCode', close: 'closeQRCode' },
+    { modal: 'websiteQRModal', show: 'showWebsiteQR', close: 'closeWebsiteQR' }
+  ];
 
-  if (!modal || !showBtn || !closeBtn) {
-    console.warn('QR Code modal elements not found');
-    return;
-  }
+  configs.forEach(function (cfg) {
+    const modal = utils.el(cfg.modal);
+    const showBtn = utils.el(cfg.show);
+    const closeBtn = utils.el(cfg.close);
 
-  // Show modal
-  showBtn.addEventListener('click', function() {
-    modal.style.display = 'block';
-    document.body.style.overflow = 'hidden'; // Prevent background scrolling
-  });
-
-  // Close modal
-  closeBtn.addEventListener('click', function() {
-    modal.style.display = 'none';
-    document.body.style.overflow = 'auto'; // Restore scrolling
-  });
-
-  // Close modal when clicking outside
-  window.addEventListener('click', function(event) {
-    if (event.target === modal) {
-      modal.style.display = 'none';
-      document.body.style.overflow = 'auto';
+    if (!modal || !showBtn || !closeBtn) {
+      console.warn('QR Code modal elements not found: ' + cfg.modal);
+      return;
     }
-  });
 
-  // Close modal with Escape key
-  document.addEventListener('keydown', function(event) {
-    if (event.key === 'Escape' && modal.style.display === 'block') {
-      modal.style.display = 'none';
-      document.body.style.overflow = 'auto';
+    function openModal() {
+      modal.style.display = 'block';
+      document.body.style.overflow = 'hidden';
     }
+
+    function closeModal() {
+      modal.style.display = 'none';
+      document.body.style.overflow = anyOtherModalOpen() ? 'hidden' : 'auto';
+    }
+
+    showBtn.addEventListener('click', openModal);
+    closeBtn.addEventListener('click', closeModal);
+
+    window.addEventListener('click', function (event) {
+      if (event.target === modal) closeModal();
+    });
+
+    document.addEventListener('keydown', function (event) {
+      if (event.key === 'Escape' && modal.style.display === 'block') closeModal();
+    });
   });
 }
 
@@ -132,7 +132,7 @@ function initializeDisclaimer() {
 let fullDisclaimerOpener = null;
 
 function anyOtherModalOpen() {
-  return ['qrCodeModal'].some(function (id) {
+  return ['qrCodeModal', 'websiteQRModal', 'fullDisclaimerModal', 'submissions-modal'].some(function (id) {
     const other = utils.el(id);
     return other && other.style.display === 'block';
   });
